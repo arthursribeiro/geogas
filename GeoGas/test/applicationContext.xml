@@ -10,25 +10,21 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-	<!-- DAOS -->
-	
-	<bean id="formularioDAO" class="smartgathering.formulario.hibernate.FormularioDAO" scope="singleton">
+	<!-- DAOS 
+		Exs.:
 		
-	</bean>
-	
-	<bean id="vistoriaDAO" class="smartgathering.formulario.vistoria.hibernate.VistoriaDAO" scope="singleton">
-		
-	</bean>
-	
 	<bean id="irregularDAO" class="smartgathering.formulario.irregular.hibernate.IrregularDAO" scope="singleton">
 		
 	</bean>
-
-	<!-- CONFIGURACAO HIBERNATE -->
+	
+	-->
+	
+	<!-- CONFIGURACAO HIBERNATE 
+	Exs.:
 	
 	<bean id="entityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSourceSG"/>
+        <property name="dataSource" ref="dataSourceGeoGas"/>
         <property name="persistenceProvider">
             <bean class="org.hibernate.ejb.HibernatePersistence"/>
         </property>
@@ -37,14 +33,23 @@
         </property>
         <property name="jpaProperties">
             <props>
-                <!-- <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop> -->
                 <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
                 <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.hbm2ddl.auto">validate</prop>
             </props>
         </property>
     </bean>
-
+    
+    <bean id="dataSourceSG"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	   <property name="driverClassName" value="org.postgresql.Driver" />
+	   <property name="url" value="jdbc:postgresql://localhost:5432/geogas" />
+	   <property name="username" value="postgres" />
+	   <property name="password" value="admin" />
+    </bean>
+	
+	-->
+	
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
     <bean id="transactionManager"
@@ -53,42 +58,15 @@
             ref="entityManagerFactory" />
     </bean>
     
-	<!-- <bean id="dataSourceSG"
-        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-	   <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
-	   <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
-	   <property name="username" value="system" />
-	   <property name="password" value="admin" />
-    </bean> -->
-    
-    <bean id="dataSourceSG"
-        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-	   <property name="driverClassName" value="org.postgresql.Driver" />
-	   <!-- <property name="url" value="jdbc:postgresql://loalhost:5432/smartgathering" /> -->
-	   <property name="url" value="jdbc:postgresql://150.165.75.171:5432/smartgathering" />
-	   <property name="username" value="sg" />
-	   <property name="password" value="smartgathering" />
-    </bean>
-    
-    
     <tx:annotation-driven transaction-manager="transactionManager" />
     
     
-    <!-- ACTIONS -->
+    <!-- ACTIONS
+    Exs.:
     
     <bean id="formularioAction" class="smartgathering.formulario.action.FormularioAction">
     	<property name="formularioDAO" ref="formularioDAO" />
 	</bean>
-	
-	<bean id="vistoriaAction" class="smartgathering.formulario.vistoria.action.VistoriaAction">
-    	<property name="vistoriaDAO" ref="vistoriaDAO" />
-	</bean>
-	
-	<bean id="irregularAction" class="smartgathering.formulario.irregular.action.IrregularAction">
-    	<property name="irregularDAO" ref="irregularDAO" />
-	</bean>
-	
-	<bean id="geoserverAction" class="smartgathering.formulario.action.GeoServerAction">
-	</bean>
-
+     -->
+    
 </beans>

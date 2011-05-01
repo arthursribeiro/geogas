@@ -8,70 +8,18 @@
 		<constant name="struts.devMode" value="false" />
     	<package name="smartgathering" extends="struts-default">
     	
-    		<action name="testando" class="anexoAction" method="testing" >
+	        <!-- Add actions here
+	        	Exs.:
+	        	
+	        <action name="testando" class="anexoAction" method="testing" >
     			<result name="teste">/index.jsp</result>
-	        </action>
-	        
-	        <action name="adicionandoTag" class="anexoAction" method="adicionaTag">
 	        </action>
 	        
 	        <action name="getTags" class="anexoAction" method="photoTags">
 	        	<result name="tagAux">/getTags.jsp</result>
 	        </action>
-    	
-    		<action name="salvarAnexo" class="anexoAction" method="salvarAnexo" >
-	        </action>
-    	
-    		<action name="realizarPesquisa" class="geoserverAction" method="giveFormsNearLocationAndDate" >
-    			
-	        </action>
-	        
-	        <action name="kml" class="geoserverAction" method="giveFormsKML" >
-	        </action>
-	        
-	        <action name="kml2" class="geoserverAction" method="redirectGeoServer" >
-	        </action>
-
-	        <action name="testeAction" class="vistoriaAction" method="teste" >
-	        </action>
-	        
-	        <action name="salvarVistoria" class="vistoriaAction" method="salvarVistoria" >
-	            
-	        </action>
-	        
-	        <action name="removerVistoria" class="vistoriaAction" method="removerVistoria" >
-	            
-	        </action>
-	        
-	        <action name="recuperarVistoriaXML" class="vistoriaAction" method="recuperarVistoriaXML" >
-	            
-	        </action>
-	        
-	        <action name="atualizarVistoria" class="vistoriaAction" method="atualizarVistoria" >
-	            
-	        </action>
-	        
-	        <action name="salvarIrregular" class="irregularAction" method="salvarIrregular" >
-	            
-	        </action>
-	        
-	        <action name="removerIrregular" class="irregularAction" method="removerIrregular" >
-	            
-	        </action>
-	        
-	        <action name="recuperarIrregularXML" class="irregularAction" method="recuperarIrregularXML" >
-	            
-	        </action>
-	        
-	        <action name="atualizarIrregular" class="irregularAction" method="atualizarIrregular" >
-	            
-	        </action>
-	
-			<action name="recuperarFormularios" class="formularioAction" method="recuperarFormulariosXML" >
-	            
-	        </action>
-	
-	        <!-- Add actions here -->
+	        	
+	         -->
     	</package>
 
     <!-- Add packages here -->
