@@ -8,6 +8,12 @@
 		<constant name="struts.devMode" value="false" />
     	<package name="smartgathering" extends="struts-default">
     	
+    	<action name="getGasStation" class="gasStationAction" method="getGasStationById" >
+	    </action>
+	    
+	    <action name="getAllPlaces" class="gasStationAction" method="getAllGasStations" >
+	    </action>
+    	
 	        <!-- Add actions here
 	        	Exs.:
 	        	
