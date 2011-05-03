@@ -19,6 +19,10 @@
 	
 	-->
 	
+	<bean id="gasStationDAO" class="br.edu.ufcg.geogas.dao.GasStationDAO" scope="singleton">
+		
+	</bean>
+	
 	<!-- CONFIGURACAO HIBERNATE 
 	Exs.:
 	
@@ -50,6 +54,32 @@
 	
 	-->
 	
+	<bean id="entityManagerFactory"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSourceGeoGas"/>
+        <property name="persistenceProvider">
+            <bean class="org.hibernate.ejb.HibernatePersistence"/>
+        </property>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="dataSourceGeoGas"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	   <property name="driverClassName" value="org.postgresql.Driver" />
+	   <property name="url" value="jdbc:postgresql://localhost:5432/geogas" />
+	   <property name="username" value="geogas" />
+	   <property name="password" value="pgsqlgeogas" />
+    </bean>
+	
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
     <bean id="transactionManager"
@@ -68,5 +98,9 @@
     	<property name="formularioDAO" ref="formularioDAO" />
 	</bean>
      -->
+     
+     <bean id="gasStationAction" class="br.edu.ufcg.geogas.action.GasStationAction">
+    	<property name="gasStationDAO" ref="gasStationDAO" />
+	</bean>
     
 </beans>
