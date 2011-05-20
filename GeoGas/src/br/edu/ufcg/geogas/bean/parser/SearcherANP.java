@@ -10,15 +10,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class ExcelHandler {
+public class SearcherANP {
 	
-	private static HashMap<String,ArrayList<String>> estadosCodMun = new HashMap<String,ArrayList<String>>();
+	private HashMap<String,ArrayList<String>> estadosCodMun = new HashMap<String,ArrayList<String>>();
 	
-	private static HashMap< String, HashMap<String,ArrayList<String>>  > estadosMunPostos = new HashMap< String, HashMap<String,ArrayList<String>>  >();
+	private HashMap< String, HashMap<String,ArrayList<String>>  > estadosMunPostos = new HashMap< String, HashMap<String,ArrayList<String>>  >();
 	
-	private static ArrayList<String> tiposDePostos = new ArrayList<String>();
+	private ArrayList<String> tiposDePostos = new ArrayList<String>();
 	
 	public static void main(String[] args) {
+		SearcherANP handler = new SearcherANP();
+		handler.buscaDados();
+	}
+	
+	public void buscaDados(){
 		try {
 			URL anp = new URL(ConstantsTagsANP.URL_ANP_POSTOS_SEARCH);
 			BufferedReader in = new BufferedReader(
@@ -63,68 +68,93 @@ public class ExcelHandler {
 					getMunPostos(estado,municipio);
 				}
 			}
-			//Dentro do for nos arrays
-//			String dataEst = URLEncoder.encode("sEstado", "UTF-8") + "=" + URLEncoder.encode("PB", "UTF-8");
-//		    
-//		    String dataMun = "&" + URLEncoder.encode("sMunicipio", "UTF-8") + "=" + URLEncoder.encode("4848", "UTF-8");
-//		    
-//		    
-//		    String dataPesq = "&" + URLEncoder.encode("hPesquisar", "UTF-8") + "=" + URLEncoder.encode("PESQUISAR", "UTF-8");
-//		    String dataTipo = "&" + URLEncoder.encode("sTipodePosto", "UTF-8") + "=" + URLEncoder.encode("0", "UTF-8");
-//		    String dataBand = "&" + URLEncoder.encode("sBandeira", "UTF-8") + "=" + URLEncoder.encode("0", "UTF-8");
-//		    String dataPag = "&" + URLEncoder.encode("p", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8");
 		} catch (Exception e) {
 		}
 	}
 	
 
-	private static void getMunPostos(String estado, String municipio) {
+	private void getMunPostos(String estado, String municipio) {
 		try{
-			String data = URLEncoder.encode(ConstantsTagsANP.ESTADO_SEARCH_ATT, "UTF-8") + "=" + URLEncoder.encode(estado, "UTF-8");  
-		      
-	        // Send data  
-	        URL url = new URL(ConstantsTagsANP.URL_ANP_POSTOS_SEARCH);  
-	        URLConnection conn = url.openConnection();  
-	        conn.setDoOutput(true);  
-	        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());  
-	        wr.write(data);  
-	        wr.flush();  
-	      
-	        // Get the response  
-	        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));  
-	        String inputLine;  
-	        
-	        boolean callFunctionPostos = false;
-			ArrayList<String> postos = new ArrayList<String>();
-	        
-	        while ((inputLine = rd.readLine()) != null) {  
-	        	if(inputLine.indexOf(ConstantsTagsANP.ON_CLICK_OPTION+"=")>=0 || 
-						inputLine.indexOf(ConstantsTagsANP.FUNCTION_CALL_RESULT+"(")>=0 ){
-					callFunctionPostos = true;
-				}else {
-					callFunctionPostos = false;
-				}
+			int numResults = 0;
+			int pag = 1;
+			while(numResults>0 || pag<2){
+				String data = URLEncoder.encode(ConstantsTagsANP.ESTADO_SEARCH_ATT, "UTF-8") + "=" + URLEncoder.encode("SP", "UTF-8");  
+				data += "&" + URLEncoder.encode(ConstantsTagsANP.MUNICIPIO_SEARCH_ATT, "UTF-8") + "=" + URLEncoder.encode("9668", "UTF-8");
 				
-				if(callFunctionPostos){
-					ArrayList<String> optionsValues = getPostoId(inputLine);
-					postos.addAll(optionsValues);
-				}
-	        }  
-	        wr.close();  
-	        rd.close();
-			
+				data += "&" + URLEncoder.encode("hPesquisar", "UTF-8") + "=" + URLEncoder.encode("PESQUISAR", "UTF-8");
+				data += "&" + URLEncoder.encode("sTipodePosto", "UTF-8") + "=" + URLEncoder.encode("0", "UTF-8");
+			    data += "&" + URLEncoder.encode("sBandeira", "UTF-8") + "=" + URLEncoder.encode("0", "UTF-8");
+			    data += "&" + URLEncoder.encode("p", "UTF-8") + "=" + URLEncoder.encode(""+pag, "UTF-8");
+				
+		        // Send data  
+		        URL url = new URL(ConstantsTagsANP.URL_ANP_POSTOS_SEARCH);  
+		        URLConnection conn = url.openConnection();  
+		        conn.setDoOutput(true);  
+		        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());  
+		        wr.write(data);  
+		        wr.flush();  
+		      
+		        // Get the response  
+		        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));  
+		        String inputLine;  
+		        
+		        boolean callFunctionPostos = false;
+				ArrayList<String> postos = new ArrayList<String>();
+		        
+		        while ((inputLine = rd.readLine()) != null) {  
+		        	if(inputLine.indexOf(ConstantsTagsANP.ON_CLICK_OPTION+"=")>=0 && 
+							inputLine.indexOf(ConstantsTagsANP.FUNCTION_CALL_RESULT+"(")>=0 ){
+						callFunctionPostos = true;
+					}else {
+						callFunctionPostos = false;
+					}
+					
+					if(callFunctionPostos){
+						ArrayList<String> optionsValues = getPostoId(inputLine);
+						postos.addAll(optionsValues);
+					}
+		        }
+		        numResults = postos.size();
+		        pag++;
+		        HashMap<String, ArrayList<String>> munPostos = estadosMunPostos.get(estado);
+		        if(munPostos==null)
+		        	munPostos = new HashMap<String, ArrayList<String>>();
+		        if(munPostos!=null){
+		        	ArrayList<String> stations = munPostos.get(municipio);
+		        	if(stations==null)
+		        		stations = new ArrayList<String>();
+		        	stations.addAll(postos);
+		        	munPostos.put(municipio, stations);
+		        	estadosMunPostos.put(estado, munPostos);
+		        }
+		        
+		        wr.close();  
+		        rd.close();
+			}
 		}catch(Exception e){
 		}
 	}
 
 
-	private static ArrayList<String> getPostoId(String inputLine) {
-		// TODO Auto-generated method stub
-		return null;
+	private ArrayList<String> getPostoId(String inputLine) {
+		String[] split = inputLine.split(ConstantsTagsANP.ON_CLICK_OPTION+"=");
+		ArrayList<String> idsPostos = new ArrayList<String>();
+		for (String part : split) {
+			if(part.indexOf(ConstantsTagsANP.FUNCTION_CALL_RESULT+"(")>=0){
+				int indexLeftParen = part.indexOf("(");
+				int indexRightParen = part.substring(indexLeftParen+1).indexOf(")");
+				if(indexLeftParen>=0 && indexRightParen>=0){
+					String value = part.substring(indexLeftParen+1,indexLeftParen+indexRightParen+1);
+					value = value.replace("\'", "");
+					idsPostos.add(value.trim());
+				}
+			}
+		}
+		return idsPostos;
 	}
 
 
-	private static void getMunCodes(ArrayList<String> keys) {
+	private void getMunCodes(ArrayList<String> keys) {
 		for (String estado : keys) {
 			try{
 				String data = URLEncoder.encode(ConstantsTagsANP.ESTADO_SEARCH_ATT, "UTF-8") + "=" + URLEncoder.encode(estado, "UTF-8");  
@@ -161,18 +191,12 @@ public class ExcelHandler {
 		        rd.close();
 				
 				estadosCodMun.put(estado, municipios);
-				for (String mun : municipios) {
-					HashMap<String,ArrayList<String>> aux = new HashMap<String, ArrayList<String>>();
-					ArrayList<String> auxList = new ArrayList<String>();
-					aux.put(mun, auxList);
-					estadosMunPostos.put(estado, aux);
-				}
 			}catch(Exception e){
 			}
 		}
 	}
 
-	private static ArrayList<String> getOptionsValues(String inputLine) {
+	private ArrayList<String> getOptionsValues(String inputLine) {
 		String[] splitOptions = inputLine.split(ConstantsTagsANP.OPTION_TAG);
 		ArrayList<String> values = new ArrayList<String>();
 		for (int i = 1; i < splitOptions.length; i++) {
