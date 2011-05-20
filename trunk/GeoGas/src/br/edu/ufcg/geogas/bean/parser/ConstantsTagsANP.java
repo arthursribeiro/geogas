@@ -6,6 +6,8 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.params.HttpParams;
@@ -39,6 +41,7 @@ public class ConstantsTagsANP {
 	
 	public static final String PAGINA_ATT = "p";
 	
-	public static final String FUNCTION_CALL_RESULT = "jogaForm";
+	public static final String FUNCTION_CALL_RESULT = "jogaform";
+	
 		
 }
