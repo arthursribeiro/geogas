@@ -7,12 +7,23 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>SmartGathering</title>
 <script type="text/javascript">
-
+	function submit(){
+		formu.submit();
+	}
 </script>
 </head>
-<body>
-SmartGathering... =D
-<br>
-<h3>SUGGESTION TAGS</h3>       	
+<body onload="submit();">
+	<form method="Post" action="http://www.anp.gov.br/postos/consulta.asp" name="formu" id="formu" onSubmit="">
+		<input value="AC" type="hidden" name="sEstado">
+		<input value="1" type="hidden" name="sMunicipio" class="busca">
+		<input type="hidden" name="hPesquisar" value="PESQUISAR">
+		<input value="0" type="hidden" name="sBandeira" class="busca">
+		<input value="0" type="hidden" name="sTipodePosto">
+		<!-- 
+		
+		
+		
+		 -->
+    </form>
 </body>
 </html>
