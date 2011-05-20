@@ -111,5 +111,6 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/XJCPluginJavaApiforKml.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xwork-2.1.2.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xwork-core-2.1.4.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jxl.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
