@@ -1,4 +1,4 @@
-package br.edu.ufcg.geogas.bean.anp2.parser;
+package br.edu.ufcg.geogas.bean.anp.parser;
 
 public class ConstantsTagsANP {
 	
