@@ -29,15 +29,25 @@ CREATE TABLE Neighborhood(
 
 CREATE TABLE GasStation(
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(255) NOT NULL,
-	address VARCHAR(255) NOT NULL,
+	autorizacao VARCHAR(255),
+	cnpjCpf VARCHAR(255) NOT NULL UNIQUE,
+	razaoSocial VARCHAR(255),
+	nomeFantasia VARCHAR(255),
+	endereco VARCHAR(255) NOT NULL,
+	complemento VARCHAR(255),
+	bairro VARCHAR(255),
+	municipioUF VARCHAR(255) NOT NULL,
+	cep VARCHAR(255),
+	numeroDespacho VARCHAR(255), 
+	dataPublicacao VARCHAR(255),
+	bandeira VARCHAR(255),
+	tipoPosto VARCHAR(255),
 	priceGasoline DOUBLE PRECISION,
 	priceGas DOUBLE PRECISION,
 	priceDiesel DOUBLE PRECISION,
 	priceAlcohol DOUBLE PRECISION,
-	latitude DOUBLE PRECISION NOT NULL,
-	longitude DOUBLE PRECISION NOT NULL,
-	CHECK(priceGasoline IS NOT NULL OR priceGas IS NOT NULL OR priceDiesel IS NOT NULL OR priceAlcohol IS NOT NULL)
+	latitude DOUBLE PRECISION,
+	longitude DOUBLE PRECISION
 );
 
 --- CREATES SPATIAL ---
