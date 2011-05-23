@@ -57,34 +57,15 @@ public class GasStationDAO {
 		getEntityManager().remove(v);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public ArrayList<GasStation> getAllGasStations() {
 		ArrayList<GasStation> postos = new ArrayList<GasStation>();
-		Query q = getEntityManager().createQuery("SELECT g.id, g.name, g.address, g.priceGasoline, g.priceGas, g.priceDiesel, g.priceAlcohol, g.latitude, g.longitude FROM GasStation g");
+		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g");
 		List<Object> stations = q.getResultList();
 		for (Object station : stations) {
-			if(station instanceof Object[]){
-				Object[] values = (Object[]) station;
-				GasStation g = new GasStation();
-				if(values[0]!=null && values[0] instanceof Integer)
-					g.setId((Integer) values[0]);
-				if(values[1]!=null && values[1] instanceof String)
-					g.setName((String) values[1]);
-				if(values[2]!=null && values[2] instanceof String)
-					g.setAddress((String) values[2]);
-				if(values[3]!=null && values[3] instanceof Double)
-					g.setPriceGasoline((Double) values[3]);
-				if(values[4]!=null && values[4] instanceof Double)
-					g.setPriceGas((Double) values[4]);
-				if(values[5]!=null && values[5] instanceof Double)
-					g.setPriceDiesel((Double) values[5]);
-				if(values[6]!=null && values[6] instanceof Double)
-					g.setPriceAlcohol((Double) values[6]);
-				if(values[7]!=null && values[7] instanceof Double)
-					g.setLatitude((Double) values[7]);
-				if(values[8]!=null && values[8] instanceof Double)
-					g.setLongitude((Double) values[8]);
-				postos.add(g);
+			if(station instanceof GasStation){
+				postos.add((GasStation)station);
 			}
 		}
 		return postos;

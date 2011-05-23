@@ -1,13 +1,7 @@
 package br.edu.ufcg.geogas.action;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +13,7 @@ import br.edu.ufcg.geogas.dao.GasStationDAO;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+@SuppressWarnings("serial")
 public class GasStationAction  extends ActionSupport{
 	
 	private GasStationDAO gasStationDAO;

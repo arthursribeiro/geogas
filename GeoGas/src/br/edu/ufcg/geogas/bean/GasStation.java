@@ -20,15 +20,49 @@ public class GasStation {
     @SequenceGenerator(name = "seq", sequenceName = "gasstation_id_seq")
     private Integer id; // surrogate key
 	
-	@Column(name = "name")
-    @NotNull
-	private String name;
+	@Column(name = "autorizacao")
+	private String autorizacao;
 	
-	@Column(name = "address")
-    @NotNull
-	private String address;
+	@Column(name = "cnpjCpf")
+	@NotNull
+	private String cnpjCpf;
 	
-	@Column(name = "pricegasoline")
+	@Column(name = "razaoSocial")
+	private String razaoSocial;
+	
+	@Column(name = "nomeFantasia")
+	private String nomeFantasia;
+	
+	@Column(name = "endereco")
+	@NotNull
+	private String endereco;
+	
+	@Column(name = "complemento")
+	private String complemento;
+	
+	@Column(name = "bairro")
+	private String bairro;
+	
+	@Column(name = "municipioUF")
+	@NotNull
+	private String municipioUF;
+	
+	@Column(name = "cep")
+	private String cep;
+	
+	@Column(name = "numeroDespacho")
+	private String numeroDespacho; 
+	
+	@Column(name = "dataPublicacao")
+	private String dataPublicacao;
+	
+	@Column(name = "bandeira")
+	private String bandeira;
+	
+	@Column(name = "tipoPosto")
+	private String tipoPosto;
+	
+	@Column(name = "priceGasoline")
 	private Double priceGasoline;
 	
 	@Column(name = "pricegas")
@@ -41,17 +75,15 @@ public class GasStation {
 	private Double priceAlcohol;
 	
 	@Column(name = "latitude")
-	@NotNull
 	private Double latitude;
 	
 	@Column(name = "longitude")
-	@NotNull
 	private Double longitude;
 	
 	public String toXML() {
 		String nodeId = "<id>"+id+"</id>";
-		String nodeName = "<name>"+name+"</name>";
-		String nodeAddress = "<address>"+address+"</address>";
+//		String nodeName = "<name>"+name+"</name>";
+//		String nodeAddress = "<address>"+address+"</address>";
 		String nodePriceGasoline = "<priceGasoline>"+(priceGasoline!=null?priceGasoline:"")+"</priceGasoline>";
 		String nodePriceGas = "<priceGas>"+(priceGas!=null?priceGas:"")+"</priceGas>";
 		String nodePriceDiesel = "<priceDiesel>"+(priceDiesel!=null?priceDiesel:"")+"</priceDiesel>";
@@ -59,7 +91,8 @@ public class GasStation {
 		String nodeLat = "<latitude>"+latitude+"</latitude>";
 		String nodeLong = "<longitude>"+longitude+"</longitude>";
 		
-		String data = "\n"+nodeId+"\n"+nodeName+"\n"+nodeAddress+"\n"+
+		//nodeName+"\n"+nodeAddress+"\n"+
+		String data = "\n"+nodeId+"\n"+
 						nodePriceGasoline+"\n"+nodePriceGas+"\n"+nodePriceDiesel+"\n"+nodePriceAlcohol+"\n"+
 						nodeLat+"\n"+nodeLong+"\n";
 		
@@ -73,22 +106,6 @@ public class GasStation {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
 	}
 
 	public Double getPriceGasoline() {
@@ -137,6 +154,110 @@ public class GasStation {
 
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+
+	public String getAutorizacao() {
+		return autorizacao;
+	}
+
+	public void setAutorizacao(String autorizacao) {
+		this.autorizacao = autorizacao;
+	}
+
+	public String getCnpjCpf() {
+		return cnpjCpf;
+	}
+
+	public void setCnpjCpf(String cnpjCpf){
+		this.cnpjCpf = cnpjCpf;
+	}
+
+	public String getRazaoSocial() {
+		return razaoSocial;
+	}
+
+	public void setRazaoSocial(String razaoSocial) {
+		this.razaoSocial = razaoSocial;
+	}
+
+	public String getNomeFantasia() {
+		return nomeFantasia;
+	}
+
+	public void setNomeFantasia(String nomeFantasia) {
+		this.nomeFantasia = nomeFantasia;
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	public String getComplemento() {
+		return complemento;
+	}
+
+	public void setComplemento(String complemento) {
+		this.complemento = complemento;
+	}
+
+	public String getBairro() {
+		return bairro;
+	}
+
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
+
+	public String getMunicipioUF() {
+		return municipioUF;
+	}
+
+	public void setMunicipioUF(String municipioUF) {
+		this.municipioUF = municipioUF;
+	}
+
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
+	}
+
+	public String getNumeroDespacho() {
+		return numeroDespacho;
+	}
+
+	public void setNumeroDespacho(String numeroDespacho) {
+		this.numeroDespacho = numeroDespacho;
+	}
+
+	public String getDataPublicacao() {
+		return dataPublicacao;
+	}
+
+	public void setDataPublicacao(String dataPublicacao) {
+		this.dataPublicacao = dataPublicacao;
+	}
+
+	public String getBandeira() {
+		return bandeira;
+	}
+
+	public void setBandeira(String bandeira) {
+		this.bandeira = bandeira;
+	}
+
+	public String getTipoPosto() {
+		return tipoPosto;
+	}
+
+	public void setTipoPosto(String tipoPosto) {
+		this.tipoPosto = tipoPosto;
 	}
 	
 }
