@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, GeoGasRequest!</string>
+    <string name="app_name">GeoGas Request</string>
+    <string name="gasStationAction">Get GasStation</string>
+    <string name="allPlacesAction">Get All Places</string>
+    <string name="tituloApp">GeoGas Http Requests</string>
+    <string name="allPlacesActionTitle">Action getAllPlaces</string>
+    <string name="loading">Getting Data from server...</string>
+    <string name="fetch_error">Could not get data from server.</string>
+</resources>
