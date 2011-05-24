@@ -1,5 +1,9 @@
 package br.edu.ufcg.geogas.dao;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,4 +83,27 @@ public class GasStationDAO {
     protected EntityManager getEntityManager() {
         return em;
     }
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public ArrayList<GasStation> getPostosEstado(String estado) {
+		String sql = "SELECT g FROM GasStation g WHERE g.municipioUF LIKE '%"+estado+"'";
+		ArrayList<GasStation> postos = new ArrayList<GasStation>();
+		Query q = getEntityManager().createQuery(sql);
+		List<Object> stations = q.getResultList();
+		for (Object station : stations) {
+			if(station instanceof GasStation){
+				postos.add((GasStation)station);
+			}
+		}
+		return postos;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public void runUpdates(ArrayList<String> updates) {
+		for (String query : updates) {
+			Query q = getEntityManager().createQuery(query);
+			q.executeUpdate();
+		}
+	}
 }
