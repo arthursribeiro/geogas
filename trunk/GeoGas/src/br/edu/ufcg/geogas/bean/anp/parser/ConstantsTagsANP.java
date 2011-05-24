@@ -51,5 +51,16 @@ public class ConstantsTagsANP {
 	public static final String RESULT_DATA_PUBLICACAO = "Data Publicação";
 	public static final String RESULT_BANDEIRA = "Bandeira";
 	public static final String RESULT_TIPO_POSTO = "Tipo do Posto";
+	
+	
+	public static final String URL_GEOCODING_GOOGLE_MAPS = "http://maps.googleapis.com/maps/api/geocode/xml?sensor=false";
+	public static final String GOOGLEMAPS_LOCATION_TAG = "<location>";
+	public static final String GOOGLEMAPS_END_LOCATION_TAG = "</location>";
+	public static final String GOOGLEMAPS_GEOMETRY_TAG = "<geometry>";
+	public static final String GOOGLEMAPS_END_GEOMETRY_TAG = "</geometry>";
+	public static final String GOOGLEMAPS_LATITUDE_TAG = "<lat>";
+	public static final String GOOGLEMAPS_LONGITUDE_TAG = "<lng>";
+	
+	public static final String GOOGLEMAPS_SRID = "4326";
 		
 }

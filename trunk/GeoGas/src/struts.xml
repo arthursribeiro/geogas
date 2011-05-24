@@ -15,7 +15,14 @@
 	    <!-- http://<endereço servidor>/getAllPlaces -->
 	    <action name="getAllPlaces" class="gasStationAction" method="getAllGasStations" >
 	    </action>
-    	
+	    
+	    <!-- http://<endereço servidor>/geocodingState -->
+    	<action name="geocodingState" class="gasStationAction" method="geocodingState" >
+	    </action>
+	    
+	    <action name="kml" class="gasStationAction" method="giveGasStationsKML" >
+	    </action>
+	    
 	        <!-- Add actions here
 	        	Exs.:
 	        	

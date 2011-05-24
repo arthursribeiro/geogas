@@ -82,8 +82,11 @@ public class GasStation {
 	
 	public String toXML() {
 		String nodeId = "<id>"+id+"</id>";
-//		String nodeName = "<name>"+name+"</name>";
-//		String nodeAddress = "<address>"+address+"</address>";
+		String name = "";
+		if(nomeFantasia!=null && nomeFantasia.trim().length()>0) name = nomeFantasia;
+		else name = razaoSocial;
+		String nodeName = "<name>"+name+"</name>";
+		String nodeAddress = "<address>"+getAddressForGMaps().replace("+", " ")+"</address>";
 		String nodePriceGasoline = "<priceGasoline>"+(priceGasoline!=null?priceGasoline:"")+"</priceGasoline>";
 		String nodePriceGas = "<priceGas>"+(priceGas!=null?priceGas:"")+"</priceGas>";
 		String nodePriceDiesel = "<priceDiesel>"+(priceDiesel!=null?priceDiesel:"")+"</priceDiesel>";
@@ -258,6 +261,11 @@ public class GasStation {
 
 	public void setTipoPosto(String tipoPosto) {
 		this.tipoPosto = tipoPosto;
+	}
+
+	public String getAddressForGMaps() {
+		String address = this.endereco+"+"+this.complemento+"+"+this.cep+"+"+this.bairro+"+"+this.municipioUF+"+Brasil";
+		return address.replace(" ", "+");
 	}
 	
 }

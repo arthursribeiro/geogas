@@ -52,14 +52,14 @@ CREATE TABLE GasStation(
 
 --- CREATES SPATIAL ---
 
-SELECT AddGeometryColumn('country','geom',29100,'MULTIPOLYGON',2);
+SELECT AddGeometryColumn('country','geom',4326,'MULTIPOLYGON',2);
 
-SELECT AddGeometryColumn('region','geom',29100,'MULTIPOLYGON',2);
+SELECT AddGeometryColumn('region','geom',4326,'MULTIPOLYGON',2);
 
-SELECT AddGeometryColumn('state','geom',29100,'MULTIPOLYGON',2);
+SELECT AddGeometryColumn('state','geom',4326,'MULTIPOLYGON',2);
 
-SELECT AddGeometryColumn('city','geom',29100,'MULTIPOLYGON',2);
+SELECT AddGeometryColumn('city','geom',4326,'MULTIPOLYGON',2);
 
-SELECT AddGeometryColumn('neighborhood','geom',29100,'MULTIPOLYGON',2);
+SELECT AddGeometryColumn('neighborhood','geom',4326,'MULTIPOLYGON',2);
 
-SELECT AddGeometryColumn('gasstation','location',29100,'POINT',2);
+SELECT AddGeometryColumn('gasstation','geom',4326,'POINT',2);
