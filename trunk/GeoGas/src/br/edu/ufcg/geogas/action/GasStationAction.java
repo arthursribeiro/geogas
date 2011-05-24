@@ -89,11 +89,11 @@ public class GasStationAction  extends ActionSupport{
 	
 	public void giveGasStationsKML(){
 		try {
-			String url = this.geoserverUrl+"/wms?request=GetMap&version=1.1.1&srs=EPSG:4326&width=2096&height=2096&bbox=-180,-90,180,90&format_options=SUPEROVERLAY:false;KMPLACEMARK:false;KMSCORE:40;KMATTR:true;&layers=gasstation&Format=application/vnd.google-earth.kml+xml";
+			String url = this.geoserverUrl+"/wms?request=GetMap&version=1.1.1&srs=EPSG:4326&width=2096&height=2096&bbox=-37,-8,-30,-6&format_options=SUPEROVERLAY:false;KMPLACEMARK:true;KMSCORE:40;KMATTR:true;&layers=gasstation&Format=application/vnd.google-earth.kml+xml";
 			InputStream is = getKmlInputStringFromUrl(url);
 			Kml kml = Kml.unmarshal(is);
 			
-			fixKml(kml);
+//			fixKml(kml);
 			
 			this.response = ServletActionContext.getResponse();
 			this.response.setContentType("application/vnd.google-earth.kml+xml");
