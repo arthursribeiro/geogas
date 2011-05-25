@@ -75,9 +75,9 @@
     <bean id="dataSourceGeoGas"
         class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 	   <property name="driverClassName" value="org.postgresql.Driver" />
-	   <property name="url" value="jdbc:postgresql://localhost:5432/geogas" />
-	   <property name="username" value="geogas" />
-	   <property name="password" value="pgsqlgeogas" />
+	   <property name="url" value="jdbc:postgresql://150.165.75.171:5432/geogas" />
+	   <property name="username" value="sg" />
+	   <property name="password" value="smartgathering" />
     </bean>
 	
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>

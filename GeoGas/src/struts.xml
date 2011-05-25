@@ -23,6 +23,22 @@
 	    <action name="kml" class="gasStationAction" method="giveGasStationsKML" >
 	    </action>
 	    
+	    <action name="kml2" class="gasStationAction" method="redirectGeoServer" >
+	    </action>
+	    
+	    <action name="getStates" class="gasStationAction" method="getStates" >
+	    </action>
+	    
+	    <action name="getCities" class="gasStationAction" method="getCities" >
+	    </action>
+	    
+	    <action name="getStatesXML" class="gasStationAction" method="getStatesXML" >
+	    </action>
+	    
+	    <action name="getCitiesXML" class="gasStationAction" method="getCitiesXML" >
+	    </action>
+	    
+	    
 	        <!-- Add actions here
 	        	Exs.:
 	        	

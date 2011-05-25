@@ -106,4 +106,33 @@ public class GasStationDAO {
 			q.executeUpdate();
 		}
 	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public List<String> getStatesByName() {
+		ArrayList<String> states = new ArrayList<String>();
+		String sql = "SELECT SUBSTRING (municipioUF FROM '..$') FROM GasStation GROUP BY SUBSTRING (municipioUF FROM '..$') ORDER BY SUBSTRING (municipioUF FROM '..$')";
+		Query q = getEntityManager().createNativeQuery(sql);
+		List<Object> stations = q.getResultList();
+		for (Object object : stations) {
+			if(object instanceof String) states.add((String)object);
+		}
+		return states;
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public List<String> getCityByState(String state) {
+		ArrayList<String> states = new ArrayList<String>();
+		String sql = "SELECT municipioUF FROM GasStation GROUP BY municipioUF HAVING municipioUF LIKE '%"+state+"'  ORDER BY municipioUF";
+		Query q = getEntityManager().createNativeQuery(sql);
+		List<Object> stations = q.getResultList();
+		for (Object object : stations) {
+			if(object instanceof String){
+				String mun = (String) object;
+				int index = mun.indexOf("/");
+				mun = mun.substring(0, index);
+				states.add(mun);
+			}
+		}
+		return states;
+	}
 }
