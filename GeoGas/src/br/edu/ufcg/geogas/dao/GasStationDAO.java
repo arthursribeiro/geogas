@@ -86,7 +86,7 @@ public class GasStationDAO {
 
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-	public ArrayList<GasStation> getPostosEstado(String estado) {
+	public ArrayList<GasStation> getAllGasStationsByState(String estado) {
 		String sql = "SELECT g FROM GasStation g WHERE g.municipioUF LIKE '%"+estado+"'";
 		ArrayList<GasStation> postos = new ArrayList<GasStation>();
 		Query q = getEntityManager().createQuery(sql);
@@ -134,5 +134,19 @@ public class GasStationDAO {
 			}
 		}
 		return states;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public ArrayList<GasStation> getAllGasStationsByCity(String city,
+			String state) {
+		ArrayList<GasStation> postos = new ArrayList<GasStation>();
+		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g WHERE geom IS NOT NULL AND municipioUF LIKE '"+city+"_"+state+"'");
+		List<Object> stations = q.getResultList();
+		for (Object station : stations) {
+			if(station instanceof GasStation){
+				postos.add((GasStation)station);
+			}
+		}
+		return postos;
 	}
 }
