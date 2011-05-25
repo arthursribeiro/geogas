@@ -16,12 +16,20 @@
 	    <action name="getAllPlaces" class="gasStationAction" method="getAllGasStations" >
 	    </action>
 	    
+	    <!-- http://<endereço servidor>/getAllPlacesBBox?longMin=<longMin>&longMax=<longMax>&latMin=<latMin>&latMax=<latMax> -->
+	    <action name="getAllPlacesByBBox" class="gasStationAction" method="getAllGasStationsByBBox" >
+	    </action>
+	    
 	    <!-- http://<endereço servidor>/getAllPlacesState?state=<state> -->
 	    <action name="getAllPlacesByState" class="gasStationAction" method="getAllGasStationsByState" >
 	    </action>
 	    
-	    <!-- http://<endereço servidor>/getAllPlacesState?state=<state>&city=<city> -->
+	    <!-- http://<endereço servidor>/getAllPlacesByCity?state=<state>&city=<city> -->
 	    <action name="getAllPlacesByCity" class="gasStationAction" method="getAllGasStationsByCity" >
+	    </action>
+	    
+	    <!-- http://<endereço servidor>/getAllPlacesByCityXML?state=<state>&city=<city> -->
+	    <action name="getAllPlacesByCityXML" class="gasStationAction" method="getAllGasStationsByCityXML" >
 	    </action>
 	    
 	    <!-- http://<endereço servidor>/geocodingState -->
@@ -29,9 +37,6 @@
 	    </action>
 	    
 	    <action name="kml" class="gasStationAction" method="giveGasStationsKML" >
-	    </action>
-	    
-	    <action name="kml2" class="gasStationAction" method="redirectGeoServer" >
 	    </action>
 	    
 	    <action name="getStates" class="gasStationAction" method="getStates" >

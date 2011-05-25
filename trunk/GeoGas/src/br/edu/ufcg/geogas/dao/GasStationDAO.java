@@ -83,7 +83,23 @@ public class GasStationDAO {
     protected EntityManager getEntityManager() {
         return em;
     }
-
+    
+    //SELECT * FROM GasStation WHERE INTERSECTS(geom,GeomFromText('POLYGON(("+longMin+" "+latMin+","+longMin+" "+latMax+","+longMax+" "+latMax+","+longMax+" "+latMin+","+longMin+" "+latMin"+"))',4326))
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public ArrayList<GasStation> getAllGasStationsByBBox(String longMin,String latMin,String longMax,String latMax) {
+		String sql = "SELECT * FROM GasStation g WHERE INTERSECTS(geom,GeomFromText('POLYGON(("+longMin+" "+latMin+","+longMin+" "+latMax+","+longMax+" "+latMax+","+longMax+" "+latMin+","+longMin+" "+latMin+"))',4326))";
+		ArrayList<GasStation> postos = new ArrayList<GasStation>();
+		Query q = getEntityManager().createNativeQuery(sql, GasStation.class);
+		List<Object> stations = q.getResultList();
+		for (Object station : stations) {
+			if(station instanceof GasStation){
+				postos.add((GasStation)station);
+			}
+		}
+		return postos;
+	}
+    
+    
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public ArrayList<GasStation> getAllGasStationsByState(String estado) {
