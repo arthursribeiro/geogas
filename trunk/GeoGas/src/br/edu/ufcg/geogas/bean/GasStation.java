@@ -80,26 +80,28 @@ public class GasStation {
 	@Column(name = "longitude")
 	private Double longitude;
 	
+	@Column(name = "infracoes")
+	private Integer infracoes;
+	
 	public String toXML() {
-		String nodeId = "<id>"+id+"</id>";
 		String name = "";
 		if(nomeFantasia!=null && nomeFantasia.trim().length()>0) name = nomeFantasia;
-		else name = razaoSocial;
-		String nodeName = "<name>"+name+"</name>";
-		String nodeAddress = "<address>"+getAddressForGMaps().replace("+", " ")+"</address>";
-		String nodePriceGasoline = "<priceGasoline>"+(priceGasoline!=null?priceGasoline:"")+"</priceGasoline>";
-		String nodePriceGas = "<priceGas>"+(priceGas!=null?priceGas:"")+"</priceGas>";
-		String nodePriceDiesel = "<priceDiesel>"+(priceDiesel!=null?priceDiesel:"")+"</priceDiesel>";
-		String nodePriceAlcohol = "<priceAlcohol>"+(priceAlcohol!=null?priceAlcohol:"")+"</priceAlcohol>";
-		String nodeLat = "<latitude>"+latitude+"</latitude>";
-		String nodeLong = "<longitude>"+longitude+"</longitude>";
+		else if(razaoSocial!=null && razaoSocial.trim().length()>0) name = razaoSocial;
+		else name = "CNPJ/CPF: "+cnpjCpf;
+		
+		String nodeId = "<id value=\""+cnpjCpf+"\"></id>";
+		String nodeName = "<name value=\""+name+"\"></name>";
+		String nodeBandeira = "<bandeira value=\""+bandeira+"\"></bandeira>";
+		String nodePriceGasoline = "<priceGasoline value=\""+(priceGasoline!=null?priceGasoline:"")+"\"></priceGasoline>";
+		String nodePriceGas = "<priceGas value=\""+(priceGas!=null?priceGas:"")+"\"></priceGas>";
+		String nodePriceDiesel = "<priceDiesel value=\""+(priceDiesel!=null?priceDiesel:"")+"\"></priceDiesel>";
+		String nodePriceAlcohol = "<priceAlcohol value=\""+(priceAlcohol!=null?priceAlcohol:"")+"\"></priceAlcohol>";
 		
 		//nodeName+"\n"+nodeAddress+"\n"+
-		String data = "\n"+nodeId+"\n"+
-						nodePriceGasoline+"\n"+nodePriceGas+"\n"+nodePriceDiesel+"\n"+nodePriceAlcohol+"\n"+
-						nodeLat+"\n"+nodeLong+"\n";
+		String data = "\n"+nodeName+"\n"+nodeId+"\n"+nodeBandeira+"\n"+
+						nodePriceGasoline+"\n"+nodePriceGas+"\n"+nodePriceDiesel+"\n"+nodePriceAlcohol+"\n";
 		
-		String xml = "<gasStation>"+data+"<gasStation>";
+		String xml = "<location latitude=\""+latitude+"\" longitude=\""+longitude+"\" valido=\""+(!(infracoes>0))+"\">"+data+"</location>\n";
 		return xml;
 	}
 
@@ -266,6 +268,14 @@ public class GasStation {
 	public String getAddressForGMaps() {
 		String address = this.endereco+"+"+this.complemento+"+"+this.cep+"+"+this.bairro+"+"+this.municipioUF+"+Brasil";
 		return address.replace(" ", "+");
+	}
+
+	public Integer getInfracoes() {
+		return infracoes;
+	}
+
+	public void setInfracoes(Integer infracoes) {
+		this.infracoes = infracoes;
 	}
 	
 }
