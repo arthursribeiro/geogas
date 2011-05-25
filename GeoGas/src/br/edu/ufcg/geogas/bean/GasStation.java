@@ -1,5 +1,7 @@
 package br.edu.ufcg.geogas.bean;
 
+import java.text.Normalizer;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -89,9 +91,12 @@ public class GasStation {
 		else if(razaoSocial!=null && razaoSocial.trim().length()>0) name = razaoSocial;
 		else name = "CNPJ/CPF: "+cnpjCpf;
 		
+		name = Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}Á«]", "");
+		String band = Normalizer.normalize(bandeira, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}Á«]", "");
+		
 		String nodeId = "<id value=\""+cnpjCpf+"\"></id>";
 		String nodeName = "<name value=\""+name+"\"></name>";
-		String nodeBandeira = "<bandeira value=\""+bandeira+"\"></bandeira>";
+		String nodeBandeira = "<bandeira value=\""+band+"\"></bandeira>";
 		String nodePriceGasoline = "<priceGasoline value=\""+(priceGasoline!=null?priceGasoline:"")+"\"></priceGasoline>";
 		String nodePriceGas = "<priceGas value=\""+(priceGas!=null?priceGas:"")+"\"></priceGas>";
 		String nodePriceDiesel = "<priceDiesel value=\""+(priceDiesel!=null?priceDiesel:"")+"\"></priceDiesel>";
@@ -104,7 +109,7 @@ public class GasStation {
 		String xml = "<location latitude=\""+latitude+"\" longitude=\""+longitude+"\" valido=\""+(!(infracoes>0))+"\">"+data+"</location>\n";
 		return xml;
 	}
-
+	
 	public Integer getId() {
 		return id;
 	}

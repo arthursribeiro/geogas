@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,16 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.ServletActionContext;
 
 import br.edu.ufcg.geogas.bean.GasStation;
+import br.edu.ufcg.geogas.bean.geo.GeoLocation;
 import br.edu.ufcg.geogas.bean.googlemaps.GeocodingGMaps;
 import br.edu.ufcg.geogas.dao.GasStationDAO;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-import de.micromata.opengis.kml.v_2_2_0.AbstractObject;
-import de.micromata.opengis.kml.v_2_2_0.Document;
-import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 @SuppressWarnings("serial")
 public class GasStationAction  extends ActionSupport{
@@ -41,6 +37,16 @@ public class GasStationAction  extends ActionSupport{
 	private String city;
 	
 	private final String geoserverUrl = "http://buchada.dsc.ufcg.edu.br/geoserver";
+
+	private String longMin;
+
+	private String latMin;
+
+	private String longMax;
+
+	private String latMax;
+	
+	private String radius;
 	
 	public void getStates(){
 		DataOutputStream dos = null;
@@ -174,6 +180,67 @@ public class GasStationAction  extends ActionSupport{
 		}
 	}
 	
+	public void getAllGasStationsByBBox(){
+		if(longMin!=null && latMin!=null){
+			String places = "";
+			if(radius != null && longMax==null && latMax==null){
+				try{
+					double longiMin = Double.parseDouble(longMin);
+					double latiMin = Double.parseDouble(latMin);
+					double r = Double.parseDouble(radius);
+					GeoLocation geo = GeoLocation.fromDegrees(latiMin, longiMin);
+					GeoLocation g[] = geo.boundingCoordinates(r);
+					longMax = ""+g[1].getLongitudeInDegrees();
+					latMax = ""+g[1].getLatitudeInDegrees();
+				}catch(Exception e){
+					places="ERROR: Radius and coords must be a number.";
+				}
+			}
+			if(longMax!=null && latMax!=null){
+				try{
+					double longiMin = Double.parseDouble(longMin);
+					double longiMax = Double.parseDouble(longMax);
+					double latiMin = Double.parseDouble(latMin);
+					double latiMax = Double.parseDouble(latMax);
+					
+					if(!(coordValid(longiMin,latiMin) && coordValid(longiMax,latiMax)) || longiMax<=longiMin || latiMax<=latiMin){
+						places="ERROR: Wrong coords.";
+					}else{
+						ArrayList<GasStation> stations = getGasStationDAO().getAllGasStationsByBBox(longMin,latMin,longMax,latMax);
+						places = "<placemark>\n";
+						for (GasStation gasStation : stations) {
+							places+="\n"+gasStation.toXML();
+						}
+						places+= "\n</placemark>";
+					}
+				}catch(Exception e){
+					places="ERROR: Radius and coords must be a number.";
+				}
+			}else{
+				places+="ERROR: Wrong parameters";
+			}
+			
+			DataOutputStream dos = null;
+			this.response = ServletActionContext.getResponse();
+			try {
+				dos = new DataOutputStream(response.getOutputStream());
+				dos.write(places.getBytes());
+				dos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private boolean coordValid(double longiMin, double latiMin) {
+		if(longiMin<=180 && longiMin>=-180){
+			if(latiMin<=90 && latiMin>=-90){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void getAllGasStationsByCity(){
 		if(state!=null && city!=null){
 			ArrayList<GasStation> stations = getGasStationDAO().getAllGasStationsByCity(city,state);
@@ -185,6 +252,28 @@ public class GasStationAction  extends ActionSupport{
 			places+= "\n</placemark>";
 			DataOutputStream dos = null;
 			this.response = ServletActionContext.getResponse();
+			try {
+				dos = new DataOutputStream(response.getOutputStream());
+				dos.write(places.getBytes());
+				dos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void getAllGasStationsByCityXML(){
+		if(state!=null && city!=null){
+			ArrayList<GasStation> stations = getGasStationDAO().getAllGasStationsByCity(city,state);
+			String places = "<placemark>\n";
+//			String places = "";
+			for (GasStation gasStation : stations) {
+				places+="\n"+gasStation.toXML();
+			}
+			places+= "\n</placemark>";
+			DataOutputStream dos = null;
+			this.response = ServletActionContext.getResponse();
+			this.response.setContentType("text/xml");
 			try {
 				dos = new DataOutputStream(response.getOutputStream());
 				dos.write(places.getBytes());
@@ -238,62 +327,59 @@ public class GasStationAction  extends ActionSupport{
 		return uc.getInputStream();
 	}
 	
-	public void redirectGeoServer(){
-		if(state==null && city==null){
-			state = "PB";
-			city = "JOAO PESSOA";
-		}
-		if(state!=null && city!=null){
-			state = state.replace(" ", "%20");
-			String url = this.geoserverUrl+"/wms?request=GetMap&version=1.1.1&srs=EPSG:4326&width=2096&height=2096&bbox=-180,-90,180,90&format_options=SUPEROVERLAY:false;KMPLACEMARK:false;KMSCORE:40;KMATTR:true;&layers=gasstation&Format=application/vnd.google-earth.kml+xml&cql_Filter=municipiouf%20=%20%27"+city+"/"+state+"%27";
-			this.response = ServletActionContext.getResponse();
-			try {
-				this.response.setContentType("application/vnd.google-earth.kml+xml");
-				this.response.sendRedirect(this.response.encodeRedirectURL(url));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	public void giveGasStationsKML(){
 		try {
-			if(state==null && city==null){
-				state = "PB";
-				city = "JOAO PESSOA";
-			}
+			String url = this.geoserverUrl+"/wms?request=GetMap&version=1.1.1&srs=EPSG:4326&width=2096&height=2096&format_options=SUPEROVERLAY:false;KMPLACEMARK:false;KMSCORE:40;KMATTR:true;&layers=gasstation&Format=application/vnd.google-earth.kml+xml";
+			String cql_Filter = "";
+			String bbox = "&bbox=-180,-90,180,90";
 			if(state!=null && city!=null){
 				state = state.replace(" ", "%20");
 				city = city.replace(" ", "%20");
-				String url = this.geoserverUrl+"/wms?request=GetMap&version=1.1.1&srs=EPSG:4326&width=2096&height=2096&bbox=-180,-90,180,90&format_options=SUPEROVERLAY:false;KMPLACEMARK:false;KMSCORE:40;KMATTR:true;&layers=gasstation&Format=application/vnd.google-earth.kml+xml&cql_Filter=municipiouf%20=%20%27"+city+"/"+state+"%27";
-				InputStream is = getKmlInputStringFromUrl(url);
-				Kml kml = Kml.unmarshal(is);
+				cql_Filter = "&cql_Filter=municipiouf%20=%20%27"+city+"/"+state+"%27";
+			}else if(longMin!=null && latMin!=null && longMax!=null && latMax!=null){
+				double longiMin = Double.parseDouble(longMin);
+				double longiMax = Double.parseDouble(longMax);
+				double latiMin = Double.parseDouble(latMin);
+				double latiMax = Double.parseDouble(latMax);
+
+				if(!(coordValid(longiMin,latiMin) && coordValid(longiMax,latiMax)) || longiMax<=longiMin || latiMax<=latiMin){
+					throw new Exception("ERROR: Wrong coords.");
+				}
 				
-//				fixKml(kml);
-				
-				this.response = ServletActionContext.getResponse();
-				this.response.setContentType("application/vnd.google-earth.kml+xml");
-				ServletOutputStream dos = response.getOutputStream();
-				kml.marshal(dos);
-				dos.flush();
-				dos.close();
-				is.close();
+				bbox = "&bbox="+longiMin+","+latiMin+","+longiMax+","+latiMax;
 			}
+			
+			url = url+bbox+cql_Filter;
+			
+			InputStream is = getKmlInputStringFromUrl(url);
+			Kml kml = Kml.unmarshal(is);
+			
+//			fixKml(kml);
+			
+			this.response = ServletActionContext.getResponse();
+			this.response.setContentType("application/vnd.google-earth.kml+xml");
+			ServletOutputStream dos = response.getOutputStream();
+			kml.marshal(dos);
+			dos.flush();
+			dos.close();
+			is.close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void fixKml(Kml kml) {
-		Feature feature = kml.getFeature();
-		List<Feature> places = ((Document)feature).getFeature();
-		for (Feature feat : places) {
-			if(feat instanceof Placemark){
-				Placemark placemark = ((Placemark)feat);
-				placemark.setDescription("Mudei");
-			}
-		}
-	}
+//	private void fixKml(Kml kml) {
+//		Feature feature = kml.getFeature();
+//		List<Feature> places = ((Document)feature).getFeature();
+//		for (Feature feat : places) {
+//			if(feat instanceof Placemark){
+//				Placemark placemark = ((Placemark)feat);
+//				placemark.setDescription("Mudei");
+//			}
+//		}
+//	}
 
 	public GasStationDAO getGasStationDAO() {
 		return gasStationDAO;
@@ -333,6 +419,46 @@ public class GasStationAction  extends ActionSupport{
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public String getLongMin() {
+		return longMin;
+	}
+
+	public void setLongMin(String longMin) {
+		this.longMin = longMin;
+	}
+
+	public String getLatMin() {
+		return latMin;
+	}
+
+	public void setLatMin(String latMin) {
+		this.latMin = latMin;
+	}
+
+	public String getLongMax() {
+		return longMax;
+	}
+
+	public void setLongMax(String longMax) {
+		this.longMax = longMax;
+	}
+
+	public String getLatMax() {
+		return latMax;
+	}
+
+	public void setLatMax(String latMax) {
+		this.latMax = latMax;
+	}
+
+	public String getRadius() {
+		return radius;
+	}
+
+	public void setRadius(String radius) {
+		this.radius = radius;
 	}
 
 }
