@@ -65,7 +65,7 @@ public class GasStationDAO {
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public ArrayList<GasStation> getAllGasStations() {
 		ArrayList<GasStation> postos = new ArrayList<GasStation>();
-		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g");
+		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g WHERE geom IS NOT NULL");
 		List<Object> stations = q.getResultList();
 		for (Object station : stations) {
 			if(station instanceof GasStation){

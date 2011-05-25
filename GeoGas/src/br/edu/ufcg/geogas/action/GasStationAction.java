@@ -157,12 +157,12 @@ public class GasStationAction  extends ActionSupport{
 	
 	public void getAllGasStations(){
 		ArrayList<GasStation> stations = getGasStationDAO().getAllGasStations();
-		String places = "<places>";
+		String places = "<placemark>\n";
 //		String places = "";
 		for (GasStation gasStation : stations) {
 			places+="\n"+gasStation.toXML();
 		}
-		places+= "\n</places>";
+		places+= "\n</placemark>";
 		DataOutputStream dos = null;
 		this.response = ServletActionContext.getResponse();
 		try {
@@ -175,10 +175,19 @@ public class GasStationAction  extends ActionSupport{
 	}
 	
 	public void geocodingState(){
-		ArrayList<GasStation> stations = getGasStationDAO().getPostosEstado(state);
-		GeocodingGMaps geo = new GeocodingGMaps();
-		ArrayList<String> updates = geo.geocodingEstado(stations);
-		getGasStationDAO().runUpdates(updates);
+//		String[] states = {"AC","AL","RN","SE"};
+//		for (String state1 : states) {
+//			ArrayList<GasStation> stations = getGasStationDAO().getPostosEstado(state1);
+//			GeocodingGMaps geo = new GeocodingGMaps();
+//			ArrayList<String> updates = geo.geocodingEstado(stations);
+//			getGasStationDAO().runUpdates(updates);
+//		}
+		if(state!=null){
+			ArrayList<GasStation> stations = getGasStationDAO().getPostosEstado(state);
+			GeocodingGMaps geo = new GeocodingGMaps();
+			ArrayList<String> updates = geo.geocodingEstado(stations);
+			getGasStationDAO().runUpdates(updates);
+		}
 	}
 	
 	private InputStream getKmlInputStringFromUrl(String url) throws IOException{
@@ -188,6 +197,10 @@ public class GasStationAction  extends ActionSupport{
 	}
 	
 	public void redirectGeoServer(){
+		if(state==null && city==null){
+			state = "PB";
+			city = "JOAO PESSOA";
+		}
 		if(state!=null && city!=null){
 			state = state.replace(" ", "%20");
 			String url = this.geoserverUrl+"/wms?request=GetMap&version=1.1.1&srs=EPSG:4326&width=2096&height=2096&bbox=-180,-90,180,90&format_options=SUPEROVERLAY:false;KMPLACEMARK:false;KMSCORE:40;KMATTR:true;&layers=gasstation&Format=application/vnd.google-earth.kml+xml&cql_Filter=municipiouf%20=%20%27"+city+"/"+state+"%27";
@@ -203,6 +216,10 @@ public class GasStationAction  extends ActionSupport{
 	
 	public void giveGasStationsKML(){
 		try {
+			if(state==null && city==null){
+				state = "PB";
+				city = "JOAO PESSOA";
+			}
 			if(state!=null && city!=null){
 				state = state.replace(" ", "%20");
 				city = city.replace(" ", "%20");
