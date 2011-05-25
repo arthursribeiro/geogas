@@ -174,6 +174,48 @@ public class GasStationAction  extends ActionSupport{
 		}
 	}
 	
+	public void getAllGasStationsByCity(){
+		if(state!=null && city!=null){
+			ArrayList<GasStation> stations = getGasStationDAO().getAllGasStationsByCity(city,state);
+			String places = "<placemark>\n";
+//			String places = "";
+			for (GasStation gasStation : stations) {
+				places+="\n"+gasStation.toXML();
+			}
+			places+= "\n</placemark>";
+			DataOutputStream dos = null;
+			this.response = ServletActionContext.getResponse();
+			try {
+				dos = new DataOutputStream(response.getOutputStream());
+				dos.write(places.getBytes());
+				dos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void getAllGasStationsByState(){
+		if(state!=null){
+			ArrayList<GasStation> stations = getGasStationDAO().getAllGasStationsByState(state);
+			String places = "<placemark>\n";
+//			String places = "";
+			for (GasStation gasStation : stations) {
+				places+="\n"+gasStation.toXML();
+			}
+			places+= "\n</placemark>";
+			DataOutputStream dos = null;
+			this.response = ServletActionContext.getResponse();
+			try {
+				dos = new DataOutputStream(response.getOutputStream());
+				dos.write(places.getBytes());
+				dos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void geocodingState(){
 //		String[] states = {"AC","AL","RN","SE"};
 //		for (String state1 : states) {
@@ -183,7 +225,7 @@ public class GasStationAction  extends ActionSupport{
 //			getGasStationDAO().runUpdates(updates);
 //		}
 		if(state!=null){
-			ArrayList<GasStation> stations = getGasStationDAO().getPostosEstado(state);
+			ArrayList<GasStation> stations = getGasStationDAO().getAllGasStationsByState(state);
 			GeocodingGMaps geo = new GeocodingGMaps();
 			ArrayList<String> updates = geo.geocodingEstado(stations);
 			getGasStationDAO().runUpdates(updates);

@@ -16,6 +16,14 @@
 	    <action name="getAllPlaces" class="gasStationAction" method="getAllGasStations" >
 	    </action>
 	    
+	    <!-- http://<endereço servidor>/getAllPlacesState?state=<state> -->
+	    <action name="getAllPlacesByState" class="gasStationAction" method="getAllGasStationsByState" >
+	    </action>
+	    
+	    <!-- http://<endereço servidor>/getAllPlacesState?state=<state>&city=<city> -->
+	    <action name="getAllPlacesByCity" class="gasStationAction" method="getAllGasStationsByCity" >
+	    </action>
+	    
 	    <!-- http://<endereço servidor>/geocodingState -->
     	<action name="geocodingState" class="gasStationAction" method="geocodingState" >
 	    </action>
