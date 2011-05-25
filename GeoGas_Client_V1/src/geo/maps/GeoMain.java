@@ -43,11 +43,13 @@ public class GeoMain extends Activity implements LocationListener {
 		my_button = (Button) findViewById(R.id.button);
 		my_button.setOnClickListener(new ButtonClickHandler());
 	}
+
 	public class ButtonClickHandler implements View.OnClickListener {
 		public void onClick(View view) {
 			startVis();
 		}
 	}
+
 	public void startVis() {
 		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 		my_count = new CountDownTimer(10000, 10000) {
@@ -73,13 +75,13 @@ public class GeoMain extends Activity implements LocationListener {
 			int cellID = location.getCid();
 			int lac = location.getLac();
 
-			showCellId(cellID, lac);
+			// showCellId(cellID, lac);
 		} catch (Exception e) {
-			Toast.makeText(
-					this,
-					"Impossivel resguardar sua posição, tente novamente outra hora.",
-					Toast.LENGTH_LONG).show();
-		}
+			/*
+			 * Toast.makeText( this,
+			 * "Impossivel resguardar sua posição, tente novamente outra hora.",
+			 * Toast.LENGTH_LONG).show();
+			 */}
 
 	}
 
@@ -89,7 +91,7 @@ public class GeoMain extends Activity implements LocationListener {
 		Toast.makeText(getApplicationContext(),
 				"Não é possivel conseguir sua localização, tente mais tarde.",
 				Toast.LENGTH_LONG).show();
-		chamada_mapa(-45,-6);
+		chamada_mapa(-45, -6);
 
 	}
 
@@ -152,20 +154,30 @@ public class GeoMain extends Activity implements LocationListener {
 		 * Toast.makeText(getApplicationContext(), e.toString(),
 		 * Toast.LENGTH_LONG).show(); }
 		 */
-		chamada_mapa(lat,log);
+		chamada_mapa(lat, log);
 	}
 
-	public void chamada_mapa(double lat,double log){
-		final Intent myIntent = new Intent(
-				android.content.Intent.ACTION_VIEW,
-				Uri.parse("geo:"
-						+ String.valueOf(lat)
-						+ ","
-						+ String.valueOf(log)
-						+ "?q=http://buchada.dsc.ufcg.edu.br/smartgathering/kml"));
-		startActivity(myIntent);
+	public void chamada_mapa(double lat, double log) {
+
+		try {
+			Intent i = new Intent(GeoMain.this, GeoMaps.class);
+			i.putExtra("latitude", lat);
+			i.putExtra("longitude", log);
+			GeoMain.this.startActivity(i);
+		} catch (Exception e) {
+			Toast.makeText(getApplicationContext(), e.toString(),
+					Toast.LENGTH_LONG).show();
+		}
+
+		/*
+		 * final Intent myIntent = new Intent(
+		 * android.content.Intent.ACTION_VIEW, Uri.parse("geo:" +
+		 * String.valueOf(lat) + "," + String.valueOf(log) +
+		 * "?q=http://buchada.dsc.ufcg.edu.br/geogas/kml?state=PB&city=JOAO PESSOA"
+		 * )); startActivity(myIntent);
+		 */
 	}
-	
+
 	private void showCellId(int cell, int lac) {
 		String text = "Your current position : CellId : " + cell + " LAC :"
 				+ lac;
