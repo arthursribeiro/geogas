@@ -39,7 +39,7 @@ public class GeoMain extends Activity implements LocationListener {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.main);
-
+		get_location = false;
 		my_button = (Button) findViewById(R.id.button);
 		my_button.setOnClickListener(new ButtonClickHandler());
 	}
@@ -128,6 +128,7 @@ public class GeoMain extends Activity implements LocationListener {
 	}
 
 	public synchronized void onLocationChanged(Location location) {
+		get_location = true;
 		my_count.cancel();
 		loc = location;
 		showlocation(loc);
@@ -163,6 +164,7 @@ public class GeoMain extends Activity implements LocationListener {
 			Intent i = new Intent(GeoMain.this, GeoMaps.class);
 			i.putExtra("latitude", lat);
 			i.putExtra("longitude", log);
+			i.putExtra("sucess", get_location);
 			GeoMain.this.startActivity(i);
 		} catch (Exception e) {
 			Toast.makeText(getApplicationContext(), e.toString(),
