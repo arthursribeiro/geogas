@@ -110,6 +110,44 @@ public class GasStation {
 		return xml;
 	}
 	
+	public String toCompleteXML() {
+		String data = "";
+		
+		String nodeAut = "<autorizacao value=\""+normalizeString(autorizacao)+"\"></autorizacao>";
+		String nodeBairro = "<bairro value=\""+normalizeString(bairro)+"\"></bairro>";
+		String nodeBandeira = "<bandeira value=\""+normalizeString(bandeira)+"\"></bandeira>";
+		String nodeCep = "<cep value=\""+normalizeString(cep)+"\"></cep>";
+		String nodeCnpjCpf = "<cnpjCpf value=\""+normalizeString(cnpjCpf)+"\"></cnpjCpf>";
+		String nodeComplemento = "<complemento value=\""+normalizeString(complemento)+"\"></complemento>";
+		String nodeDataPublicacao = "<dataPublicacao value=\""+normalizeString(dataPublicacao)+"\"></dataPublicacao>";
+		String nodeEndereco = "<endereco value=\""+normalizeString(endereco)+"\"></endereco>";
+		String nodeInfracoes = "<infracoes value=\""+normalizeString(""+infracoes)+"\"></infracoes>";
+		String nodeMunicipioUF = "<municipioUF value=\""+normalizeString(municipioUF)+"\"></municipioUF>";
+		String nodeNomeFantasia = "<nomeFantasia value=\""+normalizeString(nomeFantasia)+"\"></nomeFantasia>";
+		String nodeNumeroDespacho = "<numeroDespacho value=\""+normalizeString(numeroDespacho)+"\"></numeroDespacho>";
+		String nodeRazaoSocial = "<razaoSocial value=\""+normalizeString(razaoSocial)+"\"></razaoSocial>";
+		String nodeTipoPosto = "<tipoPosto value=\""+normalizeString(tipoPosto)+"\"></tipoPosto>";
+		
+		String nodePriceGasoline = "<priceGasoline value=\""+(priceGasoline!=null?priceGasoline:"")+"\"></priceGasoline>";
+		String nodePriceGas = "<priceGas value=\""+(priceGas!=null?priceGas:"")+"\"></priceGas>";
+		String nodePriceDiesel = "<priceDiesel value=\""+(priceDiesel!=null?priceDiesel:"")+"\"></priceDiesel>";
+		String nodePriceAlcohol = "<priceAlcohol value=\""+(priceAlcohol!=null?priceAlcohol:"")+"\"></priceAlcohol>";
+		
+		data+="\n"+nodeAut+"\n"+nodeBairro+"\n"+nodeBandeira+"\n"+nodeCep+"\n"+
+				nodeCnpjCpf+"\n"+nodeComplemento+"\n"+nodeDataPublicacao+"\n"+nodeDataPublicacao+"\n"+
+				nodeEndereco+"\n"+nodeInfracoes+"\n"+nodeMunicipioUF+"\n"+nodeNomeFantasia+"\n"+
+				nodeNumeroDespacho+"\n"+nodePriceAlcohol+"\n"+nodePriceDiesel+"\n"+
+				nodePriceGas+"\n"+nodePriceGasoline+"\n"+nodeRazaoSocial+"\n"+nodeTipoPosto+"\n";
+		
+		String xml = "<location latitude=\""+latitude+"\" longitude=\""+longitude+"\" valido=\""+(!(infracoes>0))+"\">"+data+"</location>\n";
+		return xml;
+	}
+	
+	private String normalizeString(String s) {
+		return Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}Á«]", "");
+	}
+	
+	
 	public Integer getId() {
 		return id;
 	}

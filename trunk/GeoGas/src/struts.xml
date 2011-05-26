@@ -12,6 +12,10 @@
     	<action name="getGasStation" class="gasStationAction" method="getGasStationById" >
 	    </action>
 	    
+	    <!-- http://<endereço servidor>/getGasStation?id=<numId> -->
+    	<action name="getGasStationByCnpj" class="gasStationAction" method="getGasStationByCnpj" >
+	    </action>
+	    
 	    <!-- http://<endereço servidor>/getAllPlaces -->
 	    <action name="getAllPlaces" class="gasStationAction" method="getAllGasStations" >
 	    </action>
