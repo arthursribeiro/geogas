@@ -115,8 +115,29 @@ public class XMLHandler {
 			Element fstElmnt = (Element) node;
 			String latitude = fstElmnt.getAttribute("latitude");
 			String longitude = fstElmnt.getAttribute("longitude");
+			String validade = fstElmnt.getAttribute("valido");
+			NodeList cities = fstElmnt.getElementsByTagName("name");
+			Element name = (Element) cities.item(0);
+			
+			String posto_name = name.getAttribute("value");
+			NodeList preco_gasolina = fstElmnt.getElementsByTagName("priceGasoline");
+			Element preco_gasolina1 = (Element) preco_gasolina.item(0);
+			String string_gasolina = preco_gasolina1.getAttribute("value");
+			
+			NodeList preco_gas = fstElmnt.getElementsByTagName("priceGas");
+			Element preco_gas1 = (Element) preco_gas.item(0);
+			String string_gas = preco_gas1.getAttribute("value");
+
+			NodeList preco_disel = fstElmnt.getElementsByTagName("priceDiesel");
+			Element preco_disel1 = (Element) preco_disel.item(0);
+			String string_disel = preco_disel1.getAttribute("value");
+
+			NodeList preco_alcool = fstElmnt.getElementsByTagName("priceAlcohol");
+			Element preco_alcool1 = (Element) preco_alcool.item(0);
+			String string_alcool = preco_alcool1.getAttribute("value");
+			
 			Log.i("Latitude", latitude+" "+longitude);
-			result.add(new Place(latitude, longitude));
+			result.add(new Place(latitude, longitude,validade,posto_name,string_gasolina,string_gas,string_disel,string_alcool));
 		}
 		return result;
 	}
