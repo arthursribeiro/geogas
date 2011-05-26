@@ -11,10 +11,13 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -27,6 +30,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MapView.LayoutParams;
 import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 public class GeoMaps extends MapActivity {
 	private static final int radius = 100;
@@ -37,11 +41,14 @@ public class GeoMaps extends MapActivity {
 	private XMLHandler xml;
 	private boolean sucess;
 	private List<Overlay> listOfOverlays;
+	private ArrayList<Place> all_places;
 	private final int MAX_POSTOS = 75;
 	private final int AJUSTE_USER = 16;
 	private final int AJUSTE_POSTO = 16;
 	double lat;
 	double lng;
+	MyItemizedOverlay itemizedOverlay;
+	MyItemizedOverlay itemizedOverlay2;
 
 	class MapOverlayPosto extends com.google.android.maps.Overlay {
 		@Override
@@ -59,20 +66,64 @@ public class GeoMaps extends MapActivity {
 						R.drawable.user);
 				canvas.drawBitmap(bmp, screenPts.x, screenPts.y - 16, null);
 			}
-			for (int i = 0; i<Math.min(postos.size(), MAX_POSTOS);i++) {
-				GeoPoint x = postos.get(i);
-				Point screenPts1 = new Point();
-				mapView.getProjection().toPixels(x, screenPts1);
-
-				// ---add the marker---
-				Bitmap bmp1 = BitmapFactory.decodeResource(getResources(),
-						R.drawable.iconpostovalido);
-				canvas.drawBitmap(bmp1, screenPts1.x, screenPts1.y - 16, null);
-			}
+//			for (int i = 0; i<Math.min(postos.size(), MAX_POSTOS);i++) {
+//				GeoPoint x = postos.get(i);
+//				Point screenPts1 = new Point();
+//				mapView.getProjection().toPixels(x, screenPts1);
+//
+//				// ---add the marker---
+//				Bitmap bmp1 = BitmapFactory.decodeResource(getResources(),
+//						R.drawable.iconpostovalido);
+//				canvas.drawBitmap(bmp1, screenPts1.x, screenPts1.y - 16, null);
+//			}
 			return true;
 		}
 	}
 
+/**
+	public class PostoOverLayItem extends com.google.android.maps.ItemizedOverlay {
+		private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+		private Context mContext;
+		
+		
+		public PostoOverLayItem(Drawable defaultMarker) {
+			  super(boundCenterBottom(defaultMarker));
+			}
+		
+		public PostoOverLayItem(Drawable defaultMarker, Context context) {
+			  super(defaultMarker);
+			  mContext = context;
+			}
+		public void addOverlay(OverlayItem overlay) {
+		    mOverlays.add(overlay);
+		    populate();
+		}
+		
+		@Override
+		protected OverlayItem createItem(int i) {
+			// TODO Auto-generated method stub
+			return mOverlays.get(i);
+		}
+		@Override
+		public int size() {
+			 return mOverlays.size();
+		}
+		
+		@Override
+		protected boolean onTap(int index) {
+		  OverlayItem item = mOverlays.get(index);
+		  if(mContext == null)
+			  Log.d("OBJETO", "eh nulo");
+		  AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+		  dialog.setTitle(item.getTitle());
+		  dialog.setMessage(item.getSnippet());
+		  dialog.show();
+		  return true;
+		}
+		
+	}
+**/
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.maplayout);
@@ -100,19 +151,31 @@ public class GeoMaps extends MapActivity {
 		mc.setZoom(zoom);
 
 		plotaPostos();
-		MapOverlayPosto us = new MapOverlayPosto();
 		listOfOverlays = mapView.getOverlays();
 		listOfOverlays.clear();
-		listOfOverlays.add(us);
+		Drawable drawable = this.getResources().getDrawable(R.drawable.iconpostovalido);
+		itemizedOverlay = new MyItemizedOverlay(drawable, mapView);
+		MapOverlayPosto os = new MapOverlayPosto();
+		loadOverLay();
+		listOfOverlays.add(os);
 		mapView.invalidate();
 	}
 
+	public void loadOverLay(){
+		for(int i = 0;i<Math.min(postos.size(),75);i++){
+			GeoPoint ponto = postos.get(i);
+			OverlayItem overlayitem = new OverlayItem(ponto, all_places.get(i).getName(), "Gasolina: " + all_places.get(i).getGasolina() + "\nAlcool: " + all_places.get(i).getAlcool()+ "\nDiesel: " + all_places.get(i).getDisel() + "\nGás: " + all_places.get(i).getGas());
+			itemizedOverlay.addOverlay(overlayitem);
+		}
+		listOfOverlays.add(itemizedOverlay);
+	}
+	
 	public void getBoundingBox(){
 		//ToDo
 	}
 	
 	public void plotaPostos() {
-		ArrayList<Place> all_places = getPostos();
+		all_places = getPostos();
 		postos = new ArrayList<GeoPoint>();
 		for (Place p : all_places) {
 			// Log.i("Place", "Latitude :" + String.valueOf(p.getLat())+
@@ -125,7 +188,7 @@ public class GeoMaps extends MapActivity {
 	}
 
 	public ArrayList<Place> getPostos() {
-		ArrayList<Place> all_places = new ArrayList<Place>();
+		ArrayList<Place> all_places1 = new ArrayList<Place>();
 		;
 		try {
 			xml = new XMLHandler();
@@ -133,7 +196,7 @@ public class GeoMaps extends MapActivity {
 			// "<placemark><location latitude=\"-6,4320\" longitude=\"-37,104100\" valido=\"true\"></location><location latitude=\"-6,4370\" longitude=\"-37,103910\" valido=\"false\"></location></placemark>";
 			// xml.loadXMLfromString(teste);
 			xml.loadXMLfromURL("http://buchada.dsc.ufcg.edu.br/geogas/getAllPlacesByCity?state=PB&city=JOAO%20PESSOA");
-			all_places = xml.getElementByPlace();
+			all_places1 = xml.getElementByPlace();
 		} catch (IOException e) {
 			Log.i("Error", e.toString());
 		} catch (SAXException e) {
@@ -143,7 +206,7 @@ public class GeoMaps extends MapActivity {
 			// TODO Auto-generated catch block
 			Log.i("Error", e.toString());
 		}
-		return all_places;
+		return all_places1;
 	}
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
