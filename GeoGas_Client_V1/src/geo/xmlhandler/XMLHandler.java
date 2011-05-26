@@ -59,9 +59,11 @@ public class XMLHandler {
 		return result;
 	}
 
-	public void loadXMLfromURL(String url) throws SAXException, IOException {
-		String result = doRequest(url);
-		loadXMLfromString(result);
+	public void loadXMLfromURL(String u) throws SAXException, IOException {
+//		String result = doRequest(url);
+//		loadXMLfromString(result);
+		URL url = new URL(u);
+		doc = db.parse(new InputSource(url.openStream()));
 	}
 
 	public void loadXMLfromString(String contentText) throws SAXException,
@@ -113,6 +115,7 @@ public class XMLHandler {
 			Element fstElmnt = (Element) node;
 			String latitude = fstElmnt.getAttribute("latitude");
 			String longitude = fstElmnt.getAttribute("longitude");
+			Log.i("Latitude", latitude+" "+longitude);
 			result.add(new Place(latitude, longitude));
 		}
 		return result;
