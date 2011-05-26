@@ -150,7 +150,23 @@ public class GasStationAction  extends ActionSupport{
 			try{
 				Integer intId = new Integer(id);
 				GasStation g = getGasStationDAO().getGasStationById(intId);
-				String xml = g.toXML();
+				String xml = g.toCompleteXML();
+				this.response = ServletActionContext.getResponse();
+				dos = new DataOutputStream(response.getOutputStream());
+				dos.write(xml.getBytes());
+				dos.close();
+			}catch(Exception e){
+//				return ERROR;
+			}
+		}
+	}
+	
+	public void getGasStationByCnpj(){
+		if(id!=null){
+			DataOutputStream dos = null;
+			try{
+				GasStation g = getGasStationDAO().getGasStationByCnpj(id);
+				String xml = g.toCompleteXML();
 				this.response = ServletActionContext.getResponse();
 				dos = new DataOutputStream(response.getOutputStream());
 				dos.write(xml.getBytes());
@@ -190,6 +206,8 @@ public class GasStationAction  extends ActionSupport{
 					double r = Double.parseDouble(radius);
 					GeoLocation geo = GeoLocation.fromDegrees(latiMin, longiMin);
 					GeoLocation g[] = geo.boundingCoordinates(r);
+					latMin = ""+g[0].getLatitudeInDegrees();
+					longMin = ""+g[0].getLongitudeInDegrees();
 					longMax = ""+g[1].getLongitudeInDegrees();
 					latMax = ""+g[1].getLatitudeInDegrees();
 				}catch(Exception e){

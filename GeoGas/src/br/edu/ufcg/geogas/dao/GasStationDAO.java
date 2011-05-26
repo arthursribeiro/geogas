@@ -165,4 +165,16 @@ public class GasStationDAO {
 		}
 		return postos;
 	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public GasStation getGasStationByCnpj(String id) {
+		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g WHERE cnpjcpf = '"+id+"'");
+		List<Object> stations = q.getResultList();
+		for (Object station : stations) {
+			if(station instanceof GasStation){
+				return (GasStation) station;
+			}
+		}
+		return null;
+	}
 }
