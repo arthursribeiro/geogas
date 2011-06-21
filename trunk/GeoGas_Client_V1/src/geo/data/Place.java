@@ -11,6 +11,8 @@ public class Place {
 	String gas;
 	String disel;
 	String alcool;
+	String bandeira;
+	String endereco;
 	
 	public Place(String lat, String longe) {
 		this.lat = Double.parseDouble(lat.replace(" ", "").replace(",", "."));
@@ -18,25 +20,27 @@ public class Place {
 	}
 	
 
-	public Place(String latitude, String longitude, String validade2,
+	public Place(String latitude, String longitude, boolean valido,
 			String posto_name) {
 		this.lat = Double.parseDouble(latitude.replace(" ", "").replace(",", "."));
 		this.longe = Double.parseDouble(longitude.replace(" ", "").replace(",", "."));
-		this.validade = Boolean.parseBoolean(validade2);
+		this.validade = valido;
 		this.name = posto_name;
 	}
 
-	public Place(String latitude, String longitude, String validade2,
+	public Place(String latitude, String longitude, boolean validade2,
 			String posto_name, String string_gasolina, String string_gas,
-			String string_disel, String string_alcool) {
+			String string_disel, String string_alcool,String bandeira,String endereco) {
 		this.lat = Double.parseDouble(latitude.replace(" ", "").replace(",", "."));
 		this.longe = Double.parseDouble(longitude.replace(" ", "").replace(",", "."));
-		this.validade = Boolean.parseBoolean(validade2);
+		this.validade = validade2;
 		this.name = posto_name;
 		this.gasolina = string_gasolina;
 		this.gas = string_gas;
 		this.disel = string_disel;
 		this.alcool = string_alcool;
+		this.bandeira = bandeira;
+		this.endereco = endereco;
 	}
 
 
@@ -111,5 +115,25 @@ public class Place {
 
 	public void setAlcool(String alcool) {
 		this.alcool = alcool;
+	}
+
+
+	public String getBandeira() {
+		return bandeira;
+	}
+
+
+	public void setBandeira(String bandeira) {
+		this.bandeira = bandeira;
+	}
+
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
 	}
 }
