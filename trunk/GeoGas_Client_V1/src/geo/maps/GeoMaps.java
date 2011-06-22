@@ -24,7 +24,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -34,7 +33,7 @@ import com.google.android.maps.MapView.LayoutParams;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-public class GeoMaps extends MapActivity{
+public class GeoMaps extends MapActivity {
 	private static final int radius = 100;
 	private MapView mapView;
 	private MapController mc;
@@ -49,6 +48,9 @@ public class GeoMaps extends MapActivity{
 	private final int AJUSTE_POSTO = 16;
 	double lat;
 	double lng;
+	GeoPoint center;
+	// GeoPoint inic;
+	GeoLocation[] auxiliar;
 	MyItemizedOverlay itemizedOverlay;
 	MyItemizedOverlay itemizedOverlay2;
 
@@ -68,6 +70,7 @@ public class GeoMaps extends MapActivity{
 						R.drawable.user);
 				canvas.drawBitmap(bmp, screenPts.x, screenPts.y - 16, null);
 			}
+
 			// for (int i = 0; i<Math.min(postos.size(), MAX_POSTOS);i++) {
 			// GeoPoint x = postos.get(i);
 			// Point screenPts1 = new Point();
@@ -122,12 +125,12 @@ public class GeoMaps extends MapActivity{
 		mc = mapView.getController();
 		lat = -7.000;
 		lng = -38.000;
-		int zoom = 10;
+		int zoom = 13;
 		sucess = getIntent().getExtras().getBoolean("sucess");
 		if (sucess) {
 			lat = getIntent().getExtras().getDouble("latitude");
 			lng = getIntent().getExtras().getDouble("longitude");
-			zoom = 15;
+			zoom = 17;
 		}
 
 		p = new GeoPoint((int) (lat * 1E6), (int) (lng * 1E6));
@@ -147,10 +150,43 @@ public class GeoMaps extends MapActivity{
 		loadOverLay();
 		listOfOverlays.add(os);
 		mapView.invalidate();
+		mapView.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				center = mapView.getMapCenter();
+				getBoundingBox();
+				if (testeCenter()) {
+					Reload();
+				}
+				return false;
+			}
+		});
+	}
+
+	private boolean testeCenter() {
+		double lat = center.getLatitudeE6() / 1E6;
+		double lng = center.getLongitudeE6() / 1E6;
+		if (noIntervalo(lat, auxiliar[0].getLatitudeInDegrees(),
+				auxiliar[1].getLatitudeInDegrees())
+				&& noIntervalo(lng, auxiliar[0].getLongitudeInDegrees(),
+						auxiliar[1].getLongitudeInDegrees())) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean noIntervalo(double lat2, double latitudeInDegrees,
+			double latitudeInDegrees2) {
+		boolean result = false;
+		if (lat2 <= Math.min(latitudeInDegrees, latitudeInDegrees2)
+				|| lat2 >= Math.max(latitudeInDegrees, latitudeInDegrees2))
+			result = true;
+		return result;
 	}
 
 	public void loadOverLay() {
-		for (int i = 0; i < Math.min(postos.size(), 75); i++) {
+		for (int i = 0; i < Math.min(postos.size(),75); i++) {
 			GeoPoint ponto = postos.get(i);
 			OverlayItem overlayitem = new OverlayItem(ponto, all_places.get(i)
 					.getName(), "Gasolina: " + all_places.get(i).getGasolina()
@@ -164,13 +200,13 @@ public class GeoMaps extends MapActivity{
 			}
 		}
 		listOfOverlays.add(itemizedOverlay);
-		listOfOverlays.add(itemizedOverlay2);
+		// listOfOverlays.add(itemizedOverlay2);
 	}
 
 	public String getBoundingBox() {
 		GeoLocation aux = GeoLocation.fromDegrees(lat, lng);
-		double distance = mapView.getZoomLevel() * 3.75;
-		GeoLocation[] auxiliar = aux.boundingCoordinates(distance);
+		double distance = (20 - mapView.getZoomLevel())*2;
+		auxiliar = aux.boundingCoordinates(distance);
 		String bbox = auxiliar[0].toString() + "," + auxiliar[1].toString();
 		return bbox;
 	}
@@ -194,9 +230,6 @@ public class GeoMaps extends MapActivity{
 		;
 		try {
 			xml = new XMLHandler();
-			// String teste =
-			// "<placemark><location latitude=\"-6,4320\" longitude=\"-37,104100\" valido=\"true\"></location><location latitude=\"-6,4370\" longitude=\"-37,103910\" valido=\"false\"></location></placemark>";
-			// xml.loadXMLfromString(teste);
 			xml.loadXMLfromURL("http://buchada.dsc.ufcg.edu.br/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&BBOX="
 					+ getBoundingBox());
 			all_places1 = xml.getElementByPlaceBB();
@@ -213,16 +246,61 @@ public class GeoMaps extends MapActivity{
 	}
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.i("Click", "Testando");
 		MapController mc = mapView.getController();
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_3:
-			//ReloadView();
+			// ReloadView();
 			break;
 		case KeyEvent.KEYCODE_1:
 			mc.zoomOut();
 			break;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	public void Reload() {
+		lat = mapView.getMapCenter().getLatitudeE6() / 1E6;
+		lng = mapView.getMapCenter().getLongitudeE6() / 1E6;
+		mapView.removeAllViews();
+		mapView = (MapView) findViewById(R.id.mapView);
+		// LinearLayout zoomLayout = (LinearLayout) findViewById(R.id.zoom);
+		// View zoomView = mapView.getZoomControls();
+		//
+		// zoomLayout.addView(zoomView, new LinearLayout.LayoutParams(
+		// LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		// mapView.displayZoomControls(true);
+		mc = mapView.getController();
+
+		sucess = getIntent().getExtras().getBoolean("sucess");
+
+		p = new GeoPoint((int) (lat * 1E6), (int) (lng * 1E6));
+
+		plotaPostos();
+		listOfOverlays = mapView.getOverlays();
+		listOfOverlays.clear();
+		Drawable valido = this.getResources().getDrawable(
+				R.drawable.iconpostovalido);
+		Drawable invalido = this.getResources().getDrawable(
+				R.drawable.iconepostoinvalido);
+		itemizedOverlay = new MyItemizedOverlay(valido, mapView);
+		itemizedOverlay2 = new MyItemizedOverlay(invalido, mapView);
+		MapOverlayPosto os = new MapOverlayPosto();
+		loadOverLay();
+		listOfOverlays.add(os);
+		mapView.invalidate();
+		mapView.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				center = mapView.getMapCenter();
+				if (testeCenter()) {
+					mapView.removeAllViews();
+					Reload();
+				}
+				return false;
+			}
+		});
 	}
 
 	@Override
