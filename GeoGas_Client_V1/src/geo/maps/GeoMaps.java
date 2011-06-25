@@ -54,6 +54,13 @@ public class GeoMaps extends MapActivity {
 	GeoLocation[] auxiliar;
 	MyItemizedOverlay itemizedOverlay;
 	MyItemizedOverlay itemizedOverlay2;
+	MyItemizedOverlay itemizedOverlay3;
+	MyItemizedOverlay itemizedOverlay4;
+	MyItemizedOverlay itemizedOverlay5;
+	MyItemizedOverlay itemizedOverlay6;
+	MyItemizedOverlay itemizedOverlay7;
+	MyItemizedOverlay itemizedOverlay8;
+	MyItemizedOverlay itemizedOverlay9;
 
 	class MapOverlayPosto extends com.google.android.maps.Overlay {
 		@Override
@@ -141,12 +148,7 @@ public class GeoMaps extends MapActivity {
 		plotaPostos();
 		listOfOverlays = mapView.getOverlays();
 		listOfOverlays.clear();
-		Drawable valido = this.getResources().getDrawable(
-				R.drawable.iconpostovalido);
-		Drawable invalido = this.getResources().getDrawable(
-				R.drawable.iconepostoinvalido);
-		itemizedOverlay = new MyItemizedOverlay(valido, mapView);
-		itemizedOverlay2 = new MyItemizedOverlay(invalido, mapView);
+		createOverlays();
 		MapOverlayPosto os = new MapOverlayPosto();
 		loadOverLay();
 		listOfOverlays.add(os);
@@ -163,6 +165,29 @@ public class GeoMaps extends MapActivity {
 				return false;
 			}
 		});
+	}
+	
+	private void createOverlays() {
+		Drawable valido = this.getResources().getDrawable(
+				R.drawable.iconpostovalido);
+		Drawable invalido = this.getResources().getDrawable(
+				R.drawable.iconepostoinvalido);
+		Drawable ban = this.getResources().getDrawable(R.drawable.petrobras);
+		Drawable ban1 = this.getResources().getDrawable(R.drawable.shell);
+		Drawable ban2 = this.getResources().getDrawable(R.drawable.texaco);
+		Drawable ban3 = this.getResources().getDrawable(R.drawable.whiteflag);
+		Drawable ban4 = this.getResources().getDrawable(R.drawable.esso);
+		Drawable ban5 = this.getResources().getDrawable(R.drawable.ello);
+		Drawable ban6 = this.getResources().getDrawable(R.drawable.dislub);
+		itemizedOverlay = new MyItemizedOverlay(valido, mapView);
+		itemizedOverlay2 = new MyItemizedOverlay(invalido, mapView);
+		itemizedOverlay3 = new MyItemizedOverlay(ban, mapView);
+		itemizedOverlay4 = new MyItemizedOverlay(ban1, mapView);
+		itemizedOverlay5 = new MyItemizedOverlay(ban2, mapView);
+		itemizedOverlay6 = new MyItemizedOverlay(ban3, mapView);
+		itemizedOverlay7 = new MyItemizedOverlay(ban4, mapView);
+		itemizedOverlay8 = new MyItemizedOverlay(ban5, mapView);
+		itemizedOverlay9 = new MyItemizedOverlay(ban6, mapView);
 	}
 
 	private boolean testeCenter() {
@@ -198,10 +223,28 @@ public class GeoMaps extends MapActivity {
 					+ "\nAlcool: " + all_places.get(i).getAlcool()
 					+ "\nDiesel: " + all_places.get(i).getDisel() + "\nGás: "
 					+ all_places.get(i).getGas());
+
 			if(!latlng.containsKey(ponto.getLatitudeE6()) || latlng.get(ponto.getLatitudeE6()) != ponto.getLongitudeE6()){
 				Log.i("Entrou", ponto.getLatitudeE6() +" "+ ponto.getLongitudeE6());
-				if (all_places.get(i).isValidade()) {
-					itemizedOverlay.addOverlay(overlayitem);
+				
+				if(all_places.get(i).isValidade()) {
+					if(all_places.get(i).getBandeira().equalsIgnoreCase("PETROBRAS DISTRIBUIDORA S.A") ||  all_places.get(i).getBandeira().equalsIgnoreCase("PETROBRAS")) {
+						itemizedOverlay3.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("SHELL")) {
+						itemizedOverlay4.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("IPP")) {
+						itemizedOverlay5.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("BANDEIRA BRANCA")) {
+						itemizedOverlay6.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("COSAN COMBUSTÍVEIS")) {
+						itemizedOverlay7.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("ELLO")) {
+						itemizedOverlay8.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("DISLUB")) {
+						itemizedOverlay9.addOverlay(overlayitem);
+					} else {
+						itemizedOverlay.addOverlay(overlayitem);
+					}
 				} else {
 					itemizedOverlay2.addOverlay(overlayitem);
 				}
@@ -211,10 +254,25 @@ public class GeoMaps extends MapActivity {
 			i++;
 			postos_num--;
 		}
-		if(itemizedOverlay.size() > 0)
-		listOfOverlays.add(itemizedOverlay);
+			
+		if(itemizedOverlay4.size() > 0)
+			listOfOverlays.add(itemizedOverlay4);
+		if(itemizedOverlay.size() > 0) 
+		    listOfOverlays.add(itemizedOverlay);
+		if(itemizedOverlay3.size() > 0)
+			listOfOverlays.add(itemizedOverlay3);
+		if(itemizedOverlay5.size() > 0)
+			listOfOverlays.add(itemizedOverlay5);
+		if(itemizedOverlay6.size() > 0)
+			listOfOverlays.add(itemizedOverlay6);
+		if(itemizedOverlay7.size() > 0)
+			listOfOverlays.add(itemizedOverlay7);
+		if(itemizedOverlay8.size() > 0)
+			listOfOverlays.add(itemizedOverlay8);
+		if(itemizedOverlay9.size() > 0)
+			listOfOverlays.add(itemizedOverlay9);
 		if(itemizedOverlay2.size() > 0)
-		 listOfOverlays.add(itemizedOverlay2);
+		    listOfOverlays.add(itemizedOverlay2);
 	}
 
 	public String getBoundingBox() {
@@ -293,12 +351,7 @@ public class GeoMaps extends MapActivity {
 		plotaPostos();
 		listOfOverlays = mapView.getOverlays();
 		listOfOverlays.clear();
-		Drawable valido = this.getResources().getDrawable(
-				R.drawable.iconpostovalido);
-		Drawable invalido = this.getResources().getDrawable(
-				R.drawable.iconepostoinvalido);
-		itemizedOverlay = new MyItemizedOverlay(valido, mapView);
-		itemizedOverlay2 = new MyItemizedOverlay(invalido, mapView);
+		createOverlays();
 		MapOverlayPosto os = new MapOverlayPosto();
 		loadOverLay();
 		listOfOverlays.add(os);

@@ -16,6 +16,7 @@ public class MyItemizedOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
 	public MyItemizedOverlay(Drawable defaultMarker, MapView mapView) {
 		super(boundCenter(defaultMarker), mapView);
+		populate();
 		c = mapView.getContext();
 	}
 
