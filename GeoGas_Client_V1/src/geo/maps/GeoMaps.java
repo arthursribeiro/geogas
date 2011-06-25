@@ -6,6 +6,7 @@ import geo.xmlhandler.XMLHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -186,26 +187,39 @@ public class GeoMaps extends MapActivity {
 	}
 
 	public void loadOverLay() {
-		for (int i = 0; i < Math.min(postos.size(),75); i++) {
+		int postos_num = postos.size();
+		int min = 75;
+		int i = 0;
+		HashMap<Integer,Integer> latlng = new HashMap<Integer,Integer>();
+		while(postos_num > 0 && min > 0){
 			GeoPoint ponto = postos.get(i);
 			OverlayItem overlayitem = new OverlayItem(ponto, all_places.get(i)
 					.getName(), "Gasolina: " + all_places.get(i).getGasolina()
 					+ "\nAlcool: " + all_places.get(i).getAlcool()
 					+ "\nDiesel: " + all_places.get(i).getDisel() + "\nGás: "
 					+ all_places.get(i).getGas());
-			if (all_places.get(i).isValidade()) {
-				itemizedOverlay.addOverlay(overlayitem);
-			} else {
-				itemizedOverlay2.addOverlay(overlayitem);
+			if(!latlng.containsKey(ponto.getLatitudeE6()) || latlng.get(ponto.getLatitudeE6()) != ponto.getLongitudeE6()){
+				Log.i("Entrou", ponto.getLatitudeE6() +" "+ ponto.getLongitudeE6());
+				if (all_places.get(i).isValidade()) {
+					itemizedOverlay.addOverlay(overlayitem);
+				} else {
+					itemizedOverlay2.addOverlay(overlayitem);
+				}
+				min--;
+				latlng.put(ponto.getLatitudeE6(), ponto.getLongitudeE6());
 			}
+			i++;
+			postos_num--;
 		}
+		if(itemizedOverlay.size() > 0)
 		listOfOverlays.add(itemizedOverlay);
-		// listOfOverlays.add(itemizedOverlay2);
+/*		if(itemizedOverlay2.size() > 0)
+		 listOfOverlays.add(itemizedOverlay2);*/
 	}
 
 	public String getBoundingBox() {
 		GeoLocation aux = GeoLocation.fromDegrees(lat, lng);
-		double distance = (20 - mapView.getZoomLevel())*2;
+		double distance = (20 - mapView.getZoomLevel())*2.5;
 		auxiliar = aux.boundingCoordinates(distance);
 		String bbox = auxiliar[0].toString() + "," + auxiliar[1].toString();
 		return bbox;
