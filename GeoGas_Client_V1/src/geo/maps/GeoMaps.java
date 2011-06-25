@@ -213,8 +213,8 @@ public class GeoMaps extends MapActivity {
 		}
 		if(itemizedOverlay.size() > 0)
 		listOfOverlays.add(itemizedOverlay);
-/*		if(itemizedOverlay2.size() > 0)
-		 listOfOverlays.add(itemizedOverlay2);*/
+		if(itemizedOverlay2.size() > 0)
+		 listOfOverlays.add(itemizedOverlay2);
 	}
 
 	public String getBoundingBox() {
