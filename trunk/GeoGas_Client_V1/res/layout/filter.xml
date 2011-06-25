@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:id="@+id/widget84" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+	<LinearLayout android:id="@+id/widget83"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:orientation="vertical">
+		<CheckBox android:id="@+id/widget31" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Pre&#231;o Min">
+		</CheckBox>
+		<CheckBox android:id="@+id/widget34" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Distancia">
+		</CheckBox>
+		<CheckBox android:id="@+id/widget33" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Bandeira">
+		</CheckBox>
+		<CheckBox android:id="@+id/widget32" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Pre&#231;o M&#225;x">
+		</CheckBox>
+		<Button android:id="@+id/widget39" android:layout_width="107px"
+			android:layout_height="wrap_content" android:text="Continuar">
+		</Button>
+		<EditText android:id="@+id/widget38" android:layout_width="93px"
+			android:layout_height="wrap_content" android:text="KM"
+			android:textSize="18sp">
+		</EditText>
+		<EditText android:id="@+id/widget37" android:layout_width="198px"
+			android:layout_height="wrap_content" android:text="Marca"
+			android:textSize="18sp">
+		</EditText>
+		<EditText android:id="@+id/widget36" android:layout_width="201px"
+			android:layout_height="wrap_content" android:text="R$ M&#225;ximo"
+			android:textSize="18sp">
+		</EditText>
+		<EditText android:id="@+id/widget35" android:layout_width="210px"
+			android:layout_height="wrap_content" android:text="R$ Minimo"
+			android:textSize="18sp">
+		</EditText>
+	</LinearLayout>
+</ScrollView>

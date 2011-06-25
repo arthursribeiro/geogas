@@ -5,6 +5,7 @@ import geo.xmlhandler.GeoLocation;
 import geo.xmlhandler.XMLHandler;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,14 @@ public class GeoMaps extends MapActivity {
 	private final int MAX_POSTOS = 75;
 	private final int AJUSTE_USER = 16;
 	private final int AJUSTE_POSTO = 16;
+	private boolean min;
+	private boolean max;
+	private boolean bandeira;
+	private boolean distancia;
+	private double preco_min = -1;
+	private double preco_max = Double.MAX_VALUE;
+	private String v_bandeira;
+	private double v_distancia = 0;
 	double lat;
 	double lng;
 	GeoPoint center;
@@ -134,7 +143,51 @@ public class GeoMaps extends MapActivity {
 		lat = -7.000;
 		lng = -38.000;
 		int zoom = 13;
+
 		sucess = getIntent().getExtras().getBoolean("sucess");
+		min = getIntent().getExtras().getBoolean("min_sucess");
+		max = getIntent().getExtras().getBoolean("max_sucess");
+		bandeira = getIntent().getExtras().getBoolean(
+				"bandeira_sucess");
+		distancia = getIntent().getExtras().getBoolean("dis_sucess");
+		
+		try {
+			preco_min = Double.valueOf(getIntent().getExtras().getString(
+					"preco_min"));
+		}catch(Exception e){
+			
+		} finally {
+			if(min && preco_min != -1){
+				min = true;
+			}else{
+				min = false;
+			}
+		}
+		try{
+			preco_max = Double.valueOf(getIntent().getExtras().getString(
+			"preco_max"));
+		}catch(Exception e){
+			
+		}finally{
+			if(max && preco_max != Double.MAX_VALUE){
+				max = true;
+			}else{
+				max = false;
+			}
+		}
+		try{
+			v_distancia = Double.valueOf(getIntent().getExtras().getString(
+			"distancia"));
+		}catch(Exception e){
+			
+		}finally{
+			if(distancia && v_distancia != 0){
+				distancia = true;
+			}else{
+				distancia = false;
+			}
+		}
+		v_bandeira = getIntent().getExtras().getString("bandeira");
 		if (sucess) {
 			lat = getIntent().getExtras().getDouble("latitude");
 			lng = getIntent().getExtras().getDouble("longitude");
@@ -166,7 +219,7 @@ public class GeoMaps extends MapActivity {
 			}
 		});
 	}
-	
+
 	private void createOverlays() {
 		Drawable valido = this.getResources().getDrawable(
 				R.drawable.iconpostovalido);
@@ -215,32 +268,44 @@ public class GeoMaps extends MapActivity {
 		int postos_num = postos.size();
 		int min = 75;
 		int i = 0;
-		HashMap<Integer,Integer> latlng = new HashMap<Integer,Integer>();
-		while(postos_num > 0 && min > 0){
-			GeoPoint ponto = postos.get(i);
+		HashMap<Integer, Integer> latlng = new HashMap<Integer, Integer>();
+		while (postos_num > 0 && min > 0) {
+			GeoPoint ponto = all_places.get(i).getPoint();
 			OverlayItem overlayitem = new OverlayItem(ponto, all_places.get(i)
 					.getName(), "Gasolina: " + all_places.get(i).getGasolina()
 					+ "\nAlcool: " + all_places.get(i).getAlcool()
 					+ "\nDiesel: " + all_places.get(i).getDisel() + "\nGás: "
 					+ all_places.get(i).getGas());
 
-			if(!latlng.containsKey(ponto.getLatitudeE6()) || latlng.get(ponto.getLatitudeE6()) != ponto.getLongitudeE6()){
-				Log.i("Entrou", ponto.getLatitudeE6() +" "+ ponto.getLongitudeE6());
-				
-				if(all_places.get(i).isValidade()) {
-					if(all_places.get(i).getBandeira().equalsIgnoreCase("PETROBRAS DISTRIBUIDORA S.A") ||  all_places.get(i).getBandeira().equalsIgnoreCase("PETROBRAS")) {
+			if (!latlng.containsKey(ponto.getLatitudeE6())
+					|| latlng.get(ponto.getLatitudeE6()) != ponto
+							.getLongitudeE6()) {
+				Log.i("Entrou",
+						ponto.getLatitudeE6() + " " + ponto.getLongitudeE6());
+
+				if (all_places.get(i).isValidade()) {
+					if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("PETROBRAS DISTRIBUIDORA S.A")
+							|| all_places.get(i).getBandeira()
+									.equalsIgnoreCase("PETROBRAS")) {
 						itemizedOverlay3.addOverlay(overlayitem);
-					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("SHELL")) {
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("SHELL")) {
 						itemizedOverlay4.addOverlay(overlayitem);
-					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("IPP")) {
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("IPP")) {
 						itemizedOverlay5.addOverlay(overlayitem);
-					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("BANDEIRA BRANCA")) {
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("BANDEIRA BRANCA")) {
 						itemizedOverlay6.addOverlay(overlayitem);
-					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("COSAN COMBUSTÍVEIS")) {
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("COSAN COMBUSTÍVEIS")) {
 						itemizedOverlay7.addOverlay(overlayitem);
-					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("ELLO")) {
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("ELLO")) {
 						itemizedOverlay8.addOverlay(overlayitem);
-					} else if (all_places.get(i).getBandeira().equalsIgnoreCase("DISLUB")) {
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("DISLUB")) {
 						itemizedOverlay9.addOverlay(overlayitem);
 					} else {
 						itemizedOverlay.addOverlay(overlayitem);
@@ -254,32 +319,33 @@ public class GeoMaps extends MapActivity {
 			i++;
 			postos_num--;
 		}
-			
-		if(itemizedOverlay4.size() > 0)
+
+		if (itemizedOverlay4.size() > 0)
 			listOfOverlays.add(itemizedOverlay4);
-		if(itemizedOverlay.size() > 0) 
-		    listOfOverlays.add(itemizedOverlay);
-		if(itemizedOverlay3.size() > 0)
+		if (itemizedOverlay.size() > 0)
+			listOfOverlays.add(itemizedOverlay);
+		if (itemizedOverlay3.size() > 0)
 			listOfOverlays.add(itemizedOverlay3);
-		if(itemizedOverlay5.size() > 0)
+		if (itemizedOverlay5.size() > 0)
 			listOfOverlays.add(itemizedOverlay5);
-		if(itemizedOverlay6.size() > 0)
+		if (itemizedOverlay6.size() > 0)
 			listOfOverlays.add(itemizedOverlay6);
-		if(itemizedOverlay7.size() > 0)
+		if (itemizedOverlay7.size() > 0)
 			listOfOverlays.add(itemizedOverlay7);
-		if(itemizedOverlay8.size() > 0)
+		if (itemizedOverlay8.size() > 0)
 			listOfOverlays.add(itemizedOverlay8);
-		if(itemizedOverlay9.size() > 0)
+		if (itemizedOverlay9.size() > 0)
 			listOfOverlays.add(itemizedOverlay9);
-		if(itemizedOverlay2.size() > 0)
-		    listOfOverlays.add(itemizedOverlay2);
+		if (itemizedOverlay2.size() > 0)
+			listOfOverlays.add(itemizedOverlay2);
 	}
 
 	public String getBoundingBox() {
 		GeoLocation aux = GeoLocation.fromDegrees(lat, lng);
-		double distance = (20 - mapView.getZoomLevel())*2.5;
+		double distance = (20 - mapView.getZoomLevel()) * 2.5;
+		if(distancia) distance = v_distancia;
 		auxiliar = aux.boundingCoordinates(distance);
-		String bbox = auxiliar[0].toString() + "," + auxiliar[1].toString();
+		String bbox = auxiliar[0].toString() + " " + auxiliar[1].toString();
 		return bbox;
 	}
 
@@ -294,16 +360,30 @@ public class GeoMaps extends MapActivity {
 			// listOfOverlays.add(new MapOverlayPosto(point));
 			postos.add(point);
 		}
-
 	}
 
 	public ArrayList<Place> getPostos() {
 		ArrayList<Place> all_places1 = new ArrayList<Place>();
-		;
 		try {
+			String preco = "";
+			String ban = "";
+			if(min || max){
+				preco = "<PropertyIsBetween>               <PropertyName>pricegasoline</PropertyName>               <LowerBoundary><Literal>"+preco_min+"</Literal></LowerBoundary>               <UpperBoundary><Literal>"+preco_max+"</Literal></UpperBoundary>           </PropertyIsBetween>";
+			}
+			if(bandeira){
+				ban = "  <PropertyIsLike escapeChar=\"\\\" singleChar=\"_\" wildCard=\"%\">                        <PropertyName>bandeira</PropertyName>                    <Literal>%"+v_bandeira+"%</Literal>            </PropertyIsLike>";
+			}
+			String url = "<Filter xmlns:gml=\"http://www.opengis.net/gml\" xmlns=\"http://www.opengis.net/ogc\">    <And>        <BBOX>            <PropertyName>geom</PropertyName>            <gml:Box srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">                <gml:coordinates>"
+					+ getBoundingBox()
+					+ "                </gml:coordinates>             </gml:Box>          </BBOX>    "+preco+ban+"</And></Filter>";
 			xml = new XMLHandler();
-			xml.loadXMLfromURL("http://buchada.dsc.ufcg.edu.br/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&BBOX="
-					+ getBoundingBox());
+			// xml.loadXMLfromURL("http://buchada.dsc.ufcg.edu.br/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&BBOX="
+			// + getBoundingBox());
+			String allurl = "http://buchada.dsc.ufcg.edu.br/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER="
+					+ URLEncoder.encode(url, "UTF-8");
+			Log.i("URL", allurl);
+			xml.loadXMLfromURL(allurl);
+
 			all_places1 = xml.getElementByPlaceBB();
 		} catch (IOException e) {
 			Log.i("Error", e.toString());
@@ -347,7 +427,6 @@ public class GeoMaps extends MapActivity {
 		sucess = getIntent().getExtras().getBoolean("sucess");
 
 		p = new GeoPoint((int) (lat * 1E6), (int) (lng * 1E6));
-
 		plotaPostos();
 		listOfOverlays = mapView.getOverlays();
 		listOfOverlays.clear();
