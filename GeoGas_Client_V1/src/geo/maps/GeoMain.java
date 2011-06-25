@@ -161,7 +161,7 @@ public class GeoMain extends Activity implements LocationListener {
 	public void chamada_mapa(double lat, double log) {
 
 		try {
-			Intent i = new Intent(GeoMain.this, GeoMaps.class);
+			Intent i = new Intent(GeoMain.this, GeoFilter.class);
 			i.putExtra("latitude", lat);
 			i.putExtra("longitude", log);
 			i.putExtra("sucess", get_location);

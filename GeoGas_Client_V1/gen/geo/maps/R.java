@@ -16,25 +16,45 @@ public final class R {
         public static final int balloon_overlay_focused=0x7f020002;
         public static final int balloon_overlay_unfocused=0x7f020003;
         public static final int bg=0x7f020004;
-        public static final int icon=0x7f020005;
-        public static final int iconepostoinvalido=0x7f020006;
-        public static final int iconpostovalido=0x7f020007;
-        public static final int user=0x7f020008;
+        public static final int dislub=0x7f020005;
+        public static final int ello=0x7f020006;
+        public static final int esso=0x7f020007;
+        public static final int gas=0x7f020008;
+        public static final int icon=0x7f020009;
+        public static final int iconepostoinvalido=0x7f02000a;
+        public static final int iconpostovalido=0x7f02000b;
+        public static final int petrobras=0x7f02000c;
+        public static final int shell=0x7f02000d;
+        public static final int texaco=0x7f02000e;
+        public static final int user=0x7f02000f;
+        public static final int whiteflag=0x7f020010;
     }
     public static final class id {
         public static final int balloon_inner_layout=0x7f050001;
         public static final int balloon_item_snippet=0x7f050003;
         public static final int balloon_item_title=0x7f050002;
         public static final int balloon_main_layout=0x7f050000;
-        public static final int button=0x7f050005;
+        public static final int button=0x7f050010;
         public static final int close_img_button=0x7f050004;
-        public static final int mapView=0x7f050006;
-        public static final int zoom=0x7f050007;
+        public static final int mapView=0x7f050011;
+        public static final int widget31=0x7f050007;
+        public static final int widget32=0x7f05000a;
+        public static final int widget33=0x7f050009;
+        public static final int widget34=0x7f050008;
+        public static final int widget35=0x7f05000f;
+        public static final int widget36=0x7f05000e;
+        public static final int widget37=0x7f05000d;
+        public static final int widget38=0x7f05000c;
+        public static final int widget39=0x7f05000b;
+        public static final int widget83=0x7f050006;
+        public static final int widget84=0x7f050005;
+        public static final int zoom=0x7f050012;
     }
     public static final class layout {
         public static final int balloon_overlay=0x7f030000;
-        public static final int main=0x7f030001;
-        public static final int maplayout=0x7f030002;
+        public static final int filter=0x7f030001;
+        public static final int main=0x7f030002;
+        public static final int maplayout=0x7f030003;
     }
     public static final class string {
         public static final int app_name=0x7f040001;

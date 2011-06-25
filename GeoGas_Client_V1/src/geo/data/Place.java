@@ -1,10 +1,11 @@
 package geo.data;
 
-import org.w3c.dom.Element;
+import com.google.android.maps.GeoPoint;
 
 public class Place {
 	double lat;
 	double longe;
+	GeoPoint point;
 	boolean validade;
 	String name;
 	String gasolina;
@@ -33,6 +34,8 @@ public class Place {
 			String string_disel, String string_alcool,String bandeira,String endereco) {
 		this.lat = Double.parseDouble(latitude.replace(" ", "").replace(",", "."));
 		this.longe = Double.parseDouble(longitude.replace(" ", "").replace(",", "."));
+		this.point = new GeoPoint((int) (lat * 1E6),
+				(int) (this.longe * 1E6));
 		this.validade = validade2;
 		this.name = posto_name;
 		this.gasolina = string_gasolina;
@@ -56,7 +59,9 @@ public class Place {
 	public void setLonge(double longe) {
 		this.longe = longe;
 	}
-
+	public GeoPoint getPoint(){
+		return this.point;
+	}
 
 	public boolean isValidade() {
 		return validade;
