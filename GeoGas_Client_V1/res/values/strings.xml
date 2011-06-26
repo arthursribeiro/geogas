@@ -4,4 +4,10 @@
     <string name="app_name">GeoGas</string>
     <string name="button1">Visualizar Mapa Completo</string>
     <string name="item_prompt">Choose an item</string>
+    <string name="filterChoice">Quais os filtros desejados?</string>
+    <string name="valueInput">Qual o valor desejado para o filtro?</string>
+    <string name="distancia">Distancia (em KM): </string>
+    <string name="precoMin">Preço Mínimo (em reais):</string>
+    <string name="precoMax">Preço Máximo (em reais):</string>
+    <string name="bandeira">Bandeira:</string>
 </resources>

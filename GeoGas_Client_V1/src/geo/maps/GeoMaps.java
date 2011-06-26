@@ -70,6 +70,8 @@ public class GeoMaps extends MapActivity {
 	MyItemizedOverlay itemizedOverlay7;
 	MyItemizedOverlay itemizedOverlay8;
 	MyItemizedOverlay itemizedOverlay9;
+	MyItemizedOverlay itemizedOverlay10;
+	MyItemizedOverlay itemizedOverlay11;
 
 	class MapOverlayPosto extends com.google.android.maps.Overlay {
 		@Override
@@ -232,6 +234,8 @@ public class GeoMaps extends MapActivity {
 		Drawable ban4 = this.getResources().getDrawable(R.drawable.esso);
 		Drawable ban5 = this.getResources().getDrawable(R.drawable.ello);
 		Drawable ban6 = this.getResources().getDrawable(R.drawable.dislub);
+		Drawable ban7 = this.getResources().getDrawable(R.drawable.setta);
+		Drawable ban8 = this.getResources().getDrawable(R.drawable.ale);
 		itemizedOverlay = new MyItemizedOverlay(valido, mapView);
 		itemizedOverlay2 = new MyItemizedOverlay(invalido, mapView);
 		itemizedOverlay3 = new MyItemizedOverlay(ban, mapView);
@@ -241,6 +245,8 @@ public class GeoMaps extends MapActivity {
 		itemizedOverlay7 = new MyItemizedOverlay(ban4, mapView);
 		itemizedOverlay8 = new MyItemizedOverlay(ban5, mapView);
 		itemizedOverlay9 = new MyItemizedOverlay(ban6, mapView);
+		itemizedOverlay10 = new MyItemizedOverlay(ban7, mapView);
+		itemizedOverlay11 = new MyItemizedOverlay(ban8, mapView);
 	}
 
 	private boolean testeCenter() {
@@ -284,6 +290,7 @@ public class GeoMaps extends MapActivity {
 						ponto.getLatitudeE6() + " " + ponto.getLongitudeE6());
 
 				if (all_places.get(i).isValidade()) {
+					Log.i("Bandeira eh: ", all_places.get(i).getBandeira());
 					if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("PETROBRAS DISTRIBUIDORA S.A")
 							|| all_places.get(i).getBandeira()
@@ -307,6 +314,16 @@ public class GeoMaps extends MapActivity {
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("DISLUB")) {
 						itemizedOverlay9.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("SETTA DISTRIBUIDORA")) {
+						itemizedOverlay10.addOverlay(overlayitem);
+					} else if (all_places.get(i).getBandeira()
+							.equalsIgnoreCase("ALESAT")
+							|| all_places.get(i).getBandeira()
+								.equalsIgnoreCase("ALE COMBUSTÍVEIS") 
+								|| all_places.get(i).getBandeira()
+									.equalsIgnoreCase("SATELITE")) {
+						itemizedOverlay11.addOverlay(overlayitem);
 					} else {
 						itemizedOverlay.addOverlay(overlayitem);
 					}
@@ -336,6 +353,10 @@ public class GeoMaps extends MapActivity {
 			listOfOverlays.add(itemizedOverlay8);
 		if (itemizedOverlay9.size() > 0)
 			listOfOverlays.add(itemizedOverlay9);
+		if (itemizedOverlay10.size() > 0)
+			listOfOverlays.add(itemizedOverlay10);
+		if (itemizedOverlay11.size() > 0)
+			listOfOverlays.add(itemizedOverlay11);
 		if (itemizedOverlay2.size() > 0)
 			listOfOverlays.add(itemizedOverlay2);
 	}
