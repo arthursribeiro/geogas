@@ -1,39 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView android:id="@+id/widget84" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
-	<LinearLayout android:id="@+id/widget83"
-		android:layout_width="fill_parent" android:layout_height="fill_parent"
-		android:orientation="vertical">
-		<CheckBox android:id="@+id/widget31" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Pre&#231;o Min">
-		</CheckBox>
-		<CheckBox android:id="@+id/widget34" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Distancia">
-		</CheckBox>
-		<CheckBox android:id="@+id/widget33" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Bandeira">
-		</CheckBox>
-		<CheckBox android:id="@+id/widget32" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Pre&#231;o M&#225;x">
-		</CheckBox>
-		<Button android:id="@+id/widget39" android:layout_width="107px"
-			android:layout_height="wrap_content" android:text="Continuar">
-		</Button>
-		<EditText android:id="@+id/widget38" android:layout_width="93px"
-			android:layout_height="wrap_content" android:text="KM"
-			android:textSize="18sp">
-		</EditText>
-		<EditText android:id="@+id/widget37" android:layout_width="198px"
-			android:layout_height="wrap_content" android:text="Marca"
-			android:textSize="18sp">
-		</EditText>
-		<EditText android:id="@+id/widget36" android:layout_width="201px"
-			android:layout_height="wrap_content" android:text="R$ M&#225;ximo"
-			android:textSize="18sp">
-		</EditText>
-		<EditText android:id="@+id/widget35" android:layout_width="210px"
-			android:layout_height="wrap_content" android:text="R$ Minimo"
-			android:textSize="18sp">
-		</EditText>
+	<LinearLayout 
+		android:id="@+id/widget83" 
+		android:layout_height="fill_parent" 
+		android:orientation="horizontal" 
+		android:layout_width="fill_parent">
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center"
+			android:paddingLeft="20dip"
+			android:paddingRight="20dip" >
+			<TextView
+				android:text="@string/filterChoice"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="center"
+				android:layout_marginBottom="20dip"
+				android:textSize="24.5sp" />
+			<TableLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="center"
+				android:stretchColumns="*" >
+				<TableRow>
+					<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/widget31" android:text="Preço Min" android:layout_gravity="center_horizontal"></CheckBox>
+					<CheckBox android:id="@+id/widget34" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Distancia" android:layout_gravity="center_horizontal"></CheckBox>
+				</TableRow>
+				<TableRow>
+					<CheckBox android:id="@+id/widget33" android:layout_height="wrap_content" android:text="Bandeira" android:layout_width="wrap_content" android:layout_gravity="center_horizontal"></CheckBox>
+					<CheckBox android:id="@+id/widget32" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Preço Máx" android:layout_gravity="center_horizontal"></CheckBox>
+				</TableRow>
+			</TableLayout>
+			<TextView
+				android:text="@string/valueInput"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="center"
+				android:layout_marginBottom="20dip"
+				android:textSize="24.5sp" />
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center">
+				<TextView
+					android:text="@string/distancia"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content" />
+				<EditText android:text="KM" android:textSize="16sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/widget38"></EditText>
+			</LinearLayout>
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center">
+				<TextView
+					android:text="@string/bandeira"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content" />
+				<EditText android:text="Marca" android:textSize="16sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/widget37"></EditText>
+			</LinearLayout>
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center">
+				<TextView
+					android:text="@string/precoMax"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content" />
+				<EditText android:text="R$ M&#225;ximo" android:textSize="16sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/widget36"></EditText>
+			</LinearLayout>
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center">
+				<TextView
+					android:text="@string/precoMin"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content" />
+				<EditText android:text="R$ Minimo"  android:textSize="16sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/widget35"></EditText>
+			</LinearLayout>
+			<Button android:id="@+id/widget39" android:text="Continuar" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_gravity="center"/>
+		</LinearLayout>
 	</LinearLayout>
 </ScrollView>
