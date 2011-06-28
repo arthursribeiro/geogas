@@ -55,7 +55,7 @@ public class GeoMaps extends MapActivity {
 	private double preco_min = -1;
 	private double preco_max = Double.MAX_VALUE;
 	private String v_bandeira;
-	private double v_distancia = 0;
+	private double v_distancia = -1;
 	double lat;
 	double lng;
 	GeoPoint center;
@@ -183,9 +183,11 @@ public class GeoMaps extends MapActivity {
 		}catch(Exception e){
 			
 		}finally{
-			if(distancia && v_distancia != 0){
+			if(distancia && v_distancia != -1){
+				Log.i("TESTEDIS", "OK");
 				distancia = true;
 			}else{
+				Log.i("TESTEDIS", "NO");
 				distancia = false;
 			}
 		}
@@ -296,27 +298,35 @@ public class GeoMaps extends MapActivity {
 							|| all_places.get(i).getBandeira()
 									.equalsIgnoreCase("PETROBRAS")) {
 						itemizedOverlay3.addOverlay(overlayitem);
+						itemizedOverlay3.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("SHELL")) {
 						itemizedOverlay4.addOverlay(overlayitem);
+						itemizedOverlay4.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("IPP")) {
 						itemizedOverlay5.addOverlay(overlayitem);
+						itemizedOverlay5.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("BANDEIRA BRANCA")) {
 						itemizedOverlay6.addOverlay(overlayitem);
+						itemizedOverlay6.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("COSAN COMBUSTÍVEIS")) {
 						itemizedOverlay7.addOverlay(overlayitem);
+						itemizedOverlay7.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("ELLO")) {
 						itemizedOverlay8.addOverlay(overlayitem);
+						itemizedOverlay8.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("DISLUB")) {
 						itemizedOverlay9.addOverlay(overlayitem);
+						itemizedOverlay9.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("SETTA DISTRIBUIDORA")) {
 						itemizedOverlay10.addOverlay(overlayitem);
+						itemizedOverlay10.mash(overlayitem,all_places.get(i));
 					} else if (all_places.get(i).getBandeira()
 							.equalsIgnoreCase("ALESAT")
 							|| all_places.get(i).getBandeira()
@@ -324,8 +334,10 @@ public class GeoMaps extends MapActivity {
 								|| all_places.get(i).getBandeira()
 									.equalsIgnoreCase("SATELITE")) {
 						itemizedOverlay11.addOverlay(overlayitem);
+						itemizedOverlay11.mash(overlayitem,all_places.get(i));
 					} else {
 						itemizedOverlay.addOverlay(overlayitem);
+						itemizedOverlay.mash(overlayitem,all_places.get(i));
 					}
 				} else {
 					itemizedOverlay2.addOverlay(overlayitem);
@@ -364,9 +376,17 @@ public class GeoMaps extends MapActivity {
 	public String getBoundingBox() {
 		GeoLocation aux = GeoLocation.fromDegrees(lat, lng);
 		double distance = (20 - mapView.getZoomLevel()) * 2.5;
-		if(distancia) distance = v_distancia;
-		auxiliar = aux.boundingCoordinates(distance);
+		double real_distance = 0;
+		if(distancia) {
+			real_distance = v_distancia;
+			Log.i("TESTEDIS", String.valueOf(real_distance));
+		}else{
+			real_distance = distance;
+			Log.i("TESTEDIS", "LOL"+String.valueOf(distance));
+		}
+		auxiliar = aux.boundingCoordinates(real_distance);
 		String bbox = auxiliar[0].toString() + " " + auxiliar[1].toString();
+		Log.i("TESTEDIS", bbox);		
 		return bbox;
 	}
 

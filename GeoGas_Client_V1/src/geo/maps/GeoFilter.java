@@ -3,6 +3,7 @@ package geo.maps;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,7 +29,7 @@ public class GeoFilter extends Activity {
 		lat = getIntent().getExtras().getDouble("latitude");
 		lng = getIntent().getExtras().getDouble("longitude");
 		setContentView(R.layout.filter);
-		dis = (CheckBox)findViewById(R.id.widget34);
+		dis = (CheckBox)findViewById(R.id.widget40);
 		bandeira = (CheckBox)findViewById(R.id.widget33);
 		preco_max = (CheckBox)findViewById(R.id.widget32);
 		preco_min = (CheckBox)findViewById(R.id.widget31);
@@ -48,6 +49,7 @@ public class GeoFilter extends Activity {
 			i.putExtra("max_sucess", preco_max.isChecked());
 			i.putExtra("bandeira_sucess",bandeira.isChecked());
 			i.putExtra("dis_sucess", dis.isChecked());
+			Log.i("TESTEDIS", String.valueOf(dis.isChecked()));
 			i.putExtra("preco_min", value_min.getText().toString());
 			i.putExtra("preco_max", value_max.getText().toString());
 			i.putExtra("bandeira", value_ban.getText().toString());
