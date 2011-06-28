@@ -1,10 +1,14 @@
 package geo.maps;
 
-import java.util.ArrayList;
+import geo.data.Place;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
-import android.widget.Toast;
 
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
@@ -13,7 +17,8 @@ public class MyItemizedOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
 	private ArrayList<OverlayItem> m_overlays = new ArrayList<OverlayItem>();
 	private Context c;
-
+	private HashMap<OverlayItem,Place> a = new HashMap<OverlayItem, Place>();
+	
 	public MyItemizedOverlay(Drawable defaultMarker, MapView mapView) {
 		super(boundCenter(defaultMarker), mapView);
 		populate();
@@ -37,9 +42,32 @@ public class MyItemizedOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
 	@Override
 	protected boolean onBalloonTap(int index, OverlayItem item) {
-		Toast.makeText(c, "onBalloonTap for overlay index " + index,
-				Toast.LENGTH_LONG).show();
+		AlertDialog alert = new AlertDialog.Builder(this.c).create();
+		alert.setTitle("Informações do Posto");
+		Place p = a.get(item);
+		String info = "";
+		info += "Nome do posto: " + p.getName() + "\n";
+		info += "Latitude: " + p.getLat() + "\n";
+		info += "Longitude: " + p.getLonge() + "\n";
+		info += "Endereco: " + p.getEndereco() + "\n";
+		info += "Bandeira: " + p.getBandeira() + "\n";
+		info += "Gasolina: R$" + p.getGasolina() + "\n";
+		info += "Alcool: R$" + p.getAlcool() + "\n";
+		info += "Diesel: R$" + p.getDisel() + "\n";
+		info += "Gas: R$" + p.getGas() + "\n";
+		alert.setMessage(info);
+		alert.setButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+
+		        return;
+			}
+		});
+		alert.show();
 		return true;
+	}
+
+	public void mash(OverlayItem overlayitem, Place place) {
+		a.put(overlayitem, place);
 	}
 
 }
