@@ -18,8 +18,6 @@ public class GasStation {
 	
 	@Id
     @NotNull
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-    @SequenceGenerator(name = "seq", sequenceName = "gasstation_id_seq")
     private Integer id; // surrogate key
 	
 	@Column(name = "autorizacao")
@@ -35,46 +33,11 @@ public class GasStation {
 	@Column(name = "nomeFantasia")
 	private String nomeFantasia;
 	
-	@Column(name = "endereco")
-	@NotNull
-	private String endereco;
-	
-	@Column(name = "complemento")
-	private String complemento;
-	
-	@Column(name = "bairro")
-	private String bairro;
-	
-	@Column(name = "municipioUF")
-	@NotNull
-	private String municipioUF;
-	
-	@Column(name = "cep")
-	private String cep;
-	
 	@Column(name = "numeroDespacho")
 	private String numeroDespacho; 
 	
-	@Column(name = "dataPublicacao")
-	private String dataPublicacao;
-	
 	@Column(name = "bandeira")
 	private String bandeira;
-	
-	@Column(name = "tipoPosto")
-	private String tipoPosto;
-	
-	@Column(name = "priceGasoline")
-	private Double priceGasoline;
-	
-	@Column(name = "pricegas")
-	private Double priceGas;
-	
-	@Column(name = "priceDiesel")
-	private Double priceDiesel;
-	
-	@Column(name = "pricealcohol")
-	private Double priceAlcohol;
 	
 	@Column(name = "latitude")
 	private Double latitude;
@@ -82,110 +45,12 @@ public class GasStation {
 	@Column(name = "longitude")
 	private Double longitude;
 	
-	@Column(name = "infracoes")
-	private Integer infracoes;
-	
-	public String toXML() {
-		String name = "";
-		if(nomeFantasia!=null && nomeFantasia.trim().length()>0) name = nomeFantasia;
-		else if(razaoSocial!=null && razaoSocial.trim().length()>0) name = razaoSocial;
-		else name = "CNPJ/CPF: "+cnpjCpf;
-		
-		name = Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}Á«]", "");
-		String band = Normalizer.normalize(bandeira, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}Á«]", "");
-		
-		String nodeId = "<id value=\""+cnpjCpf+"\"></id>";
-		String nodeName = "<name value=\""+name+"\"></name>";
-		String nodeBandeira = "<bandeira value=\""+band+"\"></bandeira>";
-		String nodePriceGasoline = "<priceGasoline value=\""+(priceGasoline!=null?priceGasoline:"")+"\"></priceGasoline>";
-		String nodePriceGas = "<priceGas value=\""+(priceGas!=null?priceGas:"")+"\"></priceGas>";
-		String nodePriceDiesel = "<priceDiesel value=\""+(priceDiesel!=null?priceDiesel:"")+"\"></priceDiesel>";
-		String nodePriceAlcohol = "<priceAlcohol value=\""+(priceAlcohol!=null?priceAlcohol:"")+"\"></priceAlcohol>";
-		
-		//nodeName+"\n"+nodeAddress+"\n"+
-		String data = "\n"+nodeName+"\n"+nodeId+"\n"+nodeBandeira+"\n"+
-						nodePriceGasoline+"\n"+nodePriceGas+"\n"+nodePriceDiesel+"\n"+nodePriceAlcohol+"\n";
-		
-		String xml = "<location latitude=\""+latitude+"\" longitude=\""+longitude+"\" valido=\""+(!(infracoes>0))+"\">"+data+"</location>\n";
-		return xml;
-	}
-	
-	public String toCompleteXML() {
-		String data = "";
-		
-		String nodeAut = "<autorizacao value=\""+normalizeString(autorizacao)+"\"></autorizacao>";
-		String nodeBairro = "<bairro value=\""+normalizeString(bairro)+"\"></bairro>";
-		String nodeBandeira = "<bandeira value=\""+normalizeString(bandeira)+"\"></bandeira>";
-		String nodeCep = "<cep value=\""+normalizeString(cep)+"\"></cep>";
-		String nodeCnpjCpf = "<cnpjCpf value=\""+normalizeString(cnpjCpf)+"\"></cnpjCpf>";
-		String nodeComplemento = "<complemento value=\""+normalizeString(complemento)+"\"></complemento>";
-		String nodeDataPublicacao = "<dataPublicacao value=\""+normalizeString(dataPublicacao)+"\"></dataPublicacao>";
-		String nodeEndereco = "<endereco value=\""+normalizeString(endereco)+"\"></endereco>";
-		String nodeInfracoes = "<infracoes value=\""+normalizeString(""+infracoes)+"\"></infracoes>";
-		String nodeMunicipioUF = "<municipioUF value=\""+normalizeString(municipioUF)+"\"></municipioUF>";
-		String nodeNomeFantasia = "<nomeFantasia value=\""+normalizeString(nomeFantasia)+"\"></nomeFantasia>";
-		String nodeNumeroDespacho = "<numeroDespacho value=\""+normalizeString(numeroDespacho)+"\"></numeroDespacho>";
-		String nodeRazaoSocial = "<razaoSocial value=\""+normalizeString(razaoSocial)+"\"></razaoSocial>";
-		String nodeTipoPosto = "<tipoPosto value=\""+normalizeString(tipoPosto)+"\"></tipoPosto>";
-		
-		String nodePriceGasoline = "<priceGasoline value=\""+(priceGasoline!=null?priceGasoline:"")+"\"></priceGasoline>";
-		String nodePriceGas = "<priceGas value=\""+(priceGas!=null?priceGas:"")+"\"></priceGas>";
-		String nodePriceDiesel = "<priceDiesel value=\""+(priceDiesel!=null?priceDiesel:"")+"\"></priceDiesel>";
-		String nodePriceAlcohol = "<priceAlcohol value=\""+(priceAlcohol!=null?priceAlcohol:"")+"\"></priceAlcohol>";
-		
-		data+="\n"+nodeAut+"\n"+nodeBairro+"\n"+nodeBandeira+"\n"+nodeCep+"\n"+
-				nodeCnpjCpf+"\n"+nodeComplemento+"\n"+nodeDataPublicacao+"\n"+nodeDataPublicacao+"\n"+
-				nodeEndereco+"\n"+nodeInfracoes+"\n"+nodeMunicipioUF+"\n"+nodeNomeFantasia+"\n"+
-				nodeNumeroDespacho+"\n"+nodePriceAlcohol+"\n"+nodePriceDiesel+"\n"+
-				nodePriceGas+"\n"+nodePriceGasoline+"\n"+nodeRazaoSocial+"\n"+nodeTipoPosto+"\n";
-		
-		String xml = "<location latitude=\""+latitude+"\" longitude=\""+longitude+"\" valido=\""+(!(infracoes>0))+"\">"+data+"</location>\n";
-		return xml;
-	}
-	
-	private String normalizeString(String s) {
-		return Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}Á«]", "");
-	}
-	
-	
 	public Integer getId() {
 		return id;
 	}
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Double getPriceGasoline() {
-		return priceGasoline;
-	}
-
-	public void setPriceGasoline(Double priceGasoline) {
-		this.priceGasoline = priceGasoline;
-	}
-
-	public Double getPriceGas() {
-		return priceGas;
-	}
-
-	public void setPriceGas(Double priceGas) {
-		this.priceGas = priceGas;
-	}
-
-	public Double getPriceDiesel() {
-		return priceDiesel;
-	}
-
-	public void setPriceDiesel(Double priceDiesel) {
-		this.priceDiesel = priceDiesel;
-	}
-
-	public Double getPriceAlcohol() {
-		return priceAlcohol;
-	}
-
-	public void setPriceAlcohol(Double priceAlcohol) {
-		this.priceAlcohol = priceAlcohol;
 	}
 
 	public Double getLatitude() {
@@ -236,60 +101,12 @@ public class GasStation {
 		this.nomeFantasia = nomeFantasia;
 	}
 
-	public String getEndereco() {
-		return endereco;
-	}
-
-	public void setEndereco(String endereco) {
-		this.endereco = endereco;
-	}
-
-	public String getComplemento() {
-		return complemento;
-	}
-
-	public void setComplemento(String complemento) {
-		this.complemento = complemento;
-	}
-
-	public String getBairro() {
-		return bairro;
-	}
-
-	public void setBairro(String bairro) {
-		this.bairro = bairro;
-	}
-
-	public String getMunicipioUF() {
-		return municipioUF;
-	}
-
-	public void setMunicipioUF(String municipioUF) {
-		this.municipioUF = municipioUF;
-	}
-
-	public String getCep() {
-		return cep;
-	}
-
-	public void setCep(String cep) {
-		this.cep = cep;
-	}
-
 	public String getNumeroDespacho() {
 		return numeroDespacho;
 	}
 
 	public void setNumeroDespacho(String numeroDespacho) {
 		this.numeroDespacho = numeroDespacho;
-	}
-
-	public String getDataPublicacao() {
-		return dataPublicacao;
-	}
-
-	public void setDataPublicacao(String dataPublicacao) {
-		this.dataPublicacao = dataPublicacao;
 	}
 
 	public String getBandeira() {
@@ -300,25 +117,4 @@ public class GasStation {
 		this.bandeira = bandeira;
 	}
 
-	public String getTipoPosto() {
-		return tipoPosto;
-	}
-
-	public void setTipoPosto(String tipoPosto) {
-		this.tipoPosto = tipoPosto;
-	}
-
-	public String getAddressForGMaps() {
-		String address = this.endereco+"+"+this.complemento+"+"+this.cep+"+"+this.bairro+"+"+this.municipioUF+"+Brasil";
-		return address.replace(" ", "+");
-	}
-
-	public Integer getInfracoes() {
-		return infracoes;
-	}
-
-	public void setInfracoes(Integer infracoes) {
-		this.infracoes = infracoes;
-	}
-	
 }

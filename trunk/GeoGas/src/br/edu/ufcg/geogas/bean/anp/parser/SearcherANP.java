@@ -82,14 +82,9 @@ public class SearcherANP {
 		String razaoSocial = "";
 		String nomeFantasia = "";
 		String endereco = "";
-		String complemento = "";
-		String bairro = "";
 		String municipioUF = "";
-		String cep = "";
 		String numeroDespacho = ""; 
-		String dataPublicacao = "";
 		String bandeira = "";
-		String tipoPosto = "";
 		
 		try{
 			
@@ -122,22 +117,18 @@ public class SearcherANP {
 			if(aux!=null) autorizacao = aux.replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/"); 
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_BAIRRO, allLines);
-			if(aux!=null) bairro = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/");
-			
+
 			aux = getResultValue(ConstantsTagsANP.RESULT_BANDEIRA, allLines);
 			if(aux!=null) bandeira = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/"); 
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_CEP, allLines);
-			if(aux!=null) cep = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/");
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_COMPLEMENTO_END, allLines);
-			if(aux!=null) complemento = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/");
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_CPF_CNPJ, allLines);
 			if(aux!=null) cnpjCpf = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/"); 
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_DATA_PUBLICACAO, allLines);
-			if(aux!=null) dataPublicacao = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/");
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_ENDERECO, allLines);
 			if(aux!=null) endereco = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/"); 
@@ -155,21 +146,13 @@ public class SearcherANP {
 			if(aux!=null) razaoSocial = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/");
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_TIPO_POSTO, allLines);
-			if(aux!=null) tipoPosto = aux.trim().replace("&nbsp;", "").replace("\'", "\'\'").replace("\\", "/"); 
 			
 			GasStation posto = new GasStation();
 			posto.setAutorizacao(autorizacao);
-			posto.setBairro(bairro);
 			posto.setBandeira(bandeira);
-			posto.setCep(cep);
-			posto.setComplemento(complemento);
-			posto.setDataPublicacao(dataPublicacao);
-			posto.setEndereco(endereco);
-			posto.setMunicipioUF(municipioUF);
 			posto.setNomeFantasia(nomeFantasia);
 			posto.setNumeroDespacho(numeroDespacho);
 			posto.setRazaoSocial(razaoSocial);
-			posto.setTipoPosto(tipoPosto);
 			
 			if(cnpjCpf!=null && cnpjCpf.length()>0 && endereco!=null && endereco.length()>0 && municipioUF!=null && municipioUF.length()>0){
 				posto.setCnpjCpf(cnpjCpf);
@@ -179,29 +162,13 @@ public class SearcherANP {
 				if(posto.getAutorizacao()!=null) autorizacao = posto.getAutorizacao();
 				insert+="'"+autorizacao+"',";
 				
-				if(posto.getBairro()!=null) bairro = posto.getBairro();
-				insert+="'"+bairro+"',";
 				
 				if(posto.getBandeira()!=null) bandeira = posto.getBandeira();
 				insert+="'"+bandeira+"',";
 				
-				if(posto.getCep()!=null) cep = posto.getCep();
-				insert+="'"+cep+"',";
 				
 				if(posto.getCnpjCpf()!=null) cnpjCpf = posto.getCnpjCpf();
 				insert+="'"+cnpjCpf+"',";
-				
-				if(posto.getComplemento()!=null) complemento = posto.getComplemento();
-				insert+="'"+complemento+"',";
-				
-				if(posto.getDataPublicacao()!=null) dataPublicacao = posto.getDataPublicacao();
-				insert+="'"+dataPublicacao+"',";
-				
-				if(posto.getEndereco()!=null) endereco = posto.getEndereco();
-				insert+="'"+endereco+"',";
-				
-				if(posto.getMunicipioUF()!=null) municipioUF = posto.getMunicipioUF();
-				insert+="'"+municipioUF+"',";
 				
 				if(posto.getNomeFantasia()!=null) nomeFantasia = posto.getNomeFantasia();
 				insert+="'"+nomeFantasia+"',";
@@ -211,9 +178,6 @@ public class SearcherANP {
 				
 				if(posto.getRazaoSocial()!=null) razaoSocial = posto.getRazaoSocial();
 				insert+="'"+razaoSocial+"',";
-				
-				if(posto.getTipoPosto()!=null) tipoPosto = posto.getTipoPosto();
-				insert+="'"+tipoPosto+"')";
 				
 				System.out.println(insert);
 			}
