@@ -60,7 +60,7 @@ public class PricesANP {
 		
 		URL url;
 		
-		out:for (String estado : this.estados) {
+		for (String estado : this.estados) {
 			for (String comb : this.combs) {
 				try {
 					if(comb.indexOf("GLP")<0){
