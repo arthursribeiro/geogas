@@ -15,7 +15,7 @@ public class GeocodingGMaps {
 			ArrayList<String> updates = new ArrayList<String>();
 			for (GasStation gasStation : postosEstado) {
 				String url = ConstantsTagsANP.URL_GEOCODING_GOOGLE_MAPS;
-				url+="&address="+gasStation.getAddressForGMaps();
+//				url+="&address="+gasStation.getAddressForGMaps();
 				URL geocoding = new URL(url);
 				BufferedReader in = new BufferedReader(
 						new InputStreamReader(

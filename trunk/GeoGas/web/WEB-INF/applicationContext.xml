@@ -71,13 +71,21 @@
             </props>
         </property>
     </bean>
-    
-    <bean id="dataSourceGeoGas"
+   
+   <!-- <bean id="dataSourceGeoGas"
         class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 	   <property name="driverClassName" value="org.postgresql.Driver" />
 	   <property name="url" value="jdbc:postgresql://150.165.75.171:5432/geogas" />
 	   <property name="username" value="sg" />
 	   <property name="password" value="smartgathering" />
+    </bean> --> 
+    
+    <bean id="dataSourceSG"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	   <property name="driverClassName" value="org.postgresql.Driver" />
+	   <property name="url" value="jdbc:postgresql://localhost:5432/geogas" />
+	   <property name="username" value="postgres" />
+	   <property name="password" value="admin" />
     </bean>
 	
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
