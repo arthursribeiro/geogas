@@ -80,7 +80,7 @@
 	   <property name="password" value="smartgathering" />
     </bean> --> 
     
-    <bean id="dataSourceSG"
+    <bean id="dataSourceGeoGas"
         class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 	   <property name="driverClassName" value="org.postgresql.Driver" />
 	   <property name="url" value="jdbc:postgresql://localhost:5432/geogas" />

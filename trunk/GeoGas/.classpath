@@ -114,5 +114,13 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jxl.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/pdfbox-1.5.0.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/fontbox-1.0.0.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/cfgatewayadapter.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/flex-messaging-common.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/flex-messaging-core.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/flex-messaging-opt.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/flex-messaging-proxy.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/flex-messaging-remoting.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/flex-rds-server.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/xalan.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
