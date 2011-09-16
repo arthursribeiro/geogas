@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			private function OlaMundo():void {
+				ro.olaJava.send("Mário");
+			}
+			protected function ro_resultHandler(event:ResultEvent):void {
+				// TODO Auto-generated method stub
+				Alert.show("res: "+event.result.toString());
+			}
+			protected function ro_faultHandler(event:FaultEvent):void {
+				// TODO Auto-generated method stub
+				Alert.show("Error : "+event.toString())
+			}
+		]]>
+	</fx:Script>
+	<s:Button x="95" y="82" label="Ola Java" click="OlaMundo()"/>
+</s:Application>
