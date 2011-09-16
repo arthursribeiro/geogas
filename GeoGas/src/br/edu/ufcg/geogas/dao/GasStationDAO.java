@@ -14,7 +14,7 @@ import javax.persistence.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.edu.ufcg.geogas.bean.GasStation;
+import br.edu.ufcg.geogas.bean.PostoCombustivel;
 
 public class GasStationDAO {
 	
@@ -22,11 +22,11 @@ public class GasStationDAO {
 	
 	private final Integer SRID = 29100;
 	
-	private final Class<GasStation> CLASSE = GasStation.class;
+	private final Class<PostoCombustivel> CLASSE = PostoCombustivel.class;
 
 	
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void saveGasStation(GasStation gasStation) {
+	public void saveGasStation(PostoCombustivel gasStation) {
 		try{
 			if(getEntityManager().contains(gasStation)){
 				getEntityManager().merge(gasStation);
@@ -44,32 +44,32 @@ public class GasStationDAO {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-	public GasStation getGasStationById(Integer intId) {
-		GasStation v = null;
+	public PostoCombustivel getGasStationById(Integer intId) {
+		PostoCombustivel v = null;
 		v = getEntityManager().find(CLASSE,intId);
 		return v;
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void updateGasStation(GasStation v) {
+	public void updateGasStation(PostoCombustivel v) {
 		getEntityManager().merge(v);
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void deleteGasStationById(Long id){
-		GasStation v = getEntityManager().find(CLASSE, id);
+		PostoCombustivel v = getEntityManager().find(CLASSE, id);
 		getEntityManager().remove(v);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-	public ArrayList<GasStation> getAllGasStations() {
-		ArrayList<GasStation> postos = new ArrayList<GasStation>();
+	public ArrayList<PostoCombustivel> getAllGasStations() {
+		ArrayList<PostoCombustivel> postos = new ArrayList<PostoCombustivel>();
 		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g WHERE geom IS NOT NULL");
 		List<Object> stations = q.getResultList();
 		for (Object station : stations) {
-			if(station instanceof GasStation){
-				postos.add((GasStation)station);
+			if(station instanceof PostoCombustivel){
+				postos.add((PostoCombustivel)station);
 			}
 		}
 		return postos;
@@ -86,14 +86,14 @@ public class GasStationDAO {
     
     //SELECT * FROM GasStation WHERE INTERSECTS(geom,GeomFromText('POLYGON(("+longMin+" "+latMin+","+longMin+" "+latMax+","+longMax+" "+latMax+","+longMax+" "+latMin+","+longMin+" "+latMin"+"))',4326))
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-	public ArrayList<GasStation> getAllGasStationsByBBox(String longMin,String latMin,String longMax,String latMax) {
+	public ArrayList<PostoCombustivel> getAllGasStationsByBBox(String longMin,String latMin,String longMax,String latMax) {
 		String sql = "SELECT * FROM GasStation g WHERE INTERSECTS(geom,GeomFromText('POLYGON(("+longMin+" "+latMin+","+longMin+" "+latMax+","+longMax+" "+latMax+","+longMax+" "+latMin+","+longMin+" "+latMin+"))',4326))";
-		ArrayList<GasStation> postos = new ArrayList<GasStation>();
-		Query q = getEntityManager().createNativeQuery(sql, GasStation.class);
+		ArrayList<PostoCombustivel> postos = new ArrayList<PostoCombustivel>();
+		Query q = getEntityManager().createNativeQuery(sql, PostoCombustivel.class);
 		List<Object> stations = q.getResultList();
 		for (Object station : stations) {
-			if(station instanceof GasStation){
-				postos.add((GasStation)station);
+			if(station instanceof PostoCombustivel){
+				postos.add((PostoCombustivel)station);
 			}
 		}
 		return postos;
@@ -102,14 +102,14 @@ public class GasStationDAO {
     
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-	public ArrayList<GasStation> getAllGasStationsByState(String estado) {
+	public ArrayList<PostoCombustivel> getAllGasStationsByState(String estado) {
 		String sql = "SELECT g FROM GasStation g WHERE g.municipioUF LIKE '%"+estado+"'";
-		ArrayList<GasStation> postos = new ArrayList<GasStation>();
+		ArrayList<PostoCombustivel> postos = new ArrayList<PostoCombustivel>();
 		Query q = getEntityManager().createQuery(sql);
 		List<Object> stations = q.getResultList();
 		for (Object station : stations) {
-			if(station instanceof GasStation){
-				postos.add((GasStation)station);
+			if(station instanceof PostoCombustivel){
+				postos.add((PostoCombustivel)station);
 			}
 		}
 		return postos;
@@ -153,26 +153,26 @@ public class GasStationDAO {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-	public ArrayList<GasStation> getAllGasStationsByCity(String city,
+	public ArrayList<PostoCombustivel> getAllGasStationsByCity(String city,
 			String state) {
-		ArrayList<GasStation> postos = new ArrayList<GasStation>();
+		ArrayList<PostoCombustivel> postos = new ArrayList<PostoCombustivel>();
 		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g WHERE geom IS NOT NULL AND municipioUF LIKE '"+city+"_"+state+"'");
 		List<Object> stations = q.getResultList();
 		for (Object station : stations) {
-			if(station instanceof GasStation){
-				postos.add((GasStation)station);
+			if(station instanceof PostoCombustivel){
+				postos.add((PostoCombustivel)station);
 			}
 		}
 		return postos;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-	public GasStation getGasStationByCnpj(String id) {
+	public PostoCombustivel getGasStationByCnpj(String id) {
 		Query q = getEntityManager().createQuery("SELECT g FROM GasStation g WHERE cnpjcpf = '"+id+"'");
 		List<Object> stations = q.getResultList();
 		for (Object station : stations) {
-			if(station instanceof GasStation){
-				return (GasStation) station;
+			if(station instanceof PostoCombustivel){
+				return (PostoCombustivel) station;
 			}
 		}
 		return null;

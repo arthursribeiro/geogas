@@ -1,30 +1,26 @@
 package br.edu.ufcg.geogas.bean;
 
-import java.text.Normalizer;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 
 @Entity
-@Table(name = "GasStation")
-public class GasStation {
+@Table(name = "PostoCombustivel")
+public class PostoCombustivel {
 	
 	@Id
     @NotNull
-    private Integer id; // surrogate key
+    @Column(name="id_posto_combustivel")
+    private Integer id_posto_combustivel; // surrogate key
 	
 	@Column(name = "autorizacao")
 	private String autorizacao;
 	
-	@Column(name = "cnpjCpf")
 	@NotNull
+	@Column(name = "cnpjCpf")
 	private String cnpjCpf;
 	
 	@Column(name = "razaoSocial")
@@ -46,11 +42,11 @@ public class GasStation {
 	private Double longitude;
 	
 	public Integer getId() {
-		return id;
+		return id_posto_combustivel;
 	}
 
 	public void setId(Integer id) {
-		this.id = id;
+		this.id_posto_combustivel = id;
 	}
 
 	public Double getLatitude() {

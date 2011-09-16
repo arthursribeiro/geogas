@@ -5,15 +5,15 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
-import br.edu.ufcg.geogas.bean.GasStation;
+import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.anp.parser.ConstantsTagsANP;
 
 public class GeocodingGMaps {
 	
-	public ArrayList<String> geocodingEstado(ArrayList<GasStation> postosEstado) {
+	public ArrayList<String> geocodingEstado(ArrayList<PostoCombustivel> postosEstado) {
 		try{
 			ArrayList<String> updates = new ArrayList<String>();
-			for (GasStation gasStation : postosEstado) {
+			for (PostoCombustivel gasStation : postosEstado) {
 				String url = ConstantsTagsANP.URL_GEOCODING_GOOGLE_MAPS;
 //				url+="&address="+gasStation.getAddressForGMaps();
 				URL geocoding = new URL(url);

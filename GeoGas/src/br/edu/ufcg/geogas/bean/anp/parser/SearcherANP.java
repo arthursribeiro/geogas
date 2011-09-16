@@ -9,7 +9,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import br.edu.ufcg.geogas.bean.GasStation;
+import br.edu.ufcg.geogas.bean.PostoCombustivel;
 
 
 public class SearcherANP {
@@ -147,7 +147,7 @@ public class SearcherANP {
 			
 			aux = getResultValue(ConstantsTagsANP.RESULT_TIPO_POSTO, allLines);
 			
-			GasStation posto = new GasStation();
+			PostoCombustivel posto = new PostoCombustivel();
 			posto.setAutorizacao(autorizacao);
 			posto.setBandeira(bandeira);
 			posto.setNomeFantasia(nomeFantasia);

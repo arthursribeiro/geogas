@@ -62,24 +62,6 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("</head>\r\n");
       out.write("<body >\r\n");
       out.write("Welcome to GeoGas!\r\n");
-      out.write("\r\n");
-      out.write("<form id='frmAberto' name='frmAberto' action=\"http://www.anp.gov.br/preco/prc/Resumo_Por_Estado_Municipio.asp\">\r\n");
-      out.write("\r\n");
-      out.write("<input type=\"hidden\" name=\"selSemana\" value=\"626*De 12/06/2011 a 18/06/2011\">\r\n");
-      out.write("\r\n");
-      out.write("<input type=hidden name=desc_Semana value='de 12/06/2011 a 18/06/2011'>\r\n");
-      out.write("\r\n");
-      out.write("<input type=hidden name=cod_Semana value='626'>\r\n");
-      out.write("\r\n");
-      out.write("<input type=hidden name=tipo value='1'> \r\n");
-      out.write("\r\n");
-      out.write("<input type=hidden name=Cod_Combustivel value=\"\">    \r\n");
-      out.write("\t\r\n");
-      out.write("      <select name=selEstado style='width:150px;'><option selected value='AC*ACRE'>Acre</option><option value='AL*ALAGOAS'>Alagoas</option><option value='AP*AMAPÁ'>Amapá</option><option value='AM*AMAZONAS'>Amazonas</option><option value='BA*BAHIA'>Bahia</option><option value='CE*CEARÁ'>Ceará</option><option value='DF*DISTRITO@FEDERAL'>Distrito Federal</option><option value='ES*ESPÍRITO@SANTO'>Espírito Santo</option><option value='GO*GOIÁS'>Goiás</option><option value='MA*MARANHÃO'>Maranhão</option><option value='MT*MATO@GROSSO'>Mato Grosso</option><option value='MS*MATO@GROSSO@DO@SUL'>Mato Grosso do Sul</option><option value='MG*MINAS@GERAIS'>Minas Gerais</option><option value='PR*PARANÁ'>Paraná</option><option value='PB*PARAÍBA'>Paraíba</option><option value='PA*PARÁ'>Pará</option><option value='PE*PERNAMBUCO'>Pernambuco</option><option value='PI*PIAUÍ'>Piauí</option><option value='RJ*RIO@DE@JANEIRO'>Rio de Janeiro</option><option value='RN*RIO@GRANDE@DO@NORTE'>Rio Grande do Norte</option><option value='RS*RIO@GRANDE@DO@SUL'>Rio Grande do Sul</option><option value='RO*RONDÔNIA'>Rondônia</option><option value='RR*RORAIMA'>Roraima</option><option value='SC*SANTA@CATARINA'>Santa Catarina</option><option value='SE*SERGIPE'>Sergipe</option><option value='SP*SÃO@PAULO'>São Paulo</option><option value='TO*TOCANTINS'>Tocantins</option></select>\r\n");
-      out.write("\t\t<select name=selCombustivel style='width:150px;'><option selected value='487*Gasolina'>Gasolina</option><option value='643*Etanol'>Etanol</option><option value='476*GNV'>GNV</option><option value='532*Diesel'>Diesel</option><option value='462*GLP'>GLP</option></select>   \r\n");
-      out.write("\t\t\t\t<button id=image1 name=image1 type=\"submit\" >Processar</button>\r\n");
-      out.write("</form>\r\n");
-      out.write("\r\n");
       out.write("</body>\r\n");
       out.write("</html>");
     } catch (Throwable t) {
