@@ -3,15 +3,18 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*">
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<mx:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
 	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
+			import classes.model.Entidade;
+			
 			import com.google.maps.Color;
+			import com.google.maps.InfoWindowOptions;
 			import com.google.maps.LatLng;
 			import com.google.maps.MapEvent;
+			import com.google.maps.MapMouseEvent;
 			import com.google.maps.MapType;
 			import com.google.maps.MapTypeOptions;
 			import com.google.maps.controls.MapTypeControl;
@@ -21,8 +24,10 @@
 			import com.google.maps.controls.PositionControl;
 			import com.google.maps.controls.ScaleControl;
 			import com.google.maps.controls.ZoomControl;
+			import com.google.maps.overlays.Marker;
 			
 			import mx.controls.Alert;
+			import mx.controls.Label;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
@@ -35,31 +40,52 @@
 				this.map.addControl(new ScaleControl());
 				this.map.addControl(new OverviewMapControl());
 				this.map.setCenter(new LatLng(40.736072,-73.992062), 14, MapType.NORMAL_MAP_TYPE);
+				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 			}
 			
 			private function OlaMundo():void {
 				ro.olaJava.send("Mário");
 			}
 			
+			public function mapClicked(event:MapMouseEvent):void{
+				if(map){
+					var latLng:LatLng = event.latLng;
+					var marker:Entidade = new Entidade(latLng);
+					addMarker(marker);
+				}
+			}
+			
+			public function addMarker(marker:Marker):void{
+				marker.addEventListener(MapMouseEvent.CLICK,markerClicked);
+				map.addOverlay(marker);
+			}
+			
+			public function markerClicked(event:MapEvent):void{
+				var marker:Entidade = event.target as Entidade;
+				marker.openInfoWindow();
+			}
 			
 			protected function ro_resultHandler(event:ResultEvent):void {
-				// TODO Auto-generated method stub
 				Alert.show("res: "+event.result.toString());
 			}
 			protected function ro_faultHandler(event:FaultEvent):void {
-				// TODO Auto-generated method stub
 				Alert.show("Error : "+event.toString());
 			}
 		]]>
 	</fx:Script>
-	<s:HGroup x="10" y="10" width="100%" height="100%">
-		<s:BorderContainer width="20%" height="100%">
-			<s:Button x="10" y="10" label="Ola Java" click="OlaMundo()"/>
-		</s:BorderContainer>
-		<s:BorderContainer width="80%" height="100%" id="mapC">
-			<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
-					  key="ABQIAAAArTOg12ENOoBN3O9kedACIxRkOv5Oc89yJ4sUflDi_EcLCzRIOBTMHpzPf7PADkHpU0-4GpQuUVpflw"/>
-		</s:BorderContainer>
-	</s:HGroup>
-	
+	<mx:TabNavigator x="0" y="0" width="100%" height="100%">
+		<s:NavigatorContent width="100%" height="100%" label="Map">
+			<s:HGroup x="0" y="0" width="100%" height="100%">
+				<s:BorderContainer width="20%" height="100%">
+					<s:Button x="10" y="10" label="Ola Java" click="OlaMundo()"/>
+				</s:BorderContainer>
+				<s:BorderContainer width="80%" height="100%" id="mapC">
+					<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
+							  key="ABQIAAAArTOg12ENOoBN3O9kedACIxRkOv5Oc89yJ4sUflDi_EcLCzRIOBTMHpzPf7PADkHpU0-4GpQuUVpflw"/>
+				</s:BorderContainer>
+			</s:HGroup>
+		</s:NavigatorContent>
+		<s:NavigatorContent width="100%" height="100%" label="Search">
+		</s:NavigatorContent>
+	</mx:TabNavigator>
 </s:Application>
