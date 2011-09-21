@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="252" height="246">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="252" height="246" creationComplete="init()">
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
@@ -20,52 +20,61 @@
 			private var otherTabs:Dictionary; // String (TabName) -> Dictionary[String(Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)] ]
 			private var _id:int;
 			
-			public static function getInstance(id:int,data:Dictionary):GeoGasInfoWindow{
+			public static function getInstance(id:int,data:Dictionary,othTabs:Dictionary = null):GeoGasInfoWindow{
 				var ret:GeoGasInfoWindow = new GeoGasInfoWindow();
 				ret._id = id;
-				ret.initDefaultData(data);
+				ret.defaultTab = data;
+				ret.otherTabs = othTabs
 				
 				return ret;
 			}
 			
-			private function initOtherTabs(otherTabs:Dictionary):void{
-				this.otherTabs = otherTabs;
-				for(var tab:String in this.otherTabs){
-					var navCont:NavigatorContent = new NavigatorContent();
-					navCont.label = tab;
-					navCont.width = basic.width;
-					navCont.height = basic.height;
-					
-					var form:Form = new Form();
-					form.width = basicForm.width;
-					form.height = basicForm.height;
-					form.x = basicForm.x;
-					form.y = basicForm.y;
-					
-					navCont.addChild(form);
-					
-					loadData(otherTabs,form);
-					
-					tabs.addChild(navCont);
+			public function init():void{
+				initDefaultData();
+				initOtherTabs();
+			}
+			
+			public function initOtherTabs():void{
+				if(this.otherTabs){
+					for(var tab:String in this.otherTabs){
+						var navCont:NavigatorContent = new NavigatorContent();
+						navCont.label = tab;
+						navCont.width = basic.width;
+						navCont.height = basic.height;
+						
+						var form:Form = new Form();
+						form.width = basicForm.width;
+						form.height = basicForm.height;
+						form.x = basicForm.x;
+						form.y = basicForm.y;
+						
+						navCont.addElement(form);
+						
+						loadData(otherTabs[tab],form);
+						
+						tabs.addElement(navCont);
+					}
 				}
 			}
 						
-			private function initDefaultData(data:Dictionary):void{
-				this.defaultTab = data;
-				loadData(data,basicForm);
+			private function initDefaultData():void{
+				if(this.defaultTab && basicForm){
+					loadData(defaultTab,basicForm);
+				}
 			}
 			
 			private function loadData(data:Dictionary, form:Form):void{
-				for(var editable:String in this.defaultTab){
-					for(var key:String in this.defaultTab[editable]){
+				for(var editable:String in data){
+					var dic:Dictionary = data[editable];
+					for(var key:String in dic){
 						var item:FormItem = new FormItem();
 						item.label = key;
 						var itemInput:TextInput = new TextInput();
-						itemInput.text = data[key];
+						itemInput.text = dic[key];
 						itemInput.editable = (editable.toUpperCase() == Constants.EDITABLE.toUpperCase());
-						item.addChild(itemInput);
+						item.addElement(itemInput);
 						
-						form.addChild(item);
+						form.addElement(item);
 					}
 				}
 			}
