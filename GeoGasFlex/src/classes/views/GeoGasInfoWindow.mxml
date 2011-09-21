@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="252" height="246">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import classes.Constants;
+			
+			import mx.containers.FormItem;
+			import mx.controls.TextInput;
+			
+			private var defaultTab:Dictionary; // String (Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)]
+			private var otherTabs:Dictionary; // String (TabName) -> Dictionary[String(Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)] ]
+			private var _id:int;
+			
+			public static function getInstance(id:int,data:Dictionary):GeoGasInfoWindow{
+				var ret:GeoGasInfoWindow = new GeoGasInfoWindow();
+				ret._id = id;
+				ret.initDefaultData(data);
+				
+				return ret;
+			}
+			
+			private function initOtherTabs(otherTabs:Dictionary):void{
+				this.otherTabs = otherTabs;
+				for(var tab:String in this.otherTabs){
+					var navCont:NavigatorContent = new NavigatorContent();
+					navCont.label = tab;
+					navCont.width = basic.width;
+					navCont.height = basic.height;
+					
+					var form:Form = new Form();
+					form.width = basicForm.width;
+					form.height = basicForm.height;
+					form.x = basicForm.x;
+					form.y = basicForm.y;
+					
+					navCont.addChild(form);
+					
+					loadData(otherTabs,form);
+					
+					tabs.addChild(navCont);
+				}
+			}
+						
+			private function initDefaultData(data:Dictionary):void{
+				this.defaultTab = data;
+				loadData(data,basicForm);
+			}
+			
+			private function loadData(data:Dictionary, form:Form):void{
+				for(var editable:String in this.defaultTab){
+					for(var key:String in this.defaultTab[editable]){
+						var item:FormItem = new FormItem();
+						item.label = key;
+						var itemInput:TextInput = new TextInput();
+						itemInput.text = data[key];
+						itemInput.editable = (editable.toUpperCase() == Constants.EDITABLE.toUpperCase());
+						item.addChild(itemInput);
+						
+						form.addChild(item);
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:TabNavigator width="252" height="246" id="tabs">
+		<s:NavigatorContent width="100%" height="100%" label="Information" id="basic">
+			<s:Form x="0" y="0" width="100%" height="100%" id="basicForm">
+			</s:Form>
+		</s:NavigatorContent>
+	</mx:TabNavigator>
+</s:Group>
