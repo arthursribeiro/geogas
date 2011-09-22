@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="182" height="246" creationComplete="init()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:CheckBox x="10" y="32" label="Bandeira" fontSize="11" id="bandCheck" change="changeBandInput()"/>
+	<s:TextInput x="45" y="57" width="118" fontSize="11" id="bandInput"/>
+	<s:CheckBox x="10" y="86" label="Raio (em KM)" fontSize="11" id="raioCheck" change="changeRaioInput()"/>
+	<s:TextInput x="46" y="111" width="119" fontSize="11" id="raioInput" restrict=".0-9"/>
+	<s:TextInput x="46" y="165" width="118" fontSize="11" id="precoInput" restrict=".0-9"/>
+	<s:CheckBox x="10" y="140" label="Preço Máximo" fontSize="11" id="precoCheck" change="changePrecoInput()"/>
+	<s:RichText x="10" y="10" text="Pesquisar" fontSize="14" color="#3C1CDE" fontWeight="bold"/>
+	<s:Button x="46" y="211" label="Submeter" id="botaoSubmeter" click="submeter()"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import classes.events.EventoPesquisa;
+			
+			import mx.controls.Alert;
+			
+			private var dispatcher:IEventDispatcher = new EventDispatcher();
+			
+			public function init():void {
+				bandInput.enabled = bandCheck.selected;
+				raioInput.enabled = raioCheck.selected;
+				precoInput.enabled = precoCheck.selected;
+				ativarBotao();
+			}
+			
+			public function changeBandInput():void {
+				bandInput.enabled = bandCheck.selected;
+				ativarBotao();
+			}
+			
+			public function changeRaioInput():void {
+				raioInput.enabled = raioCheck.selected;
+				ativarBotao();
+			}
+			
+			public function changePrecoInput():void {
+				precoInput.enabled = precoCheck.selected;
+				ativarBotao();
+			}
+			
+			public function ativarBotao():void {
+				if(precoCheck.selected || raioCheck.selected || bandCheck.selected) {
+					botaoSubmeter.enabled = true;
+				} else {
+					botaoSubmeter.enabled = false;
+				}
+			}
+			
+			public function submeter():void {
+				if(precoCheck.selected && precoInput.text == "") {
+					Alert.show("Preencha o campo de preço!", "Erro!");
+				} else if (bandCheck.selected && bandInput.text == "") {
+					Alert.show("Preencha o campo de bandeira!", "Erro!");
+				} else if (raioCheck.selected && raioInput.text == "") {
+					Alert.show("Preencha o campo de raio!", "Erro!");
+				} else {
+					var preco:Number = null;
+					var raio:Number = null;
+					var bandeira:String = null;
+					if(precoCheck.selected) {
+						preco = Number(precoInput.text);
+					}
+					if(raioCheck.selected) {
+						raio = Number(raioInput.text);
+					}
+					if(bandCheck.selected) {
+						bandeira = bandInput.text;
+					}
+					this.dispatchEvent(new EventoPesquisa(bandeira, raio, preco));
+				}
+			}
+			
+		]]>
+	</fx:Script>
+</s:Group>
