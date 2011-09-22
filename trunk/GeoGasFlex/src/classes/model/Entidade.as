@@ -9,6 +9,8 @@ package classes.model
 	import com.google.maps.overlays.MarkerOptions;
 	
 	import flash.utils.Dictionary;
+	
+	import mx.controls.Image;
 
 	public class Entidade extends Marker
 	{
@@ -21,11 +23,20 @@ package classes.model
 		
 		public function Entidade(latLong:LatLng, id:int = 0, data:Dictionary = null, otherData:Dictionary=null, options:MarkerOptions = null)
 		{
+			if(!options){
+				options = new MarkerOptions();
+			}
+			var img:Image = new Image();
+			img.source = "http://localhost:8080/geogas/imgs/posto.jpg";
+			img.width = 20;
+			img.height = 35;
+			options.icon = img;
 			super(latLong,options);
 			this._id = id;
 			this._data = data;
 			this._otherData = otherData;
 			this.infoOpt = getInfoWindowOptions();
+			
 		}
 		
 		public function get data():Dictionary{
@@ -48,7 +59,6 @@ package classes.model
 			if(!this.infoOpt){
 				this.infoOpt = new InfoWindowOptions({drawDefaultFrame:true});
 				this.infoOpt.hasCloseButton = true;
-				
 				var infoContent:GeoGasInfoWindow = GeoGasInfoWindow.getInstance(this.id,data,otherData);
 //				
 				this.infoOpt.customContent = infoContent;
