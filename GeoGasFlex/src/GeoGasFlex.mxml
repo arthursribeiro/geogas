@@ -3,7 +3,7 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*">
 	<fx:Declarations>
-		<mx:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
+		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -58,18 +58,18 @@
 					defaultData["editable"] = defaultFormEdit;
 					
 					var defaultForm:Dictionary = new Dictionary();
-					defaultForm["Label1"] = "Zé Mané";
-					defaultForm["Label2"] = "sdgsdg";
-					defaultForm["Label3"] = "235";
-					defaultForm["Label4"] = "sdfdf";
-					defaultForm["Label5"] = "3446";
+					defaultForm["razaosocial"] = "Zé Mané";
+					defaultForm["nome"] = "sdgsdg";
+					defaultForm["endereco"] = "235";
+					defaultForm["cnpjcpf"] = "sdfdf";
+					defaultForm["data_criacao"] = "3446";
 					
 					defaultData["notEditable"] = defaultForm;
 					
 					var otherTabs:Dictionary = new Dictionary();
 					
-					otherTabs["Tab 2"] = defaultData;
-					otherTabs["Tab 3"] = defaultData;
+					otherTabs["postocombustivel"] = defaultData;
+					otherTabs["tipocombustivel"] = defaultData;
 					
 					var marker:Entidade = new Entidade(latLng,1,defaultData,otherTabs);
 					
@@ -85,7 +85,7 @@
 			
 			public function markerClicked(event:MapEvent):void{
 				var marker:Entidade = event.target as Entidade;
-				marker.openInfoWindow();
+				marker.openInfoWindow(marker.getInfoWindowOptions());
 			}
 			
 			protected function ro_resultHandler(event:ResultEvent):void {
@@ -100,7 +100,7 @@
 		<s:NavigatorContent width="100%" height="100%" label="Map">
 			<s:HGroup x="0" y="0" width="100%" height="100%">
 				<s:BorderContainer width="20%" height="100%">
-					<s:Button x="10" y="10" label="Ola Java" click="OlaMundo()"/>
+					<s:Button x="59" y="189" label="Ola Java" click="OlaMundo()"/>
 				</s:BorderContainer>
 				<s:BorderContainer width="80%" height="100%" id="mapC">
 					<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
