@@ -68,6 +68,7 @@
 			
 			private var preco:Number = 0;
 			private var bandeira:String;
+			private var raio:Number = 0;
 			private var aplicarfiltros:Boolean = false;
 			
 			private function init():void{
@@ -88,7 +89,7 @@
 				trace("bla");
 				this.aplicarfiltros = true;
 				this.preco = ev.preco;
-				var raio:Number = ev.raio;
+				this.raio = ev.raio;
 				this.bandeira = ev.bandeira;
 				requisitar();
 			}
@@ -168,7 +169,12 @@
 			
 			private function getMapBBox():String{
 				var bbox:LatLngBounds = map.getLatLngBounds();
-				var bboxStr:String = bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat();
+				var bboxStr:String;
+				//if(this.aplicarfiltros && this.raio > 0){
+				//	var center:LatLng = bbox.getCenter();
+					//criar a string usando o raio e as coordenadas do mapa.
+				//}
+				bboxStr = bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat();
 				return bboxStr;
 			}
 			
@@ -179,8 +185,7 @@
 				if(this.aplicarfiltros && (this.preco > 0)){
 					var filpreco:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,"pricegasoline").replace(Constants.REPLACE_MIN_VALUE,"0").replace(Constants.REPLACE_MAX_VALUE,preco.toString());
 					filters.concat(filpreco);
-				//}if(this.raio > 0){
-					
+				
 				}if(this.aplicarfiltros && (this.bandeira.length > 0)){
 					var filbandeira:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,"bandeira").replace(Constants.REPLACE_VALUE,this.bandeira);
 					filters.concat(filbandeira);
