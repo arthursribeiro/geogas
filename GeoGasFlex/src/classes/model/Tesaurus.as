@@ -17,6 +17,7 @@ package classes.model
 		public static function getInstance():Tesaurus{
 			if(!singleton){
 				singleton = new Tesaurus();
+				singleton.updateDic();
 			}
 			return singleton;
 		}
