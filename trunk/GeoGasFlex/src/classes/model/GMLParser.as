@@ -6,12 +6,12 @@ package classes.model
 	import mx.collections.XMLListCollection;
 	import mx.rpc.http.HTTPService;
 	
-	public class XMLParseruiui
+	public class GMLParser
 	{
 		var map:Object = new Object();
 		var xml:XML;
 		
-		public function XMLParseruiui(xmlFile:XML)
+		public function GMLParser(xmlFile:XML)
 		{
 			this.xml = xmlFile;
 			this.parser();
