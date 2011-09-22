@@ -66,6 +66,10 @@
 				"<And>"+Constants.REPLACE_FILTERS+"</And>" +
 				"</Filter>";
 			
+			private var preco:Number = 0;
+			private var bandeira:String;
+			private var aplicarfiltros:Boolean = false;
+			
 			private function init():void{
 				Tesaurus.getInstance();
 				this.map.enableScrollWheelZoom();
@@ -81,9 +85,12 @@
 			}
 			
 			private function realizarPesquisa(ev:EventoPesquisa):void {
-				var preco:Number = ev.preco;
+				trace("bla");
+				this.aplicarfiltros = true;
+				this.preco = ev.preco;
 				var raio:Number = ev.raio;
-				var bandeira:String = ev.bandeira;
+				this.bandeira = ev.bandeira;
+				requisitar();
 			}
 			
 			private function updateMap(event:MapMoveEvent):void{
@@ -168,6 +175,16 @@
 			private function requisitar():void {
 				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:entidade_postos&FILTER=";
 				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
+				
+				if(this.aplicarfiltros && (this.preco > 0)){
+					var filpreco:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,"pricegasoline").replace(Constants.REPLACE_MIN_VALUE,"0").replace(Constants.REPLACE_MAX_VALUE,preco.toString());
+					filters.concat(filpreco);
+				//}if(this.raio > 0){
+					
+				}if(this.aplicarfiltros && (this.bandeira.length > 0)){
+					var filbandeira:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,"bandeira").replace(Constants.REPLACE_VALUE,this.bandeira);
+					filters.concat(filbandeira);
+				}
 				
 				ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
 			}
