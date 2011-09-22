@@ -39,7 +39,7 @@
 				this.map.addControl(new NavigationControl());
 				this.map.addControl(new ScaleControl());
 				this.map.addControl(new OverviewMapControl());
-				this.map.setCenter(new LatLng(40.736072,-73.992062), 14, MapType.NORMAL_MAP_TYPE);
+				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
 				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 			}
 			
@@ -49,6 +49,7 @@
 			
 			public function mapClicked(event:MapMouseEvent):void{
 				if(map){
+					map.getLatLngBounds();
 					var latLng:LatLng = event.latLng;
 					var defaultData:Dictionary = new Dictionary();
 					
