@@ -13,8 +13,8 @@ package classes.model
 	public class Entidade extends Marker
 	{
 		
-		private var _data:Dictionary;
-		private var _otherData:Dictionary;
+		private var _data:Dictionary; // String (Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)]
+		private var _otherData:Dictionary; // String (TabName) -> Dictionary[String(Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)] ]
 		private var _id:int;
 		
 		private var infoOpt:InfoWindowOptions;
@@ -44,24 +44,16 @@ package classes.model
 			this._otherData = othDat;
 		}
 		
-		override public function openInfoWindow(arg0:InfoWindowOptions=null, arg1:Boolean=false):IInfoWindow{
-			var bool:Boolean = arg1;
-			if(!this.infoOpt){
-				this.infoOpt = getInfoWindowOptions();
-			}
-			return super.openInfoWindow(this.infoOpt,bool);
-		}
-		
-		private function getInfoWindowOptions():InfoWindowOptions{
+		public function getInfoWindowOptions():InfoWindowOptions{
 			if(!this.infoOpt){
 				this.infoOpt = new InfoWindowOptions({drawDefaultFrame:true});
 				this.infoOpt.hasCloseButton = true;
 				
 				var infoContent:GeoGasInfoWindow = GeoGasInfoWindow.getInstance(this.id,data,otherData);
-				
+//				
 				this.infoOpt.customContent = infoContent;
-				this.infoOpt.width = infoContent.width+20;
-				this.infoOpt.height = infoContent.height+20;
+				this.infoOpt.width = infoContent.width+30;
+				this.infoOpt.height = infoContent.height+30;
 			}
 			
 			return this.infoOpt;
