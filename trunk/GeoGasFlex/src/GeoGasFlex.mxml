@@ -11,6 +11,7 @@
 			import classes.Constants;
 			import classes.model.Entidade;
 			import classes.model.GMLParser;
+			import classes.model.Tesaurus;
 			
 			import com.google.maps.Color;
 			import com.google.maps.InfoWindowOptions;
@@ -32,6 +33,7 @@
 			
 			import flashx.textLayout.formats.Float;
 			
+			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.controls.Label;
 			import mx.rpc.events.FaultEvent;
@@ -39,6 +41,8 @@
 			import mx.utils.URLUtil;
 			
 			import spark.effects.Scale;
+			
+			private var markers:ArrayList = new ArrayList();
 
 			
 			private var bboxFilter:String = "<BBOX>" +
@@ -62,22 +66,32 @@
 				"</Filter>";
 			
 			private function init():void{
+				Tesaurus.getInstance();
 				this.map.enableScrollWheelZoom();
 				this.map.addControl(new MapTypeControl());
 				this.map.addControl(new NavigationControl());
 				this.map.addControl(new ScaleControl());
 				this.map.addControl(new OverviewMapControl());
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
-				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
+//				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
+				requisitar();
 			}
 			
 			private function updateMap(event:MapMoveEvent):void{
-				
+				limparMapa();
+				requisitar();
+			}
+			
+			private function limparMapa():void{
+				for(var i:int = 0; i<markers.length;i++){
+					var marker:Entidade = markers.getItemAt(i) as Entidade;
+					map.removeOverlay(marker);
+				}
+				markers = new ArrayList();
 			}
 			
 			private function OlaMundo():void {
-				requisitar();
 			}
 			
 			public function mapClicked(event:MapMouseEvent):void{
@@ -115,6 +129,7 @@
 			public function addMarker(marker:Entidade):void{
 				marker.addEventListener(MapMouseEvent.CLICK,markerClicked);
 				map.addOverlay(marker);
+				markers.addItem(marker);
 			}
 			
 			public function markerClicked(event:MapEvent):void{
@@ -133,7 +148,7 @@
 			}
 			
 			protected function ro_faultHandler(event:FaultEvent):void {
-				Alert.show("Error : "+event.toString());
+				Alert.show('Ocorreu um erro com o Objeto Remoto, tente novamente mais tarde.');
 			}
 			
 			private function getMapBBox():String{
@@ -193,7 +208,6 @@
 		<s:NavigatorContent width="100%" height="100%" label="Map">
 			<s:HGroup x="0" y="0" width="100%" height="100%">
 				<s:BorderContainer width="20%" height="100%">
-					<s:Button x="59" y="189" label="Ola Java" click="OlaMundo()"/>
 				</s:BorderContainer>
 				<s:BorderContainer width="80%" height="100%" id="mapC">
 					<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
