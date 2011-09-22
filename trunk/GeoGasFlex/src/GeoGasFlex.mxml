@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*">
 	<fx:Declarations>
 		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
 	</fx:Declarations>
@@ -9,6 +9,7 @@
 	<fx:Script>
 		<![CDATA[
 			import classes.Constants;
+			import classes.events.EventoPesquisa;
 			import classes.model.Entidade;
 			import classes.model.GMLParser;
 			import classes.model.Tesaurus;
@@ -43,7 +44,7 @@
 			import spark.effects.Scale;
 			
 			private var markers:ArrayList = new ArrayList();
-
+			
 			
 			private var bboxFilter:String = "<BBOX>" +
 				"<PropertyName>geom</PropertyName>" +
@@ -73,9 +74,16 @@
 				this.map.addControl(new ScaleControl());
 				this.map.addControl(new OverviewMapControl());
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
-//				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
+				//				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
+				search.addEventListener("submeter", realizarPesquisa);
 				requisitar();
+			}
+			
+			private function realizarPesquisa(ev:EventoPesquisa):void {
+				var preco:Number = ev.preco;
+				var raio:Number = ev.raio;
+				var bandeira:String = ev.bandeira;
 			}
 			
 			private function updateMap(event:MapMoveEvent):void{
@@ -208,6 +216,8 @@
 		<s:NavigatorContent width="100%" height="100%" label="Map">
 			<s:HGroup x="0" y="0" width="100%" height="100%">
 				<s:BorderContainer width="20%" height="100%">
+					<views:SearchComponent x="-4" y="10" id="search">
+					</views:SearchComponent>
 				</s:BorderContainer>
 				<s:BorderContainer width="80%" height="100%" id="mapC">
 					<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
