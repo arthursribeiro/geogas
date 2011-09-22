@@ -8,13 +8,17 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import classes.Constants;
 			import classes.model.Entidade;
+			import classes.model.GMLParser;
 			
 			import com.google.maps.Color;
 			import com.google.maps.InfoWindowOptions;
 			import com.google.maps.LatLng;
+			import com.google.maps.LatLngBounds;
 			import com.google.maps.MapEvent;
 			import com.google.maps.MapMouseEvent;
+			import com.google.maps.MapMoveEvent;
 			import com.google.maps.MapType;
 			import com.google.maps.MapTypeOptions;
 			import com.google.maps.controls.MapTypeControl;
@@ -26,12 +30,36 @@
 			import com.google.maps.controls.ZoomControl;
 			import com.google.maps.overlays.Marker;
 			
+			import flashx.textLayout.formats.Float;
+			
 			import mx.controls.Alert;
 			import mx.controls.Label;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			import mx.utils.URLUtil;
 			
 			import spark.effects.Scale;
+
+			
+			private var bboxFilter:String = "<BBOX>" +
+				"<PropertyName>geom</PropertyName>" +
+				"<gml:Box srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">" +
+				"<gml:coordinates>"+Constants.REPLACE_VALUE+"</gml:coordinates>" +
+				"</gml:Box>" +
+				"</BBOX>";
+			private var propBetweenFilter:String = "<PropertyIsBetween>" +
+				"<PropertyName>"+Constants.REPLACE_PROP_NAME+"</PropertyName>" +
+				"<LowerBoundary><Literal>"+Constants.REPLACE_MIN_VALUE+"</Literal></LowerBoundary>" +
+				"<UpperBoundary><Literal>"+Constants.REPLACE_MAX_VALUE+"</Literal></UpperBoundary>" +
+				"</PropertyIsBetween>";
+			private var propIsLikeFilter:String = "<PropertyIsLike escapeChar=\"\\\" singleChar=\"_\" wildCard=\"%\">" +
+				"<PropertyName>"+Constants.REPLACE_PROP_NAME+"</PropertyName>" +
+				"<Literal>"+Constants.REPLACE_VALUE+"</Literal>" +
+				"</PropertyIsLike>" 
+			
+			private var filtersBlank:String = "<Filter xmlns:gml=\"http://www.opengis.net/gml\" xmlns=\"http://www.opengis.net/ogc\">" +
+				"<And>"+Constants.REPLACE_FILTERS+"</And>" +
+				"</Filter>";
 			
 			private function init():void{
 				this.map.enableScrollWheelZoom();
@@ -41,10 +69,15 @@
 				this.map.addControl(new OverviewMapControl());
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
 				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
+				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
+			}
+			
+			private function updateMap(event:MapMoveEvent):void{
+				
 			}
 			
 			private function OlaMundo():void {
-				ro.olaJava.send("Mário");
+				requisitar();
 			}
 			
 			public function mapClicked(event:MapMouseEvent):void{
@@ -90,11 +123,70 @@
 			}
 			
 			protected function ro_resultHandler(event:ResultEvent):void {
-				Alert.show("res: "+event.result.toString());
+				var serverUrl:String = event.result.toString();
+				var request:URLRequest = new URLRequest(serverUrl);
+				var urlLoader:URLLoader = new URLLoader(request);
+				urlLoader.addEventListener(Event.COMPLETE, resultHttpRequest);
+				urlLoader.addEventListener(ErrorEvent.ERROR, failHttpRequest);
+				urlLoader.addEventListener(IOErrorEvent.IO_ERROR, failHttpRequest);
+				urlLoader.load(request);
 			}
+			
 			protected function ro_faultHandler(event:FaultEvent):void {
 				Alert.show("Error : "+event.toString());
 			}
+			
+			private function getMapBBox():String{
+				var bbox:LatLngBounds = map.getLatLngBounds();
+				var bboxStr:String = bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat();
+				return bboxStr;
+			}
+			
+			private function requisitar():void {
+				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:entidade_postos&FILTER=";
+				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
+				
+				ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
+			}
+			
+			public function resultHttpRequest(e:Event):void {
+				var xml:XML = new XML(e.target.data);
+				var parser:GMLParser = new GMLParser(xml);
+				var dic:Dictionary = parser.getDictionary();
+				
+				for(var marker:String in dic){
+					var data:Dictionary = new Dictionary();
+					var lat:Number = 0;
+					var lng:Number = 0;
+					var id:int = 0;
+					for(var prop:String in dic[marker]){
+						var label:String = prop.toString().replace("geogas","");
+						label = label.toString().replace("::","");
+						if( label.toUpperCase() == Constants.LATITUDE.toUpperCase()){
+							lat = new Number( dic[marker][prop]);
+						}
+						else if( label.toUpperCase() == Constants.LONGITUDE.toUpperCase()){
+							lng = new Number( dic[marker][prop]);
+						}
+						else{
+							if( label.toUpperCase().indexOf(Constants.ID.toUpperCase())>=0){
+								id = new Number(dic[marker][prop]);
+							}else{
+								data[label] = dic[marker][prop];
+							}
+						}
+					}
+					var defaulData:Dictionary = new Dictionary();
+					defaulData[Constants.EDITABLE] = data;
+					var entidade:Entidade = new Entidade(new LatLng(lat,lng),id,defaulData);
+					addMarker(entidade);
+				}
+			}
+			
+			public function failHttpRequest(e:Event):void {
+				Alert.show('Ocorreu um erro com a comunicação, tente novamente mais tarde.');
+			}
+			
 		]]>
 	</fx:Script>
 	<mx:TabNavigator x="0" y="0" width="100%" height="100%">

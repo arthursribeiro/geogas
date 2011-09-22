@@ -1,6 +1,7 @@
 package classes.model
 {
 	import flash.events.Event;
+	import flash.utils.Dictionary;
 	import flash.xml.XMLDocument;
 	
 	import mx.collections.XMLListCollection;
@@ -8,8 +9,8 @@ package classes.model
 	
 	public class GMLParser
 	{
-		var map:Object = new Object();
-		var xml:XML;
+		private var map:Dictionary = new Dictionary();
+		private var xml:XML;
 		
 		public function GMLParser(xmlFile:XML)
 		{
@@ -23,11 +24,11 @@ package classes.model
 			elements = xml.elements();
 			for each (var element:XML in elements){
 				if(element.localName() == 'featureMember') {
-					var auxDic:Object = new Object();
+					var auxDic:Dictionary = new Dictionary();
 					for each ( var el:XML in element.children().children()){
 						var aux:String;
 						var a:XMLList = el.children();
-						aux = el.name();
+						aux = el.name().toString();
 						auxDic[aux] = el.text().toString();
 					}
 					var str_aux:String = element.children()[0].attributes()[0].toString();
@@ -36,7 +37,7 @@ package classes.model
 			}
 		}
 		
-		public function getDictionary():Object {
+		public function getDictionary():Dictionary {
 			return this.map;
 		}
 	}
