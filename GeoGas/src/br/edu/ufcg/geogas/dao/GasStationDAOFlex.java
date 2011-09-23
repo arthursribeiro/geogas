@@ -20,7 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 
 
-public class GasStationDAO implements GasStationDAOIF{
+public class GasStationDAOFlex extends HibernateDaoSupport implements GasStationDAOIF{
+	
+	@Autowired
+	public void init(SessionFactory sessionFactory) {
+//		sessionFactory.openSession();
+		super.setSessionFactory(sessionFactory);
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("GeoGas");
+		em = emf.createEntityManager();
+	}
 	
 	protected EntityManager em;
 	

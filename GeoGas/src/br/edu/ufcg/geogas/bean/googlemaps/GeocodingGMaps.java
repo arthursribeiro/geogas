@@ -63,7 +63,7 @@ public class GeocodingGMaps {
 					}
 				}
 				if(longi!=null && longi.length()>0 && lat!=null && lat.length()>0){
-					String query = "UPDATE GasStation g SET longitude = "+longi+" , latitude="+lat+" WHERE g.id = "+gasStation.getId();
+					String query = "UPDATE GasStation g SET longitude = "+longi+" , latitude="+lat+" WHERE g.id = "+gasStation.getId_posto_combustivel();
 					updates.add(query);
 				}
 			}
