@@ -2,14 +2,18 @@ package br.edu.ufcg.geogas.action;
 
 import javax.servlet.http.HttpServletResponse;
 
-import br.edu.ufcg.geogas.dao.GasStationDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.edu.ufcg.geogas.dao.GasStationDAOFlex;
+import br.edu.ufcg.geogas.dao.GasStationDAOIF;
 
 import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
 public class GasStationAction  extends ActionSupport{
 	
-	private GasStationDAO gasStationDAO;
+	@Autowired
+	private GasStationDAOIF gasStationDAO;
 	
 	private HttpServletResponse response;
 	
@@ -24,11 +28,11 @@ public class GasStationAction  extends ActionSupport{
 		return false;
 	}
 	
-	public GasStationDAO getGasStationDAO() {
+	public GasStationDAOIF getGasStationDAO() {
 		return gasStationDAO;
 	}
 
-	public void setGasStationDAO(GasStationDAO gasStationDAO) {
+	public void setGasStationDAO(GasStationDAOIF gasStationDAO) {
 		this.gasStationDAO = gasStationDAO;
 	}
 

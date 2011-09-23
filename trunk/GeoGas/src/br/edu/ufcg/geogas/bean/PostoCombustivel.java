@@ -2,18 +2,18 @@ package br.edu.ufcg.geogas.bean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 
 @Entity
 @Table(name = "PostoCombustivel")
-public class PostoCombustivel {
+@PrimaryKeyJoinColumn(name="id_posto_combustivel") 
+public class PostoCombustivel extends Entidade{
 	
-	@Id
     @NotNull
-    @Column(name="id_posto_combustivel")
+    @Column(name="id_posto_combustivel", insertable=false, updatable=false)
     private Integer id_posto_combustivel; // surrogate key
 	
 	@Column(name = "autorizacao")
@@ -41,11 +41,11 @@ public class PostoCombustivel {
 	@Column(name = "longitude")
 	private Double longitude;
 	
-	public Integer getId() {
+	public Integer getId_posto_combustivel() {
 		return id_posto_combustivel;
 	}
 
-	public void setId(Integer id) {
+	public void setId_posto_combustivel(Integer id) {
 		this.id_posto_combustivel = id;
 	}
 

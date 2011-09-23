@@ -6,9 +6,9 @@
     <listener>
         <listener-class>flex.messaging.HttpFlexSession</listener-class>
     </listener>
-
-    <!-- MessageBroker Servlet -->
-    <servlet>
+    
+    <!--
+	<servlet>
         <servlet-name>MessageBrokerServlet</servlet-name>
         <display-name>MessageBrokerServlet</display-name>
         <servlet-class>flex.messaging.MessageBrokerServlet</servlet-class>
@@ -18,28 +18,44 @@
        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+	  -->
+
+    <!-- MessageBroker Servlet -->
+    <servlet>
+		<servlet-name>MessageBrokerServlet</servlet-name>
+		<display-name>MessageBrokerServlet</display-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/flex/applicationContext.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
 
     <servlet-mapping>
         <servlet-name>MessageBrokerServlet</servlet-name>
         <url-pattern>/messagebroker/*</url-pattern>
     </servlet-mapping>
 
-    <filter>
+
+	<filter>
         <filter-name>struts2</filter-name>
         <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
     </filter>
 
-    <filter-mapping>
+	<filter-mapping>
         <filter-name>struts2</filter-name>
-        <url-pattern>/s/*</url-pattern>
-    </filter-mapping>
-
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
+        <url-pattern>/struts/*</url-pattern>
+    </filter-mapping> 
     
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    
 </web-app>
