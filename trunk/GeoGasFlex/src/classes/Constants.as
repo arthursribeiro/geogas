@@ -6,6 +6,8 @@ package classes
 		{
 		}
 		
+		public static const ENTITY:String = "entity";
+		
 		public static const REPLACE_PROP_NAME:String = "?replacePropName?";
 		public static const REPLACE_FILTERS:String = "?filters?";
 		public static const REPLACE_VALUE:String = "?replaceValue?";
