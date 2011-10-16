@@ -234,8 +234,8 @@ SELECT DISTINCT id_posto_combustivel, id_tipo_combustivel, MAX(data) as data FRO
 GROUP BY id_posto_combustivel, id_tipo_combustivel;
 
 CREATE OR REPLACE VIEW dados_basicos AS
-SELECT DISTINCT pc.id_posto_combustivel, pc.nomefantasia, pc.cnpjcpf, pc.razaosocial, pc.bandeira, pc.tipoposto
-FROM postocombustivel pc
+SELECT DISTINCT pc.id_posto_combustivel, pc.nomefantasia, pc.cnpjcpf, pc.razaosocial, pc.bandeira, pc.tipoposto, pc.latitude, pc.longitude,pc.geom
+FROM postocombustivel pc;
 
 CREATE OR REPLACE VIEW dados_basicos_anp AS
 SELECT DISTINCT pc.*, t.tipo_combustivel, p.preco, p.data
@@ -250,6 +250,10 @@ FROM dados_basicos pc INNER JOIN postocombustivel_tipocombustivel_usuario p ON p
 	ultimos_usuario u ON p.id_posto_combustivel = u.id_posto_combustivel 
 			AND p.data = u.data AND p.id_tipo_combustivel = u.id_tipo_combustivel
 	INNER JOIN tipocombustivel t ON t.id_tipo_combustivel = p.id_tipo_combustivel;
+
+
+	
+
 	
 
 
@@ -274,4 +278,27 @@ FROM postocombustivel_tipocombustivel_usuario p INNER JOIN
 	ultimos_usuario u ON p.id_posto_combustivel = u.id_posto_combustivel 
 			AND p.data = u.data AND p.id_tipo_combustivel = u.id_tipo_combustivel
 	INNER JOIN tipocombustivel t ON t.id_tipo_combustivel = p.id_tipo_combustivel;
+
+CREATE OR REPLACE VIEW precos_juntos AS 
+( SELECT DISTINCT pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco AS preco_anp, pa.data AS data_anp, pu.id_usuario, pu.preco AS preco_usuario, pu.data AS data_usuario
+   FROM postocombustivel_tipocombustivel_anp pa
+   LEFT JOIN postocombustivel_tipocombustivel_usuario pu ON pa.id_posto_combustivel = pu.id_posto_combustivel AND pa.id_tipo_combustivel = pu.id_tipo_combustivel
+   JOIN ultimos_anp ua ON pa.id_posto_combustivel = ua.id_posto_combustivel AND pa.id_tipo_combustivel = ua.id_tipo_combustivel AND pa.data = ua.data
+   LEFT JOIN ultimos_usuario uu ON pu.id_posto_combustivel = uu.id_posto_combustivel AND pa.id_tipo_combustivel = uu.id_tipo_combustivel AND pa.data = ua.data
+   JOIN tipocombustivel tp ON pa.id_tipo_combustivel = tp.id_tipo_combustivel
+  ORDER BY pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco, pa.data, pu.id_usuario, pu.preco, pu.data)
+UNION 
+( SELECT DISTINCT pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco AS preco_anp, pa.data AS data_anp, pu.id_usuario, pu.preco AS preco_usuario, pu.data AS data_usuario
+   FROM postocombustivel_tipocombustivel_anp pa
+   RIGHT JOIN postocombustivel_tipocombustivel_usuario pu ON pa.id_posto_combustivel = pu.id_posto_combustivel AND pa.id_tipo_combustivel = pu.id_tipo_combustivel
+   JOIN ultimos_usuario uu ON pu.id_posto_combustivel = uu.id_posto_combustivel AND pu.id_tipo_combustivel = uu.id_tipo_combustivel AND pu.data = uu.data
+   LEFT JOIN ultimos_anp ua ON pa.id_posto_combustivel = ua.id_posto_combustivel AND pa.id_tipo_combustivel = ua.id_tipo_combustivel AND pa.data = ua.data
+   JOIN tipocombustivel tp ON pu.id_tipo_combustivel = tp.id_tipo_combustivel
+  ORDER BY pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco, pa.data, pu.id_usuario, pu.preco, pu.data);
+
+
+CREATE OR REPLACE VIEW dados_basicos_precos AS
+SELECT db.*,pj.preco_anp, pj.data_anp, pj.preco_usuario, pj.data_usuario, pj.tipo_combustivel, 'postocombustivel' AS type_entity
+FROM dados_basicos db LEFT OUTER JOIN precos_juntos pj ON db.id_posto_combustivel = pj.id_posto_combustivel;
+
 
