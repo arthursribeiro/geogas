@@ -20,6 +20,8 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
+			import spark.primitives.Rect;
+			
 			private var defaultTab:Dictionary; // String (Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)]
 			private var otherTabs:Dictionary; // String (TabName) -> Dictionary[String(Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)] ]
 			private var _id:int;
@@ -52,13 +54,19 @@
 						navCont.width = basic.width;
 						navCont.height = basic.height;
 						
+						var scroller:Scroller = new Scroller();
+						scroller.minHeight = navCont.height;
+						var grp:Group = new Group();
+						scroller.addElement(grp);
+						navCont.addElement(scroller);
+						
 						var form:Form = new Form();
 						form.width = basicForm.width;
 						form.height = basicForm.height;
 						form.x = basicForm.x;
 						form.y = basicForm.y;
 						
-						navCont.addElement(form);
+						grp.addElement(form);
 						
 						loadData(otherTabs[tab],form);
 						
@@ -93,10 +101,14 @@
 		]]>
 	</fx:Script>
 	
-	<mx:TabNavigator width="100%" height="100%" id="tabs">
+	<mx:TabNavigator id="tabs" y="-9" width="100%" height="301">
 		<s:NavigatorContent width="100%" height="100%" label="Information" id="basic">
-			<s:Form x="0" y="0" width="100%" height="100%" id="basicForm">
-			</s:Form>
+			<s:Scroller minHeight="{basic.height}" scrollRect="{new Rectangle(0,0,basic.width,basic.height)}">
+				<s:Group id="dataGroup">
+					<s:Form id="basicForm">
+					</s:Form>
+				</s:Group>
+			</s:Scroller>
 		</s:NavigatorContent>
 	</mx:TabNavigator>
 </s:Group>

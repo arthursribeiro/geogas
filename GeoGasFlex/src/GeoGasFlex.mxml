@@ -12,7 +12,9 @@
 			import classes.events.EventoPesquisa;
 			import classes.model.Entidade;
 			import classes.model.GMLParser;
+			import classes.model.GeoLocation;
 			import classes.model.Tesaurus;
+			import classes.views.DetailPopUp;
 			
 			import com.google.maps.Color;
 			import com.google.maps.InfoWindowOptions;
@@ -31,20 +33,34 @@
 			import com.google.maps.controls.ScaleControl;
 			import com.google.maps.controls.ZoomControl;
 			import com.google.maps.overlays.Marker;
+			import com.google.maps.overlays.MarkerOptions;
+			import com.google.maps.overlays.Polygon;
+			import com.google.maps.overlays.Polyline;
+			import com.google.maps.overlays.PolylineOptions;
 			
 			import flashx.textLayout.formats.Float;
 			
+			import mx.charts.renderers.CircleItemRenderer;
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
+			import mx.controls.DataGrid;
 			import mx.controls.Label;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.URLUtil;
 			
+			import spark.components.gridClasses.GridColumn;
 			import spark.effects.Scale;
 			
 			private var markers:ArrayList = new ArrayList();
+			private var rows:ArrayList;
+			private var geodesic:Polyline;
 			
+			private var columnGrid:DataGrid;
+			private var popUp:DetailPopUp;
 			
 			private var bboxFilter:String = "<BBOX>" +
 				"<PropertyName>geom</PropertyName>" +
@@ -71,74 +87,95 @@
 			private var raio:Number = 0;
 			private var aplicarfiltros:Boolean = false;
 			
+			private function chamou(e:ListEvent):void{
+				openDetailsPopup(e.itemRenderer.data["id"],e.itemRenderer.data["type_entity"]);
+			}
+			
+			private function openDetailsPopup(id:int, typeEntity:String):void{
+				var popUp:DetailPopUp = new DetailPopUp();
+				popUp.setVariables(id,typeEntity,Tesaurus.getInstance());
+				popUp.isPopUp = true;
+				this.popUp = popUp;
+				PopUpManager.addPopUp(popUp,this,true);
+				PopUpManager.centerPopUp(this.popUp);
+			}
+			
+			private function closePopUp(e:MouseEvent):void{
+				PopUpManager.removePopUp(this.popUp);
+			}
+			
 			private function init():void{
 				Tesaurus.getInstance();
+				columnGrid = new DataGrid();
+				columnGrid.width = mapC.width;
+				columnGrid.height = mapC.height;
+				columnGrid.addEventListener(ListEvent.ITEM_CLICK,chamou);
+				colGridContainer.addElement(columnGrid);
+				if(Tesaurus.needDictionary()){
+					Tesaurus.getInstance().updateDic();
+				}
 				this.map.enableScrollWheelZoom();
 				this.map.addControl(new MapTypeControl());
 				this.map.addControl(new NavigationControl());
 				this.map.addControl(new ScaleControl());
 				this.map.addControl(new OverviewMapControl());
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
-				//				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
+				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
 				search.addEventListener("submeter", realizarPesquisa);
-				requisitar();
+				updateMap(null);
 			}
 			
 			private function realizarPesquisa(ev:EventoPesquisa):void {
-				trace("bla");
-				this.aplicarfiltros = true;
+//				trace("bla");
 				this.preco = ev.preco;
 				this.raio = ev.raio;
 				this.bandeira = ev.bandeira;
-				requisitar();
+				updateMap(null);
 			}
 			
 			private function updateMap(event:MapMoveEvent):void{
 				limparMapa();
 				requisitar();
+				updateList();
+			}
+			
+			private function updateList():void{
+				columnGrid.data = rows;
+				columnGrid.dataProvider = rows;
 			}
 			
 			private function limparMapa():void{
+//				if(columnGrid)
+//					while(columnGrid.columns.length>0)
+//						columnGrid.columns.pop();
 				for(var i:int = 0; i<markers.length;i++){
 					var marker:Entidade = markers.getItemAt(i) as Entidade;
 					map.removeOverlay(marker);
 				}
 				markers = new ArrayList();
+				rows = new ArrayList();
 			}
 			
 			private function OlaMundo():void {
 			}
 			
 			public function mapClicked(event:MapMouseEvent):void{
-				if(map){
-					map.getLatLngBounds();
-					var latLng:LatLng = event.latLng;
-					var defaultData:Dictionary = new Dictionary();
+				var r:Number = new Number(search.raioInput.text);
+				if(geodesic) map.removeOverlay(geodesic);
+				if(map && search.raioCheck.selected && r>0){
+//					var circle:Polygon = new Polygon(
+//					var marker:Entidade = new Entidade(latLng,1,defaultData,otherTabs);
+					var latL:LatLng = event.latLng;
+					var geoLoc:GeoLocation = GeoLocation.getInstanceDegrees(latL.lat(),latL.lng());
+					var coords:ArrayList = geoLoc.boundingCoordinates(r);
 					
-					var defaultFormEdit:Dictionary = new Dictionary();
-					defaultFormEdit["editing"] = "texto a editar";
+					var polyOpt:PolylineOptions = new PolylineOptions();
+					polyOpt.geodesic = true;
 					
-					defaultData["editable"] = defaultFormEdit;
+					geodesic = new Polyline(coords.toArray(),polyOpt);
 					
-					var defaultForm:Dictionary = new Dictionary();
-					defaultForm["razaosocial"] = "Zé Mané";
-					defaultForm["nome"] = "sdgsdg";
-					defaultForm["endereco"] = "235";
-					defaultForm["cnpjcpf"] = "sdfdf";
-					defaultForm["data_criacao"] = "3446";
-					
-					defaultData["notEditable"] = defaultForm;
-					
-					var otherTabs:Dictionary = new Dictionary();
-					
-					otherTabs["postocombustivel"] = defaultData;
-					otherTabs["tipocombustivel"] = defaultData;
-					
-					var marker:Entidade = new Entidade(latLng,1,defaultData,otherTabs);
-					
-					
-					addMarker(marker);
+					map.addOverlay(geodesic);
 				}
 			}
 			
@@ -146,6 +183,7 @@
 				marker.addEventListener(MapMouseEvent.CLICK,markerClicked);
 				map.addOverlay(marker);
 				markers.addItem(marker);
+				putEntidadeOnList(marker);
 			}
 			
 			public function markerClicked(event:MapEvent):void{
@@ -179,16 +217,18 @@
 			}
 			
 			private function requisitar():void {
-				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:entidade_postos&FILTER=";
+				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:dados_basicos_precos&FILTER=";
 				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
 				
-				if(this.aplicarfiltros && (this.preco > 0)){
-					var filpreco:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,"pricegasoline").replace(Constants.REPLACE_MIN_VALUE,"0").replace(Constants.REPLACE_MAX_VALUE,preco.toString());
-					filters.concat(filpreco);
+//				if(this.aplicarfiltros && (this.preco > 0)){
+//					var filpreco:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,"pricegasoline").replace(Constants.REPLACE_MIN_VALUE,"0").replace(Constants.REPLACE_MAX_VALUE,preco.toString());
+//					filters.concat(filpreco);
+//				
+//				}
 				
-				}if(this.aplicarfiltros && (this.bandeira.length > 0)){
-					var filbandeira:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,"bandeira").replace(Constants.REPLACE_VALUE,this.bandeira);
-					filters.concat(filbandeira);
+				if(this.search.bandCheck.selected && (search.getBandeira().length>0)){
+					var filbandeira:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,"bandeira").replace(Constants.REPLACE_VALUE,"%"+search.getBandeira()+"%");
+					filters+=filbandeira;
 				}
 				
 				ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
@@ -216,38 +256,91 @@
 						else{
 							if( label.toUpperCase().indexOf(Constants.ID.toUpperCase())>=0){
 								id = new Number(dic[marker][prop]);
-							}else{
+							}else if(!(label.toUpperCase() == "GEOM")){
 								data[label] = dic[marker][prop];
 							}
 						}
 					}
 					var defaulData:Dictionary = new Dictionary();
-					defaulData[Constants.EDITABLE] = data;
+					defaulData["Not"+Constants.EDITABLE] = data;
 					var entidade:Entidade = new Entidade(new LatLng(lat,lng),id,defaulData);
 					addMarker(entidade);
 				}
 			}
 			
 			public function failHttpRequest(e:Event):void {
-				Alert.show('Ocorreu um erro com a comunicação, tente novamente mais tarde.');
+//				Alert.show('Ocorreu um erro com a comunicação, tente novamente mais tarde.');
 			}
+			
+			public function putEntidadeOnList(marker:Entidade):void{
+				var data:Dictionary = marker.data;
+				if(columnGrid.columns.length<=0){
+					var columns:ArrayList = new ArrayList();
+					for(var editable:String in data){
+						var dic:Dictionary = data[editable];
+						for(var key:String in dic){
+							var gCol:DataGridColumn = new DataGridColumn();
+							gCol.dataField = key;
+							var t:String = Tesaurus.getInstance().getTraducao(key);
+							gCol.headerText = t;
+							columns.addItem(gCol);
+						}
+					}
+					
+					columnGrid.columns = columns.source;
+				}
+				
+				
+				for(var editable2:String in data){
+					var dic2:Dictionary = data[editable2];
+					var obj:Object = new Object();
+					for(var key2:String in dic2){
+						obj[key2] = Tesaurus.getInstance().getTraducao(dic2[key2]);
+					}
+					obj["id"] = marker.id;
+					rows.addItem(obj);
+				}
+			}
+			
+//			public function receiveBasicColumns(e:ResultEvent):void{
+//				var colsHead:ArrayList = new ArrayList();
+//				for(var col:String in e.result){
+//					col = e.result[col];
+//					var gCol:DataGridColumn = new DataGridColumn();
+//					gCol.dataField = col;
+//					var translation:String = Tesaurus.getInstance().getTraducao(col);
+//					gCol.headerText = translation;
+//					
+//					colsHead.addItem(gCol);
+//				}
+//				columnGrid.columns = colsHead.source;
+//				columnGrid.dataProvider;
+//				ro.removeEventListener(ResultEvent.RESULT,receiveBasicColumns);
+//				ro.addEventListener(ResultEvent.RESULT,ro_resultHandler);
+//			}
+			
+//			public function gridComplete():void{
+//				ro.removeEventListener(ResultEvent.RESULT,ro_resultHandler);
+//				ro.addEventListener(ResultEvent.RESULT,receiveBasicColumns);
+//				ro.getBasicColumns('dados_basicos');
+//			}
 			
 		]]>
 	</fx:Script>
-	<mx:TabNavigator x="0" y="0" width="100%" height="100%">
-		<s:NavigatorContent width="100%" height="100%" label="Map">
-			<s:HGroup x="0" y="0" width="100%" height="100%">
-				<s:BorderContainer width="20%" height="100%">
-					<views:SearchComponent x="-4" y="10" id="search">
-					</views:SearchComponent>
-				</s:BorderContainer>
-				<s:BorderContainer width="80%" height="100%" id="mapC">
+	<s:HGroup width="100%" height="100%">
+	<s:BorderContainer width="20%" height="100%">
+		<views:SearchComponent id="search"  width="100%" height="100%">
+		</views:SearchComponent>
+	</s:BorderContainer>
+	<mx:TabNavigator width="80%" height="100%">
+		<s:NavigatorContent id="mapTab" width="100%" height="100%" label="Map">
+				<s:BorderContainer width="100%" height="100%" id="mapC">
 					<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
 							  key="ABQIAAAArTOg12ENOoBN3O9kedACIxRkOv5Oc89yJ4sUflDi_EcLCzRIOBTMHpzPf7PADkHpU0-4GpQuUVpflw"/>
 				</s:BorderContainer>
-			</s:HGroup>
 		</s:NavigatorContent>
-		<s:NavigatorContent width="100%" height="100%" label="Search">
+		<s:NavigatorContent width="100%" height="100%" label="List" id="colGridContainer">
 		</s:NavigatorContent>
 	</mx:TabNavigator>
+	</s:HGroup>
 </s:Application>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import classes.Constants;
+			import classes.model.Tesaurus;
+			
+			import com.google.maps.controls.NavigationControl;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.containers.Form;
+			import mx.containers.FormItem;
+			import mx.controls.Alert;
+			import mx.controls.HorizontalList;
+			import mx.controls.TextInput;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.DataGrid;
+			import spark.components.NavigatorContent;
+			import spark.components.Scroller;
+			import spark.components.VGroup;
+			import spark.components.gridClasses.GridColumn;
+			
+			private var entId:int;
+			private var typeEntity:String;
+			private var dic:Tesaurus;
+			
+			public function setVariables(entityId:int,typeEntity:String,dict:Tesaurus):void{
+				this.entId = entityId;
+				this.typeEntity = typeEntity;
+				this.dic = dict;
+				ro.getAllEntityData(this.entId,this.typeEntity);
+			}
+			
+			private function createPricesTab(data:Object):NavigatorContent{
+				var navCont:NavigatorContent = new NavigatorContent();
+				navCont.label = this.dic.getTraducao("Prices");
+				navCont.width = tabBar.width;
+				navCont.height = tabBar.height;
+				navCont.setStyle("borderVisible",false);
+				
+				var grp:DataGrid = new DataGrid();
+				grp.width = navCont.width;
+				grp.height = navCont.height;
+				navCont.addElement(grp);
+				
+				var form:Form = new Form();
+				form.width = navCont.width;
+				form.height = navCont.height;
+				form.setStyle("borderVisible",false);
+				
+				var columns:ArrayList = new ArrayList();
+				var g2Col:GridColumn = new GridColumn();
+				g2Col.dataField = "field";
+				g2Col.headerText = "Gas Type";
+				columns.addItem(g2Col);
+				var g2Col2:GridColumn = new GridColumn();
+				g2Col2.dataField = "anp";
+				g2Col2.headerText = "Price from ANP";
+				columns.addItem(g2Col2);
+				var g2Col3:GridColumn = new GridColumn();
+				g2Col3.dataField = "user";
+				g2Col3.headerText = "Price from User";
+				columns.addItem(g2Col3);
+				var g2Col4:GridColumn = new GridColumn();
+				g2Col4.dataField = "userId";
+				g2Col4.headerText = "User";
+				columns.addItem(g2Col4);
+				
+				var values:ArrayList = new ArrayList();
+				for(var tab:String in data){
+					if(tab.toLowerCase().indexOf("price ")>=0){
+						var fields:Array = tab.split(" ");
+						fields.shift();
+						var field:String = "";
+						for each(var str:String in fields){
+							field+=str;
+						}
+						var objValue:Object = data[tab];
+						objValue["field"] = field;
+						values.addItem(objValue);
+					}
+				}
+				grp.columns = columns;
+				grp.dataProvider = values;
+				return navCont;
+			}
+			
+			private function ro_resultHandler(e:ResultEvent):void{
+				var data:Object = e.result;
+				var prices:Boolean = false;
+				for(var tab:String in data){
+					var navCont:NavigatorContent = null;
+					if(tab.toLowerCase().indexOf("price ")>=0 ){
+						if(!prices){
+							navCont = createPricesTab(data);
+							tabBar.addElement(navCont);
+							prices = true;
+						}
+					}else{
+						navCont = new NavigatorContent();
+						navCont.label = this.dic.getTraducao(tab);
+						navCont.width = tabBar.width;
+						navCont.height = tabBar.height;
+						navCont.setStyle("borderVisible",false);
+						
+						var grp:DataGrid = new DataGrid();
+						grp.width = navCont.width;
+						grp.height = navCont.height;
+						navCont.addElement(grp);
+						
+						var form:Form = new Form();
+						form.width = navCont.width;
+						form.height = navCont.height;
+						form.setStyle("borderVisible",false);
+						
+						var dataProv:ArrayList = new ArrayList();
+						var dic:Object = data[tab];
+						var columns:ArrayList = new ArrayList();
+						
+						
+						var gCol:GridColumn = new GridColumn();
+						gCol.dataField = "field";
+						gCol.headerText = "Field";
+						columns.addItem(gCol);
+						var gCol2:GridColumn = new GridColumn();
+						gCol2.dataField = "value";
+						gCol2.headerText = "Value";
+						columns.addItem(gCol2);
+						
+						for(var key:String in dic){
+							if(!(key.toLowerCase() == Constants.LATITUDE || key.toLowerCase() == Constants.LONGITUDE || key.toLowerCase().indexOf(Constants.ID)>=0)){
+								var values:Object = new Object();
+								values["value"] = Tesaurus.getInstance().getTraducao(dic[key]);
+								values["field"] = Tesaurus.getInstance().getTraducao(key);
+								dataProv.addItem(values);
+							}
+						}
+						grp.columns = columns;
+						grp.dataProvider = dataProv;
+						tabBar.addElement(navCont);
+					}
+					
+				}
+			}
+			
+			private function close():void{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function ro_faultHandler(e:FaultEvent):void{
+				Alert.show("Problema ao resgatar informações dessa entidade.");
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow width="100%" height="100%" borderVisible="false" title="Informations" close="close()">
+		<mx:TabNavigator id="tabBar" width="100%" height="90%" borderVisible="false">
+			
+		</mx:TabNavigator>
+	</s:TitleWindow>
+</s:Group>
