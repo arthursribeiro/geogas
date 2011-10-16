@@ -1,5 +1,7 @@
 package br.edu.ufcg.geogas.bean;
 
+import java.util.HashMap;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -111,6 +113,28 @@ public class PostoCombustivel extends Entidade{
 
 	public void setBandeira(String bandeira) {
 		this.bandeira = bandeira;
+	}
+
+	public HashMap<String, Object> getHashMap() {
+		HashMap<String,Object> tabs = new HashMap<String, Object>();
+		HashMap<String,Object> tabEnt = new HashMap<String, Object>();
+		HashMap<String,Object> tabPosto = new HashMap<String, Object>();
+		
+		tabEnt = super.getEntHashMap();
+		
+		tabPosto.put("autorizacao", this.autorizacao);
+		tabPosto.put("bandeira", this.bandeira);
+		tabPosto.put("cnpjcpf", this.cnpjCpf);
+		tabPosto.put("id_posto_combustivel", this.id_posto_combustivel);
+		tabPosto.put("latitude", this.latitude);
+		tabPosto.put("longitude", this.longitude);
+		tabPosto.put("nomefantasia", this.nomeFantasia);
+		tabPosto.put("numerodespacho", this.numeroDespacho);
+		tabPosto.put("razaosocial", this.razaoSocial);
+		
+		tabs.put("Entity", tabEnt);
+		tabs.put("Gas Station", tabPosto);
+		return tabs;
 	}
 
 }

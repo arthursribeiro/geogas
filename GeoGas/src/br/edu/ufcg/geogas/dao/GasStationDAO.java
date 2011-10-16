@@ -2,6 +2,7 @@ package br.edu.ufcg.geogas.dao;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 
 
@@ -194,6 +196,31 @@ public class GasStationDAO implements GasStationDAOIF{
 				return (PostoCombustivel) station;
 			}
 		}
+		return null;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public ArrayList<String> getBasicColumns(String tableName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public HashMap<String, Object> getEntity(int id, String typeEntity) {
+		Query q = getEntityManager().createQuery("SELECT g FROM ?1 g WHERE id = ?2");
+		q.setParameter(2, id);
+		q.setParameter(1, typeEntity);
+		try{
+			Entidade station = (Entidade) q.getSingleResult();
+			return station.getEntHashMap();
+		}catch(Exception e){
+			return null;
+		}
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public HashMap<String,Object> getPricesByGasStationId(int id, HashMap<String,Object> ret) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

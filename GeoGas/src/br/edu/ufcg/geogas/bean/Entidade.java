@@ -1,6 +1,7 @@
 package br.edu.ufcg.geogas.bean;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -143,6 +144,21 @@ public class Entidade {
 
 	public void setTipo_entidade(TipoEntidade tipo_entidade) {
 		this.tipo_entidade = tipo_entidade;
+	}
+
+	public HashMap<String, Object> getEntHashMap() {
+		HashMap<String, Object> ret = new HashMap<String, Object>();
+		ret.put("bairro", this.bairro);
+		ret.put("cep", this.cep);
+		ret.put("cidade", this.cidade);
+		ret.put("data_criacao", this.data_criacao);
+		ret.put("endereco", this.endereco);
+		ret.put("estado", this.estado);
+		ret.put("pais", this.pais);
+		ret.put("nome", this.nome);
+		ret.put("id_entidade", this.id_entidade);
+		ret.put("tipo_entidade", this.tipo_entidade);
+		return ret;
 	}
 	
 }

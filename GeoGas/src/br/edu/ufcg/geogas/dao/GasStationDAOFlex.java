@@ -1,8 +1,11 @@
 package br.edu.ufcg.geogas.dao;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -17,6 +20,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 
 
@@ -203,5 +207,58 @@ public class GasStationDAOFlex extends HibernateDaoSupport implements GasStation
 			}
 		}
 		return null;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public ArrayList<String> getBasicColumns(String tableName) {
+		ArrayList<String> basicCols = new ArrayList<String>();
+		String sql = "SELECT attname FROM pg_attribute, pg_class WHERE pg_class.oid = attrelid AND attnum>0 AND relname = ?1 AND attname != 'geom';";
+		Query q = getEntityManager().createNativeQuery(sql);
+		q.setParameter(1, tableName);
+		List<Object> stations = q.getResultList();
+		for (Object object : stations) {
+			if(object instanceof String) basicCols.add(object.toString());
+		}
+		return basicCols;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public HashMap<String, Object> getEntity(int id, String typeEntity) {
+		Query q = getEntityManager().createQuery("SELECT g FROM ?1 g WHERE id = ?2");
+		q.setParameter(2, id);
+		q.setParameter(1, typeEntity);
+		try{
+			Entidade station = (Entidade) q.getSingleResult();
+			return station.getEntHashMap();
+		}catch(Exception e){
+			return null;
+		}
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public HashMap<String,Object> getPricesByGasStationId(int id, HashMap<String,Object> ret) {
+		Query q = getEntityManager().createNativeQuery("SELECT * FROM precos_juntos g WHERE id_posto_combustivel = ?1");
+		q.setParameter(1, id);
+		try{
+			List<Object[]> prices = q.getResultList();
+			Iterator<Object[]> it = prices.iterator();
+			while(it.hasNext()){
+				Object[] o = it.next();
+				HashMap<String,Object> row = new HashMap<String, Object>();
+				String tipoComb = o[2]!=null?o[2].toString():"";
+				String priceAnp =o[3]!=null?o[3].toString():"";
+//					String dateAnp = a.get(4).toString();
+				String userId = o[5]!=null?o[5].toString():"";
+				String priceUser = o[6]!=null?o[6].toString():"";
+
+				row.put("anp", priceAnp);
+				row.put("user", priceUser);
+				row.put("userId", userId);
+				ret.put("Price "+tipoComb,row);
+			}
+			return ret;
+		}catch(Exception e){
+			return null;
+		}
 	}
 }

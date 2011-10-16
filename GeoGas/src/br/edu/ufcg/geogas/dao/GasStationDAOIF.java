@@ -2,6 +2,7 @@ package br.edu.ufcg.geogas.dao;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -39,4 +40,10 @@ public interface GasStationDAOIF {
 			String state);
 
 	public PostoCombustivel getGasStationByCnpj(String id) ;
+
+	public ArrayList<String> getBasicColumns(String tableName);
+
+	public HashMap<String, Object> getEntity(int id, String typeEntity);
+
+	public HashMap<String, Object> getPricesByGasStationId(int id, HashMap<String, Object> ret);
 }
