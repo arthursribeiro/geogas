@@ -217,7 +217,7 @@
 			}
 			
 			private function requisitar():void {
-				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:postocombustivel&FILTER=";
+				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
 				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
 				
 //				if(this.aplicarfiltros && (this.preco > 0)){
@@ -238,26 +238,33 @@
 				var xml:XML = new XML(e.target.data);
 				var parser:GMLParser = new GMLParser(xml);
 				var dic:Dictionary = parser.getDictionary();
-				
+				var columns:ArrayList = new ArrayList();
 				for(var marker:String in dic){
 					var data:Dictionary = new Dictionary();
 					var lat:Number = 0;
 					var lng:Number = 0;
 					var id:int = 0;
-					for(var prop:String in dic[marker]){
+					var dic2:Dictionary = dic[marker];
+					for(var prop:String in dic2){
 						var label:String = prop.toString().replace("geogas","");
 						label = label.toString().replace("::","");
+						if(label.toLocaleLowerCase().indexOf("price")>=0){
+							label.length;
+						}
 						if( label.toUpperCase() == Constants.LATITUDE.toUpperCase()){
-							lat = new Number( dic[marker][prop]);
+							lat = new Number( dic2[prop]);
 						}
 						else if( label.toUpperCase() == Constants.LONGITUDE.toUpperCase()){
-							lng = new Number( dic[marker][prop]);
+							lng = new Number( dic2[prop]);
 						}
 						else{
 							if( label.toUpperCase().indexOf(Constants.ID.toUpperCase())>=0){
 								id = new Number(dic[marker][prop]);
 							}else if(!(label.toUpperCase() == "GEOM")){
-								data[label] = dic[marker][prop];
+								data[label] = dic2[prop];
+								if(!(columns.getItemIndex(label)>=0)){
+									columns.addItem(label);
+								}
 							}
 						}
 					}
@@ -266,6 +273,21 @@
 					var entidade:Entidade = new Entidade(new LatLng(lat,lng),id,defaulData);
 					addMarker(entidade);
 				}
+				columns.source.sort();
+				columnGrid.columns = getGridColumns(columns.source);
+			}
+			
+			public function getGridColumns(columns:Array):Array{
+				
+				var ret:ArrayList = new ArrayList();
+				for(var i:int; i<columns.length; i++){
+					var gCol:DataGridColumn = new DataGridColumn();
+					gCol.dataField = columns[i].toString();
+					var t:String = Tesaurus.getInstance().getTraducao(columns[i].toString());
+					gCol.headerText = t;
+					ret.addItem(gCol);
+				}
+				return ret.source;
 			}
 			
 			public function failHttpRequest(e:Event):void {
@@ -274,21 +296,17 @@
 			
 			public function putEntidadeOnList(marker:Entidade):void{
 				var data:Dictionary = marker.data;
-				if(columnGrid.columns.length<=0){
-					var columns:ArrayList = new ArrayList();
-					for(var editable:String in data){
-						var dic:Dictionary = data[editable];
-						for(var key:String in dic){
-							var gCol:DataGridColumn = new DataGridColumn();
-							gCol.dataField = key;
-							var t:String = Tesaurus.getInstance().getTraducao(key);
-							gCol.headerText = t;
-							columns.addItem(gCol);
-						}
-					}
-					
-					columnGrid.columns = columns.source;
-				}
+//				var columns:ArrayList = new ArrayList();
+//				for(var editable:String in data){
+//					var dic:Dictionary = data[editable];
+//					for(var key:String in dic){
+//						var gCol:DataGridColumn = new DataGridColumn();
+//						gCol.dataField = key;
+//						var t:String = Tesaurus.getInstance().getTraducao(key);
+//						gCol.headerText = t;
+//						columns.addItem(gCol);
+//					}
+//				}
 				
 				
 				for(var editable2:String in data){
@@ -300,6 +318,7 @@
 					obj["id"] = marker.id;
 					rows.addItem(obj);
 				}
+				
 			}
 			
 //			public function receiveBasicColumns(e:ResultEvent):void{
@@ -324,6 +343,7 @@
 //				ro.addEventListener(ResultEvent.RESULT,receiveBasicColumns);
 //				ro.getBasicColumns('dados_basicos');
 //			}
+			
 			
 		]]>
 	</fx:Script>
