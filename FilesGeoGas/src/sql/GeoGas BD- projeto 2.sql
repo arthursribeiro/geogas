@@ -41,41 +41,20 @@ CREATE TABLE PostoCombustivel(
 	tipoPosto VARCHAR(255),
 	latitude DOUBLE PRECISION,
 	longitude DOUBLE PRECISION,
+	pricegasoline double precision,
+	pricealcohol double precision,
+	pricediesel double precision,
+	pricegas double precision,
+	pricegasoline_user double precision,
+	pricealcohol_user double precision,
+	pricediesel_user double precision,
+	pricegas_user double precision,
 	CONSTRAINT pk_gasstation PRIMARY KEY (id_posto_combustivel)
-);
-
-CREATE TABLE TipoCombustivel(
-	id_tipo_combustivel INTEGER PRIMARY KEY,
-	tipo_combustivel VARCHAR(255)
-);
-
-CREATE TABLE PostoCombustivel_TipoCombustivel_ANP(
-	id_posto_combustivel INTEGER REFERENCES PostoCombustivel(id_posto_combustivel),
-	id_tipo_combustivel INTEGER REFERENCES TipoCombustivel(id_tipo_combustivel),
-	preco FLOAT NOT NULL,
-	data TIMESTAMP NOT NULL,
-	CONSTRAINT pk_postocombustivel_tipocombustivel PRIMARY KEY (id_posto_combustivel, id_tipo_combustivel)
-);
-
-CREATE TABLE PostoCombustivel_TipoCombustivel_Usuario(
-	id_posto_combustivel INTEGER REFERENCES PostoCombustivel(id_posto_combustivel),
-	id_tipo_combustivel INTEGER REFERENCES TipoCombustivel(id_tipo_combustivel),
-	id_usuario INTEGER REFERENCES Usuario(id_usuario),
-	preco FLOAT NOT NULL,
-	data TIMESTAMP NOT NULL,
-	CONSTRAINT pk_postocombustivel_tipocombustivel_usuario PRIMARY KEY (id_posto_combustivel, id_tipo_combustivel,id_usuario)
 );
 
 CREATE TABLE AvaliacaoANP(
 	id_avaliacao_anp INTEGER PRIMARY KEY,
 	avaliacao VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE Avaliacao_PostoCombustivel_ANP(
-	id_posto_combustivel INTEGER REFERENCES PostoCombustivel(id_posto_combustivel),
-	id_avaliacao_anp INTEGER REFERENCES AvaliacaoANP(id_avaliacao_anp),
-	data TIMESTAMP NOT NULL,
-	CONSTRAINT pk_avaliacao_postocombustivel_anp PRIMARY KEY (id_posto_combustivel, id_avaliacao_anp)
 );
 
 CREATE TABLE Avaliacao_Entidade_Usuario(
@@ -115,6 +94,62 @@ CREATE TABLE Traducao(
 	id_lingua INTEGER REFERENCES Lingua(id_lingua),
 	CONSTRAINT pk_traducao PRIMARY KEY (coluna_banco,traducao)
 );
+
+CREATE TABLE historico_precos_anp(
+	id_posto_combustivel integer NOT NULL,
+	pricegasoline double precision,
+	pricealcohol double precision,
+	pricediesel double precision,
+	pricegas double precision,
+	data TIMESTAMP,
+	CONSTRAINT pk_historico_precos_anp PRIMARY KEY (id_posto_combustivel),
+	CONSTRAINT fk_postocombustivel FOREIGN KEY (id_posto_combustivel) REFERENCES PostoCombustivel(id_posto_combustivel)
+);
+
+CREATE TABLE historico_precos_usuario(
+	id_posto_combustivel integer NOT NULL,
+	id_usuario integer NOT NULL,
+	pricegasoline double precision,
+	pricealcohol double precision,
+	pricediesel double precision,
+	pricegas double precision,
+	data TIMESTAMP,
+	CONSTRAINT pk_historico_precos_usuario PRIMARY KEY (id_posto_combustivel,id_usuario),
+	CONSTRAINT fk_postocombustivel_usuario FOREIGN KEY (id_posto_combustivel) REFERENCES PostoCombustivel(id_posto_combustivel),
+	CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+
+CREATE OR REPLACE FUNCTION update_postocombustivel_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
+BEGIN
+UPDATE postocombustivel SET pricegasoline = NEW.pricegasoline,
+				pricealcohol = NEW.pricealcohol,
+				pricediesel = NEW.pricediesel,
+				pricegas = NEW.pricegas
+			WHERE id_posto_combustivel = NEW.id_posto_combustivel;
+RETURN NEW;
+END;
+$update_postocombustivel_anp$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_postocombustivel_anp
+    BEFORE INSERT OR UPDATE ON historico_precos_anp
+    FOR EACH ROW EXECUTE PROCEDURE update_postocombustivel_anp();
+
+
+CREATE OR REPLACE FUNCTION update_postocombustivel_usuario() RETURNS TRIGGER AS $update_postocombustivel_usuario$
+BEGIN
+UPDATE postocombustivel SET pricegasoline_user = NEW.pricegasoline,
+				pricealcohol_user = NEW.pricealcohol,
+				pricediesel_user = NEW.pricediesel,
+				pricegas_user = NEW.pricegas
+			WHERE id_posto_combustivel = NEW.id_posto_combustivel;
+RETURN NEW;
+END;
+$update_postocombustivel_usuario$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_postocombustivel_usuario
+    BEFORE INSERT OR UPDATE ON historico_precos_usuario
+    FOR EACH ROW EXECUTE PROCEDURE update_postocombustivel_usuario();
 
 --- TABLEA USUARIO ---
 INSERT INTO Traducao(coluna_banco,traducao,id_lingua) VALUES ('usuario','Usuário',1);
@@ -226,79 +261,3 @@ INSERT INTO Traducao(coluna_banco,traducao,id_lingua) VALUES ('entidade_denuncia
 /*
  * VIEWS PARA O GEOSERVER
  */
-
-CREATE OR REPLACE VIEW entidade_postos AS SELECT DISTINCT * FROM entidade e INNER JOIN postocombustivel p ON e.id_entidade = p.id_posto_combustivel ;
-
-CREATE OR REPLACE VIEW ultimos_anp AS
-SELECT DISTINCT id_posto_combustivel, id_tipo_combustivel, MAX(data) as data FROM postocombustivel_tipocombustivel_anp
-GROUP BY id_posto_combustivel, id_tipo_combustivel;
-
-CREATE OR REPLACE VIEW dados_basicos AS
-SELECT DISTINCT pc.id_posto_combustivel, pc.nomefantasia, pc.cnpjcpf, pc.razaosocial, pc.bandeira, pc.tipoposto, pc.latitude, pc.longitude,pc.geom
-FROM postocombustivel pc;
-
-CREATE OR REPLACE VIEW dados_basicos_anp AS
-SELECT DISTINCT pc.*, t.tipo_combustivel, p.preco, p.data
-FROM dados_basicos pc INNER JOIN postocombustivel_tipocombustivel_anp p ON p.id_posto_combustivel = pc.id_posto_combustivel INNER JOIN 
-	ultimos_anp u ON p.id_posto_combustivel = u.id_posto_combustivel 
-			AND p.data = u.data AND p.id_tipo_combustivel = u.id_tipo_combustivel
-	INNER JOIN tipocombustivel t ON t.id_tipo_combustivel = p.id_tipo_combustivel;
-	
-CREATE OR REPLACE VIEW dados_basicos_usuario AS
-SELECT DISTINCT pc.*, t.tipo_combustivel, p.preco, p.data
-FROM dados_basicos pc INNER JOIN postocombustivel_tipocombustivel_usuario p ON p.id_posto_combustivel = pc.id_posto_combustivel INNER JOIN 
-	ultimos_usuario u ON p.id_posto_combustivel = u.id_posto_combustivel 
-			AND p.data = u.data AND p.id_tipo_combustivel = u.id_tipo_combustivel
-	INNER JOIN tipocombustivel t ON t.id_tipo_combustivel = p.id_tipo_combustivel;
-
-
-	
-
-	
-
-
-CREATE OR REPLACE VIEW ultimos_precos_anp AS
-SELECT DISTINCT u.id_posto_combustivel, t.tipo_combustivel, p.preco, p.data
-FROM postocombustivel_tipocombustivel_anp p INNER JOIN 
-	ultimos_anp u ON p.id_posto_combustivel = u.id_posto_combustivel 
-			AND p.data = u.data AND p.id_tipo_combustivel = u.id_tipo_combustivel
-	INNER JOIN tipocombustivel t ON t.id_tipo_combustivel = p.id_tipo_combustivel;
-
-
-
-CREATE OR REPLACE VIEW ultimos_usuario AS
-SELECT DISTINCT id_posto_combustivel, id_tipo_combustivel, MAX(data) as data 
-FROM postocombustivel_tipocombustivel_usuario
-GROUP BY id_posto_combustivel, id_tipo_combustivel;
-
-
-CREATE OR REPLACE VIEW ultimos_precos_usuario AS
-SELECT DISTINCT u.id_posto_combustivel, t.tipo_combustivel, p.preco, p.data
-FROM postocombustivel_tipocombustivel_usuario p INNER JOIN 
-	ultimos_usuario u ON p.id_posto_combustivel = u.id_posto_combustivel 
-			AND p.data = u.data AND p.id_tipo_combustivel = u.id_tipo_combustivel
-	INNER JOIN tipocombustivel t ON t.id_tipo_combustivel = p.id_tipo_combustivel;
-
-CREATE OR REPLACE VIEW precos_juntos AS 
-( SELECT DISTINCT pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco AS preco_anp, pa.data AS data_anp, pu.id_usuario, pu.preco AS preco_usuario, pu.data AS data_usuario
-   FROM postocombustivel_tipocombustivel_anp pa
-   LEFT JOIN postocombustivel_tipocombustivel_usuario pu ON pa.id_posto_combustivel = pu.id_posto_combustivel AND pa.id_tipo_combustivel = pu.id_tipo_combustivel
-   JOIN ultimos_anp ua ON pa.id_posto_combustivel = ua.id_posto_combustivel AND pa.id_tipo_combustivel = ua.id_tipo_combustivel AND pa.data = ua.data
-   LEFT JOIN ultimos_usuario uu ON pu.id_posto_combustivel = uu.id_posto_combustivel AND pa.id_tipo_combustivel = uu.id_tipo_combustivel AND pa.data = ua.data
-   JOIN tipocombustivel tp ON pa.id_tipo_combustivel = tp.id_tipo_combustivel
-  ORDER BY pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco, pa.data, pu.id_usuario, pu.preco, pu.data)
-UNION 
-( SELECT DISTINCT pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco AS preco_anp, pa.data AS data_anp, pu.id_usuario, pu.preco AS preco_usuario, pu.data AS data_usuario
-   FROM postocombustivel_tipocombustivel_anp pa
-   RIGHT JOIN postocombustivel_tipocombustivel_usuario pu ON pa.id_posto_combustivel = pu.id_posto_combustivel AND pa.id_tipo_combustivel = pu.id_tipo_combustivel
-   JOIN ultimos_usuario uu ON pu.id_posto_combustivel = uu.id_posto_combustivel AND pu.id_tipo_combustivel = uu.id_tipo_combustivel AND pu.data = uu.data
-   LEFT JOIN ultimos_anp ua ON pa.id_posto_combustivel = ua.id_posto_combustivel AND pa.id_tipo_combustivel = ua.id_tipo_combustivel AND pa.data = ua.data
-   JOIN tipocombustivel tp ON pu.id_tipo_combustivel = tp.id_tipo_combustivel
-  ORDER BY pa.id_posto_combustivel, tp.id_tipo_combustivel, tp.tipo_combustivel, pa.preco, pa.data, pu.id_usuario, pu.preco, pu.data);
-
-
-CREATE OR REPLACE VIEW dados_basicos_precos AS
-SELECT db.*,pj.preco_anp, pj.data_anp, pj.preco_usuario, pj.data_usuario, pj.tipo_combustivel, 'postocombustivel' AS type_entity
-FROM dados_basicos db LEFT OUTER JOIN precos_juntos pj ON db.id_posto_combustivel = pj.id_posto_combustivel;
-
-
