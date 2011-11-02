@@ -49,6 +49,7 @@ CREATE TABLE PostoCombustivel(
 	pricealcohol_user double precision,
 	pricediesel_user double precision,
 	pricegas_user double precision,
+	autuacoes integer DEFAULT 0,
 	CONSTRAINT pk_gasstation PRIMARY KEY (id_posto_combustivel)
 );
 
@@ -119,6 +120,14 @@ CREATE TABLE historico_precos_usuario(
 	CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
+CREATE TABLE Autuacoes_ANP(
+	id_posto_combustivel integer NOT NULL,
+	autuacao VARCHAR(255),
+	data TIMESTAMP,
+	CONSTRAINT pk_autuacoes PRIMARY KEY (id_posto_combustivel,data),
+	CONSTRAINT fk_postocombustivel FOREIGN KEY (id_posto_combustivel) REFERENCES PostoCombustivel(id_posto_combustivel)
+);
+
 
 CREATE OR REPLACE FUNCTION update_postocombustivel_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
 BEGIN
@@ -150,6 +159,18 @@ $update_postocombustivel_usuario$ LANGUAGE plpgsql;
 CREATE TRIGGER update_postocombustivel_usuario
     BEFORE INSERT OR UPDATE ON historico_precos_usuario
     FOR EACH ROW EXECUTE PROCEDURE update_postocombustivel_usuario();
+    
+CREATE OR REPLACE FUNCTION update_autuacoes_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
+BEGIN
+UPDATE postocombustivel SET autuacoes = autuacoes+1
+			WHERE id_posto_combustivel = NEW.id_posto_combustivel;
+RETURN NEW;
+END;
+$update_postocombustivel_anp$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_autuacoes_anp
+    BEFORE INSERT OR UPDATE ON Autuacoes_ANP
+    FOR EACH ROW EXECUTE PROCEDURE update_autuacoes_anp();
 
 --- TABLEA USUARIO ---
 INSERT INTO Traducao(coluna_banco,traducao,id_lingua) VALUES ('usuario','Usuário',1);
