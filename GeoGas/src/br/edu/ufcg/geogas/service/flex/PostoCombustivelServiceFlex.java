@@ -52,7 +52,7 @@ public class PostoCombustivelServiceFlex implements PostoCombustivelServiceIF{
 			PostoCombustivel p = this.gasStationDAOFlex.getGasStationById(id);
 			ret = p.getHashMap();
 			
-			ret = this.gasStationDAOFlex.getPricesByGasStationId(id,ret);
+//			ret = this.gasStationDAOFlex.getPricesByGasStationId(id,ret);
 			
 		}else
 			ret = this.gasStationDAOFlex.getEntity(id,typeEntity);
