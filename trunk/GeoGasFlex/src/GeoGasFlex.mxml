@@ -217,7 +217,7 @@
 			}
 			
 			private function requisitar():void {
-				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:dados_basicos_precos&FILTER=";
+				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:postocombustivel&FILTER=";
 				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
 				
 //				if(this.aplicarfiltros && (this.preco > 0)){
