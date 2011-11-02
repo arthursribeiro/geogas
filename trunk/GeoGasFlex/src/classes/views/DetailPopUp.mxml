@@ -21,6 +21,7 @@
 			import mx.containers.Form;
 			import mx.containers.FormItem;
 			import mx.controls.Alert;
+			import mx.controls.DataGrid;
 			import mx.controls.HorizontalList;
 			import mx.controls.TextInput;
 			import mx.controls.dataGridClasses.DataGridColumn;
@@ -28,11 +29,9 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
-			import spark.components.DataGrid;
 			import spark.components.NavigatorContent;
 			import spark.components.Scroller;
 			import spark.components.VGroup;
-			import spark.components.gridClasses.GridColumn;
 			
 			private var entId:int;
 			private var typeEntity:String;
@@ -63,19 +62,19 @@
 				form.setStyle("borderVisible",false);
 				
 				var columns:ArrayList = new ArrayList();
-				var g2Col:GridColumn = new GridColumn();
+				var g2Col:DataGridColumn = new DataGridColumn();
 				g2Col.dataField = "field";
 				g2Col.headerText = "Gas Type";
 				columns.addItem(g2Col);
-				var g2Col2:GridColumn = new GridColumn();
+				var g2Col2:DataGridColumn = new DataGridColumn();
 				g2Col2.dataField = "anp";
 				g2Col2.headerText = "Price from ANP";
 				columns.addItem(g2Col2);
-				var g2Col3:GridColumn = new GridColumn();
+				var g2Col3:DataGridColumn = new DataGridColumn();
 				g2Col3.dataField = "user";
 				g2Col3.headerText = "Price from User";
 				columns.addItem(g2Col3);
-				var g2Col4:GridColumn = new GridColumn();
+				var g2Col4:DataGridColumn = new DataGridColumn();
 				g2Col4.dataField = "userId";
 				g2Col4.headerText = "User";
 				columns.addItem(g2Col4);
@@ -94,7 +93,7 @@
 						values.addItem(objValue);
 					}
 				}
-				grp.columns = columns;
+				grp.columns = columns.source;
 				grp.dataProvider = values;
 				return navCont;
 			}
@@ -132,11 +131,11 @@
 						var columns:ArrayList = new ArrayList();
 						
 						
-						var gCol:GridColumn = new GridColumn();
+						var gCol:DataGridColumn = new DataGridColumn();
 						gCol.dataField = "field";
 						gCol.headerText = "Field";
 						columns.addItem(gCol);
-						var gCol2:GridColumn = new GridColumn();
+						var gCol2:DataGridColumn = new DataGridColumn();
 						gCol2.dataField = "value";
 						gCol2.headerText = "Value";
 						columns.addItem(gCol2);
@@ -149,7 +148,7 @@
 								dataProv.addItem(values);
 							}
 						}
-						grp.columns = columns;
+						grp.columns = columns.source;
 						grp.dataProvider = dataProv;
 						tabBar.addElement(navCont);
 					}
