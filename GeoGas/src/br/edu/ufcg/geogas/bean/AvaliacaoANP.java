@@ -1,28 +1,27 @@
 package br.edu.ufcg.geogas.bean;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="AvaliacaoANP")
+@Table(name="Autuacoes_ANP")
 public class AvaliacaoANP {
-	@Id
-	@NotNull
-	@Column(name="id_avaliacao_anp")
-	private Integer id_avaliacao_anp;
+	
+	@EmbeddedId
+	private AvaliacaoANP_PK id_avaliacao_anp;
 	
 	@NotNull
-	@Column(name="avaliacao")
+	@Column(name="autuacao")
 	private String avaliacao;
 
-	public Integer getId_avaliacao_anp() {
+	public AvaliacaoANP_PK getId_avaliacao_anp() {
 		return id_avaliacao_anp;
 	}
 
-	public void setId_avaliacao_anp(Integer id_avaliacao_anp) {
+	public void setId_avaliacao_anp(AvaliacaoANP_PK id_avaliacao_anp) {
 		this.id_avaliacao_anp = id_avaliacao_anp;
 	}
 
