@@ -132,10 +132,40 @@ CREATE TABLE Autuacoes_ANP(
 CREATE TABLE layers(
 	label VARCHAR(255) NOT NULL,
 	prop_name VARCHAR(255) NOT NULL,
-	folder VARCHAR(255) NOT NULL,
-	filter INTEGER NOT NULL,
-	CONSTRAINT pk_layers PRIMARY KEY (label,folder)
+	islike_value VARCHAR(255),
+	min_value DOUBLE PRECISION,
+	max_value DOUBLE PRECISION,
+	folder VARCHAR(255) NOT NULL
 );
+
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value) VALUES
+('Bandeira','bandeira','BRANCA','%BRANCA%',null,null),
+('Bandeira','bandeira','PETROBRAS','PETROBRAS%',null,null),
+('Bandeira','bandeira','SHELL','SHELL%',null,null),
+('Bandeira','bandeira','SETTA','%SETTA%',null,null),
+('Bandeira','bandeira','DISLUB','DISLUB%',null,null),
+('Bandeira','bandeira','ALESAT','ALESAT%',null,null),
+('Bandeira','bandeira','COSAN','COSAN%',null,null),
+('Bandeira','bandeira','ELLO','ELLO%',null,null),
+('Bandeira','bandeira','FAN','FAN%',null,null),
+('Bandeira','bandeira','FEDERAL','FEDERAL%',null,null),
+('Bandeira','bandeira','IPP','IPP%',null,null),
+('Bandeira','bandeira','ALVO','ALVO%',null,null),
+('Bandeira','bandeira','SATELITE','SATELITE%',null,null),
+('Bandeira','bandeira','SP','SP%',null,null),
+('Bandeira','bandeira','TEMAPE','TEMAPE%',null,null),
+('Bandeira','bandeira','TOTAL','TOTAL%',null,null),
+
+('Tipo Comb.','pricegasoline','Gasolina',null,0,1000),
+('Tipo Comb.','pricealcohol','Alcool',null,0,1000),
+('Tipo Comb.','pricediesel','Diesel',null,0,1000),
+('Tipo Comb.','pricegas','Gas',null,0,1000),
+
+('Aval. ANP','autuacoes','Autuados',null,1,1000000),
+('Aval. ANP','autuacoes','Nao Autuados',null,-1,0),
+
+('Aval. Usuarios','denuncias','Com denuncias',null,1,1000000),
+('Aval. Usuarios','denuncias','Sem denuncias',null,-1,0);
 
 
 CREATE OR REPLACE FUNCTION update_postocombustivel_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
