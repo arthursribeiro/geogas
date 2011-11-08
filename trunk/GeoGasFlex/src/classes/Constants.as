@@ -20,5 +20,16 @@ package classes
 		public static const LONGITUDE:String = "longitude";
 		
 		public static const ID:String = "id_";
+		
+		public static const BANDEIRA_FOLDER:String = "bandeira";
+		
+		public static const TIPO_COMBUSTIVEL_FOLDER:String = "tipo comb.";
+		
+		public static const PROP_LAYER_FOLDER:String = "geogas::folder";
+		public static const PROP_LAYER_LABEL:String = "geogas::label";
+		public static const PROP_LAYER_PROP_NAME:String = "geogas::prop_name";
+		public static const PROP_LAYER_ISLIKE_VALUE:String = "geogas::islike_value";
+		public static const PROP_LAYER_MIN_VALUE:String = "geogas::min_value";
+		public static const PROP_LAYER_MAX_VALUE:String = "geogas::max_value";
 	}
 }

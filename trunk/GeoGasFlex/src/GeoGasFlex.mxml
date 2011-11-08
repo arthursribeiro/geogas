@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<mx:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*">
 	<fx:Declarations>
 		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
+		
+		<fx:XML xmlns="" id="treeSource">
+			<node/>
+		</fx:XML>
 	</fx:Declarations>
+	
+	
 	
 	<fx:Script>
 		<![CDATA[
@@ -14,6 +20,7 @@
 			import classes.model.GMLParser;
 			import classes.model.GeoLocation;
 			import classes.model.Tesaurus;
+			import classes.model.it.sephiroth.renderers.TreecheckboxItemRenderer;
 			import classes.views.DetailPopUp;
 			
 			import com.google.maps.Color;
@@ -46,7 +53,9 @@
 			import mx.controls.DataGrid;
 			import mx.controls.Label;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
+			import mx.events.TreeEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -122,8 +131,19 @@
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
 				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
-				search.addEventListener("submeter", realizarPesquisa);
-				updateMap(null);
+//				search.addEventListener("submeter", realizarPesquisa);
+				getLayersTree();
+//				updateMap(null);
+			}
+			
+			private function getLayersTree():void{
+				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:layers";
+				var request:URLRequest = new URLRequest(serverUrl);
+				var urlLoader:URLLoader = new URLLoader(request);
+				urlLoader.addEventListener(Event.COMPLETE, resultHttpRequestLayersTree);
+				urlLoader.addEventListener(ErrorEvent.ERROR, failHttpRequest);
+				urlLoader.addEventListener(IOErrorEvent.IO_ERROR, failHttpRequest);
+				urlLoader.load(request);
 			}
 			
 			private function realizarPesquisa(ev:EventoPesquisa):void {
@@ -157,25 +177,25 @@
 				rows = new ArrayList();
 			}
 			
-			private function OlaMundo():void {
-			}
 			
 			public function mapClicked(event:MapMouseEvent):void{
-				var r:Number = new Number(search.raioInput.text);
-				if(geodesic) map.removeOverlay(geodesic);
-				if(map && search.raioCheck.selected && r>0){
-//					var circle:Polygon = new Polygon(
-//					var marker:Entidade = new Entidade(latLng,1,defaultData,otherTabs);
-					var latL:LatLng = event.latLng;
-					var geoLoc:GeoLocation = GeoLocation.getInstanceDegrees(latL.lat(),latL.lng());
-					var coords:ArrayList = geoLoc.boundingCoordinates(r);
-					
-					var polyOpt:PolylineOptions = new PolylineOptions();
-					polyOpt.geodesic = true;
-					
-					geodesic = new Polyline(coords.toArray(),polyOpt);
-					
-					map.addOverlay(geodesic);
+				if(search){
+					var r:Number = new Number(search.raioInput.text);
+					if(geodesic) map.removeOverlay(geodesic);
+					if(map && search.raioCheck.selected && r>0){
+						//					var circle:Polygon = new Polygon(
+						//					var marker:Entidade = new Entidade(latLng,1,defaultData,otherTabs);
+						var latL:LatLng = event.latLng;
+						var geoLoc:GeoLocation = GeoLocation.getInstanceDegrees(latL.lat(),latL.lng());
+						var coords:ArrayList = geoLoc.boundingCoordinates(r);
+						
+						var polyOpt:PolylineOptions = new PolylineOptions();
+						polyOpt.geodesic = true;
+						
+						geodesic = new Polyline(coords.toArray(),polyOpt);
+						
+						map.addOverlay(geodesic);
+					}
 				}
 			}
 			
@@ -208,10 +228,6 @@
 			private function getMapBBox():String{
 				var bbox:LatLngBounds = map.getLatLngBounds();
 				var bboxStr:String;
-				//if(this.aplicarfiltros && this.raio > 0){
-				//	var center:LatLng = bbox.getCenter();
-					//criar a string usando o raio e as coordenadas do mapa.
-				//}
 				bboxStr = bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat();
 				return bboxStr;
 			}
@@ -220,18 +236,90 @@
 				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
 				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
 				
-//				if(this.aplicarfiltros && (this.preco > 0)){
-//					var filpreco:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,"pricegasoline").replace(Constants.REPLACE_MIN_VALUE,"0").replace(Constants.REPLACE_MAX_VALUE,preco.toString());
-//					filters.concat(filpreco);
-//				
-//				}
 				
-				if(this.search.bandCheck.selected && (search.getBandeira().length>0)){
+				var data2:XML = new XML(myTree.dataProvider);
+				var layersFilter:String = '<Or>'+Constants.REPLACE_FILTERS+'</Or>';
+				var layersFilterData:String = '';
+				for each(var node:XML in data2.children()){
+					var label:String = node.@label;
+					if(label.toLowerCase() == Constants.BANDEIRA_FOLDER){
+						var bandeiraClean:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,'bandeira');
+						bandeiraClean = bandeiraClean.replace(Constants.REPLACE_VALUE,'#@!NENHUMA SELECIONADA!@#');
+						
+						var bandeiraLayer:String = layersFilter.replace(Constants.REPLACE_FILTERS,bandeiraClean+' '+Constants.REPLACE_FILTERS);
+						var newBandeiraFilter:String = '';
+						for each(var bandeira:XML in node.children()){
+							if(bandeira.@checked == 1){
+								newBandeiraFilter += propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,bandeira.@prop_name);
+								newBandeiraFilter = newBandeiraFilter.replace(Constants.REPLACE_VALUE,'%'+bandeira.@label+'%');
+							}
+						}
+						layersFilterData += bandeiraLayer.replace(Constants.REPLACE_FILTERS,newBandeiraFilter);
+					}else if(label.toLowerCase().indexOf(Constants.TIPO_COMBUSTIVEL_FOLDER) >=0){
+						var newCombustiveisFilter:String = '';
+						for each(var combustivel:XML in node.children()){
+							var combustivelClean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,combustivel.@prop_name);
+							combustivelClean = combustivelClean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+							combustivelClean = combustivelClean.replace(Constants.REPLACE_MAX_VALUE,'-1');
+							
+							var combFilt:String = layersFilter.replace(Constants.REPLACE_FILTERS,combustivelClean + ' ' + Constants.REPLACE_FILTERS);
+							var newCombFilt:String = '';
+							if(combustivel.@checked == 1){
+								newCombFilt = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,combustivel.@prop_name);
+								newCombFilt = newCombFilt.replace(Constants.REPLACE_MIN_VALUE,'0');
+								newCombFilt = newCombFilt.replace(Constants.REPLACE_MAX_VALUE,'1000');
+							}
+							combFilt = combFilt.replace(Constants.REPLACE_FILTERS,newCombFilt);
+							newCombustiveisFilter += combFilt;
+						}
+						layersFilterData += layersFilter.replace(Constants.REPLACE_FILTERS,newCombustiveisFilter);
+					}
+				}
+				
+				filters+=layersFilterData;
+				
+				if(search && this.search.bandCheck.selected && (search.getBandeira().length>0)){
 					var filbandeira:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,"bandeira").replace(Constants.REPLACE_VALUE,"%"+search.getBandeira()+"%");
 					filters+=filbandeira;
 				}
 				
 				ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
+			}
+			
+			private function resultHttpRequestLayersTree(e:Event):void{
+				var xml:XML = new XML(e.target.data);
+				var parser:GMLParser = new GMLParser(xml);
+				var dic:Dictionary = parser.getDictionary();
+				createTree(dic);
+				updateMap(null);
+			}
+			
+			private function createTree(dic:Dictionary):void{
+				var hash:Dictionary = new Dictionary();
+				var folders:ArrayList = new ArrayList();
+				for each(var layer:Object in dic){
+					var strFolder:String = layer[Constants.PROP_LAYER_FOLDER];
+					var strLayer:String = '    <node label="'+layer[Constants.PROP_LAYER_LABEL]+'" ' +
+						'checked="1" prop_name="'+layer[Constants.PROP_LAYER_PROP_NAME]+'" ' +
+						'islike_value="'+layer[Constants.PROP_LAYER_ISLIKE_VALUE]+'" ' +
+						'min_value="'+layer[Constants.PROP_LAYER_MIN_VALUE]+'" ' +
+						'max_value="'+layer[Constants.PROP_LAYER_MAX_VALUE]+'" /> \n';
+					if(hash[strFolder])
+						hash[strFolder] += strLayer;
+					else{
+						hash[strFolder] = strLayer;
+						folders.addItem(strFolder);
+					}
+					
+				}
+				//<node label="Layers" checked="1">
+				var strTree:String = '';
+				for(var i:int = 0; i<folders.length; i++){
+					var folder:String = folders.getItemAt(i) as String;
+					var node:String = '<node label="'+folder+'" checked="1">\n'+hash[folder]+'</node>\n'
+					strTree += node;
+				}
+				treeSource = XML('<node>'+strTree+'</node>');
 			}
 			
 			public function resultHttpRequest(e:Event):void {
@@ -275,6 +363,7 @@
 				}
 				columns.source.sort();
 				columnGrid.columns = getGridColumns(columns.source);
+				FlexGlobals.topLevelApplication.enabled = true;
 			}
 			
 			public function getGridColumns(columns:Array):Array{
@@ -321,36 +410,81 @@
 				
 			}
 			
-//			public function receiveBasicColumns(e:ResultEvent):void{
-//				var colsHead:ArrayList = new ArrayList();
-//				for(var col:String in e.result){
-//					col = e.result[col];
-//					var gCol:DataGridColumn = new DataGridColumn();
-//					gCol.dataField = col;
-//					var translation:String = Tesaurus.getInstance().getTraducao(col);
-//					gCol.headerText = translation;
-//					
-//					colsHead.addItem(gCol);
-//				}
-//				columnGrid.columns = colsHead.source;
-//				columnGrid.dataProvider;
-//				ro.removeEventListener(ResultEvent.RESULT,receiveBasicColumns);
-//				ro.addEventListener(ResultEvent.RESULT,ro_resultHandler);
-//			}
 			
-//			public function gridComplete():void{
-//				ro.removeEventListener(ResultEvent.RESULT,ro_resultHandler);
-//				ro.addEventListener(ResultEvent.RESULT,receiveBasicColumns);
-//				ro.getBasicColumns('dados_basicos');
-//			}
+			/**
+			 * Called on checkbox click
+			 * check and update for both parents and child nodes
+			 * according to the checkbox status
+			 */
+			private function onItemCheck( event: TreeEvent ): void
+			{
+				FlexGlobals.topLevelApplication.enabled = false;
+				updateParents( event.item as XML, ( event.itemRenderer as TreecheckboxItemRenderer ).checkBox.checkState );
+				updateChilds( event.item as XML, ( event.itemRenderer as TreecheckboxItemRenderer ).checkBox.checkState );
+				updateMap(null);
+			}
 			
+			/**
+			 * @see it.sephiroth.controls.CheckBoxExtended#checkState
+			 * 
+			 */
+			private function updateChilds( item:XML, value: uint ):void
+			{
+				var middle: Boolean = ( value & 2 << 1 ) == ( 2 << 1 );
+				var selected: Boolean = ( value & 1 << 1 ) == ( 1 << 1 );
+				
+				if( item.children( ).length( ) > 0 && !middle )
+				{
+					for each(var x: XML in item.node )
+					{
+						x.@checked = value == ( 1 << 1 | 2 << 1 ) ? "2" : value == ( 1 << 1 ) ? "1" : "0";
+						updateChilds( x, value );
+					}
+				}
+			}
+			
+			private function updateParents( item: XML, value: uint ): void
+			{
+				var checkValue: String = ( value == ( 1 << 1 | 2 << 1 ) ? "2" : value == ( 1 << 1 ) ? "1" : "0" );
+				var parentNode: XML = item.parent( );
+				if( parentNode )
+				{
+					for each(var x: XML in parentNode.node )
+					{
+						if( x.@checked != checkValue )
+						{
+							checkValue = "2"
+						}
+					}
+					parentNode.@checked = checkValue;
+					updateParents( parentNode, value );
+				}
+			}
 			
 		]]>
 	</fx:Script>
+	
 	<s:HGroup width="100%" height="100%">
 	<s:BorderContainer width="20%" height="100%">
-		<views:SearchComponent id="search"  width="100%" height="100%">
-		</views:SearchComponent>
+		<mx:TabNavigator x="0" y="-1" width="100%" height="100%">
+			<s:NavigatorContent width="100%" height="100%" label="Layers">
+				<controls:TreeCheckBox id="myTree"
+									   showRoot="false"
+									   width="100%"
+									   height="100%"
+									   dataProvider="{treeSource}"
+									   openItems="{treeSource..node}"
+									   labelField="@label"
+									   checkField="@checked"
+									   itemCheck="onItemCheck( event )" editable="false">
+					
+				</controls:TreeCheckBox>
+			</s:NavigatorContent>
+			<s:NavigatorContent width="100%" height="100%" label="Search">
+				<views:SearchComponent id="search" x="0" y="0" width="100%" height="100%">
+				</views:SearchComponent>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
 	</s:BorderContainer>
 	<mx:TabNavigator width="80%" height="100%">
 		<s:NavigatorContent id="mapTab" width="100%" height="100%" label="Map">
@@ -363,4 +497,4 @@
 		</s:NavigatorContent>
 	</mx:TabNavigator>
 	</s:HGroup>
-</s:Application>
+</mx:Application>
