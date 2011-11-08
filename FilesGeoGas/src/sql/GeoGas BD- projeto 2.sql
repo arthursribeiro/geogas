@@ -50,6 +50,7 @@ CREATE TABLE PostoCombustivel(
 	pricediesel_user double precision,
 	pricegas_user double precision,
 	autuacoes integer DEFAULT 0,
+	denuncias integer DEFAULT 0,
 	CONSTRAINT pk_gasstation PRIMARY KEY (id_posto_combustivel)
 );
 
@@ -128,6 +129,14 @@ CREATE TABLE Autuacoes_ANP(
 	CONSTRAINT fk_postocombustivel FOREIGN KEY (id_posto_combustivel) REFERENCES PostoCombustivel(id_posto_combustivel)
 );
 
+CREATE TABLE layers(
+	label VARCHAR(255) NOT NULL,
+	prop_name VARCHAR(255) NOT NULL,
+	folder VARCHAR(255) NOT NULL,
+	filter INTEGER NOT NULL,
+	CONSTRAINT pk_layers PRIMARY KEY (label,folder)
+);
+
 
 CREATE OR REPLACE FUNCTION update_postocombustivel_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
 BEGIN
@@ -160,17 +169,35 @@ CREATE TRIGGER update_postocombustivel_usuario
     BEFORE INSERT OR UPDATE ON historico_precos_usuario
     FOR EACH ROW EXECUTE PROCEDURE update_postocombustivel_usuario();
     
-CREATE OR REPLACE FUNCTION update_autuacoes_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
+CREATE OR REPLACE FUNCTION update_autuacoes_anp() RETURNS TRIGGER AS $update_autuacoes_anp$
 BEGIN
 UPDATE postocombustivel SET autuacoes = autuacoes+1
 			WHERE id_posto_combustivel = NEW.id_posto_combustivel;
 RETURN NEW;
 END;
-$update_postocombustivel_anp$ LANGUAGE plpgsql;
+$update_autuacoes_anp$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_autuacoes_anp
     BEFORE INSERT OR UPDATE ON Autuacoes_ANP
     FOR EACH ROW EXECUTE PROCEDURE update_autuacoes_anp();
+    
+CREATE OR REPLACE FUNCTION update_denuncias_usuarios() RETURNS TRIGGER AS $update_denuncias_usuarios$
+BEGIN
+UPDATE postocombustivel SET denuncias = denuncias+1
+			WHERE id_posto_combustivel = NEW.id_posto_combustivel;
+RETURN NEW;
+END;
+$update_denuncias_usuarios$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_denuncias_usuarios
+    BEFORE INSERT OR UPDATE ON Denuncia
+    FOR EACH ROW EXECUTE PROCEDURE update_denuncias_usuarios();
+    
+CREATE OR REPLACE VIEW gasstation AS
+SELECT p.nomefantasia,p.razaosocial,p.pricegasoline,p.pricegasoline_user,
+	p.pricealcohol,p.pricealcohol_user,
+	p.pricediesel, p.pricediesel_user,
+	p.pricegas,p.pricegas_user, p.bandeira, p.geom, p.latitude,p.longitude,p.autuacoes, p.denuncias, CAST('Posto de Combustivel' AS VARCHAR) AS type_entity FROM postocombustivel p;
 
 --- TABLEA USUARIO ---
 INSERT INTO Traducao(coluna_banco,traducao,id_lingua) VALUES ('usuario','Usuário',1);
