@@ -12,7 +12,6 @@
 	<s:TextInput x="46" y="140" width="119" fontSize="11" id="raioInput" restrict=".0-9"/>
 	<s:TextInput x="46" y="178" width="118" fontSize="11" id="precoInput" restrict=".0-9" visible="false"/>
 	<s:CheckBox x="10" y="157" label="Preço Máximo" visible="false" fontSize="11" id="precoCheck" change="changePrecoInput()"/>
-	<s:RichText x="10" y="10" text="Pesquisar" fontSize="14" color="#3C1CDE" fontWeight="bold"/>
 	<s:Button x="86" y="304" label="Update Map" id="botaoSubmeter" click="submeter()"/>
 	
 	<fx:Script>
