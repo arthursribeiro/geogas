@@ -3,6 +3,7 @@ package classes.model
 	import flash.utils.Dictionary;
 	
 	import mx.controls.Alert;
+	import mx.core.FlexGlobals;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.RemoteObject;
@@ -14,10 +15,12 @@ package classes.model
 		
 		private var _dicionario:Object;
 		
+		public var ro:RemoteObject = new RemoteObject("PostoCombustivelService");
+		
 		public static function getInstance():Tesaurus{
 			if(!singleton){
+				FlexGlobals.topLevelApplication.enabled = false;
 				singleton = new Tesaurus();
-				singleton.updateDic();
 			}
 			return singleton;
 		}
@@ -34,11 +37,11 @@ package classes.model
 		public function receiveDic(event:ResultEvent):void{
 			_dicionario = event.result;
 			_dicionario.toString();
+			
 		}
 		
 		public function updateDic():void{
 			if(needDictionary()){
-				var ro:RemoteObject = new RemoteObject("PostoCombustivelService");
 				ro.addEventListener(ResultEvent.RESULT,receiveDic);
 				ro.addEventListener(FaultEvent.FAULT,error);
 				ro.getTraducoes.send();
@@ -46,6 +49,7 @@ package classes.model
 		}
 		
 		public function error(event:FaultEvent):void{
+			FlexGlobals.topLevelApplication.enabled = true;
 			Alert.show(event.fault.message);
 		}
 		
