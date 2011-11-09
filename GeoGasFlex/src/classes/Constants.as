@@ -31,5 +31,6 @@ package classes
 		public static const PROP_LAYER_ISLIKE_VALUE:String = "geogas::islike_value";
 		public static const PROP_LAYER_MIN_VALUE:String = "geogas::min_value";
 		public static const PROP_LAYER_MAX_VALUE:String = "geogas::max_value";
+		public static const PROP_HAS_USER_PROP:String = "geogas::has_user_prop";
 	}
 }

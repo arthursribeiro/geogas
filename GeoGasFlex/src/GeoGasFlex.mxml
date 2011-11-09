@@ -59,6 +59,7 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
 			import mx.utils.URLUtil;
 			
 			import spark.components.gridClasses.GridColumn;
@@ -70,6 +71,9 @@
 			
 			private var columnGrid:DataGrid;
 			private var popUp:DetailPopUp;
+			
+			private var workspace:String = 'geogas';
+			private var baseLayer:String = 'gasstation';
 			
 			private var bboxFilter:String = "<BBOX>" +
 				"<PropertyName>geom</PropertyName>" +
@@ -115,14 +119,18 @@
 			
 			private function init():void{
 				Tesaurus.getInstance();
+				if(Tesaurus.needDictionary()){
+					Tesaurus.getInstance().updateDic();
+				}
+				Tesaurus.getInstance().ro.addEventListener(ResultEvent.RESULT,init_continue);
+			}
+			
+			private function init_continue(e:Event):void{
 				columnGrid = new DataGrid();
 				columnGrid.width = mapC.width;
 				columnGrid.height = mapC.height;
 				columnGrid.addEventListener(ListEvent.ITEM_CLICK,chamou);
 				colGridContainer.addElement(columnGrid);
-				if(Tesaurus.needDictionary()){
-					Tesaurus.getInstance().updateDic();
-				}
 				this.map.enableScrollWheelZoom();
 				this.map.addControl(new MapTypeControl());
 				this.map.addControl(new NavigationControl());
@@ -131,13 +139,13 @@
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
 				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
-//				search.addEventListener("submeter", realizarPesquisa);
+				//				search.addEventListener("submeter", realizarPesquisa);
 				getLayersTree();
-//				updateMap(null);
+				//				updateMap(null);
 			}
 			
 			private function getLayersTree():void{
-				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:layers";
+				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName="+this.workspace+":layers";
 				var request:URLRequest = new URLRequest(serverUrl);
 				var urlLoader:URLLoader = new URLLoader(request);
 				urlLoader.addEventListener(Event.COMPLETE, resultHttpRequestLayersTree);
@@ -214,6 +222,8 @@
 			protected function ro_resultHandler(event:ResultEvent):void {
 				var serverUrl:String = event.result.toString();
 				var request:URLRequest = new URLRequest(serverUrl);
+				request.method = URLRequestMethod.POST;
+				request.data;
 				var urlLoader:URLLoader = new URLLoader(request);
 				urlLoader.addEventListener(Event.COMPLETE, resultHttpRequest);
 				urlLoader.addEventListener(ErrorEvent.ERROR, failHttpRequest);
@@ -227,63 +237,138 @@
 			
 			private function getMapBBox():String{
 				var bbox:LatLngBounds = map.getLatLngBounds();
-				var bboxStr:String;
-				bboxStr = bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat();
+				var bboxStr:String = 
+					'<ogc:BBOX> ' +
+					'        <ogc:PropertyName>geom</ogc:PropertyName> ' +
+					'        <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"> ' +
+					'           <gml:coordinates>'+ bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat() +'</gml:coordinates> ' +
+					'        </gml:Box> ' +
+					'</ogc:BBOX>';
+				
 				return bboxStr;
 			}
 			
 			private function requisitar():void {
-				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
-				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
-				
+//				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
+				var serverUrl:String = "http://localhost:8080/geoserver/wfs";
+//				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
+				var filters:String = getMapBBox();
 				
 				var data2:XML = new XML(myTree.dataProvider);
 				var layersFilter:String = '<Or>'+Constants.REPLACE_FILTERS+'</Or>';
 				var layersFilterData:String = '';
+				var withCleanFilter:Dictionary = new Dictionary();
+				var props:ArrayList = new ArrayList();
 				for each(var node:XML in data2.children()){
 					var label:String = node.@label;
-					if(label.toLowerCase() == Constants.BANDEIRA_FOLDER){
-						var bandeiraClean:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,'bandeira');
-						bandeiraClean = bandeiraClean.replace(Constants.REPLACE_VALUE,'#@!NENHUMA SELECIONADA!@#');
-						
-						var bandeiraLayer:String = layersFilter.replace(Constants.REPLACE_FILTERS,bandeiraClean+' '+Constants.REPLACE_FILTERS);
-						var newBandeiraFilter:String = '';
-						for each(var bandeira:XML in node.children()){
-							if(bandeira.@checked == 1){
-								newBandeiraFilter += propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,bandeira.@prop_name);
-								newBandeiraFilter = newBandeiraFilter.replace(Constants.REPLACE_VALUE,'%'+bandeira.@label+'%');
+					for each(var childNode:XML in node.children()){
+						var propName:String = childNode.@folder;
+						var propLayer:String = withCleanFilter[propName];
+						var newPropFilter:String = '';
+						if(childNode.@islike_value != 'undefined'){
+							if(propLayer == null){
+								var propClean:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+								propClean = propClean.replace(Constants.REPLACE_VALUE,'#@!NENHUMA SELECIONADA!@#')+'\n';
+								propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,propClean+' '+Constants.REPLACE_FILTERS);
 							}
-						}
-						layersFilterData += bandeiraLayer.replace(Constants.REPLACE_FILTERS,newBandeiraFilter);
-					}else if(label.toLowerCase().indexOf(Constants.TIPO_COMBUSTIVEL_FOLDER) >=0){
-						var newCombustiveisFilter:String = '';
-						for each(var combustivel:XML in node.children()){
-							var combustivelClean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,combustivel.@prop_name);
-							combustivelClean = combustivelClean.replace(Constants.REPLACE_MIN_VALUE,'-2');
-							combustivelClean = combustivelClean.replace(Constants.REPLACE_MAX_VALUE,'-1');
+							if(childNode.@checked == 1){
+								newPropFilter += propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+								newPropFilter = newPropFilter.replace(Constants.REPLACE_VALUE,'%'+childNode.@label+'%')+'\n';
+							}
+						}else if(childNode.@islike_value == 'undefined' && childNode.@min_value != 'undefined' && childNode.@max_value != 'undefined' ){
+							if(propLayer == null){
+								var prop2Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+								prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+								prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+								
+								if(childNode.@has_user_prop == 1){
+									prop2Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+									prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+									prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+								}
+								
+								propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean+' '+Constants.REPLACE_FILTERS);
+							}else if(!propLayer.indexOf(childNode.@prop_name)>=0){
+								var prop3Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+								prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+								prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+								
+								if(childNode.@has_user_prop == 1){
+									prop3Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+									prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+									prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+								}
+								propLayer = propLayer.replace(Constants.REPLACE_FILTERS,prop3Clean+ ' ' + Constants.REPLACE_FILTERS);
+							}
 							
-							var combFilt:String = layersFilter.replace(Constants.REPLACE_FILTERS,combustivelClean + ' ' + Constants.REPLACE_FILTERS);
-							var newCombFilt:String = '';
-							if(combustivel.@checked == 1){
-								newCombFilt = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,combustivel.@prop_name);
-								newCombFilt = newCombFilt.replace(Constants.REPLACE_MIN_VALUE,'0');
-								newCombFilt = newCombFilt.replace(Constants.REPLACE_MAX_VALUE,'1000');
+//							var combFilt:String = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean + ' ' + Constants.REPLACE_FILTERS);
+							if(childNode.@checked == 1){
+								newPropFilter = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+								newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
+								newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
+								if(childNode.@has_user_prop == 1){
+									newPropFilter += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+									newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
+									newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
+								}
 							}
-							combFilt = combFilt.replace(Constants.REPLACE_FILTERS,newCombFilt);
-							newCombustiveisFilter += combFilt;
+//							propLayer = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+ ' ' + Constants.REPLACE_FILTERS);
 						}
-						layersFilterData += layersFilter.replace(Constants.REPLACE_FILTERS,newCombustiveisFilter);
+						if(!hasString(props,propName)){
+							props.addItem(propName);
+						}
+						withCleanFilter[propName] = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+' '+Constants.REPLACE_FILTERS);
 					}
 				}
 				
-				filters+=layersFilterData;
+				for(var index:int = 0; index < props.length; index++){
+					var propStr:String = props.getItemAt(index).toString();
+					var filter:String = withCleanFilter[propStr].toString().replace(Constants.REPLACE_FILTERS, '');
+					layersFilterData += filter;
+				}
+				filters+='<And>'+layersFilterData+'</And>';
 				
 				if(search && this.search.bandCheck.selected && (search.getBandeira().length>0)){
 					var filbandeira:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,"bandeira").replace(Constants.REPLACE_VALUE,"%"+search.getBandeira()+"%");
 					filters+=filbandeira;
 				}
+				var xmlRequest:String = 
+					'<wfs:GetFeature service="WFS" version="1.0.0" ' +
+						'	outputFormat="GML2" ' +
+						'	xmlns:topp="http://www.openplans.org/topp" ' +
+						'	xmlns:wfs="http://www.opengis.net/wfs" ' +
+						'	xmlns:ogc="http://www.opengis.net/ogc" ' +
+						'	xmlns:gml="http://www.opengis.net/gml"' +
+						'	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+						'	xsi:schemaLocation="http://www.opengis.net/wfs ' +
+						'  		http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd"> \n' +
+						
+						'	<wfs:Query typeName="'+this.workspace+':'+this.baseLayer+'"> \n' +
+						'		<ogc:Filter><And>\n' + filters +
+						'		</And></ogc:Filter> \n' +
+						'	</wfs:Query>\n ' +
+					'</wfs:GetFeature>\n'
+				//ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
 				
-				ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
+				var service:HTTPService = new HTTPService();
+				service.url = serverUrl;
+				service.resultFormat = "e4x";
+				service.method = "POST";
+				service.contentType = "text/xml";
+				service.showBusyCursor = true;
+				service.addEventListener(ResultEvent.RESULT, resultHttpRequest);
+				service.addEventListener(FaultEvent.FAULT, failHttpRequest);
+				service.send(xmlRequest);
+				
+			}
+			
+			private function hasString(props:ArrayList,propName:String):Boolean{
+				for (var i:int = 0; i<props.length;i++){
+					if(props.getItemAt(i).toString().toLowerCase() == propName.toLowerCase()){
+						return true;
+					}
+				}
+				return false;
 			}
 			
 			private function resultHttpRequestLayersTree(e:Event):void{
@@ -303,7 +388,9 @@
 						'checked="1" prop_name="'+layer[Constants.PROP_LAYER_PROP_NAME]+'" ' +
 						'islike_value="'+layer[Constants.PROP_LAYER_ISLIKE_VALUE]+'" ' +
 						'min_value="'+layer[Constants.PROP_LAYER_MIN_VALUE]+'" ' +
-						'max_value="'+layer[Constants.PROP_LAYER_MAX_VALUE]+'" /> \n';
+						'max_value="'+layer[Constants.PROP_LAYER_MAX_VALUE]+'" ' +
+						'has_user_prop="'+layer[Constants.PROP_HAS_USER_PROP]+'"' +
+						'folder="'+strFolder+'"/> \n';
 					if(hash[strFolder])
 						hash[strFolder] += strLayer;
 					else{
@@ -322,8 +409,8 @@
 				treeSource = XML('<node>'+strTree+'</node>');
 			}
 			
-			public function resultHttpRequest(e:Event):void {
-				var xml:XML = new XML(e.target.data);
+			public function resultHttpRequest(e:ResultEvent):void {
+				var xml:XML = new XML(e.result);
 				var parser:GMLParser = new GMLParser(xml);
 				var dic:Dictionary = parser.getDictionary();
 				var columns:ArrayList = new ArrayList();
@@ -334,8 +421,8 @@
 					var id:int = 0;
 					var dic2:Dictionary = dic[marker];
 					for(var prop:String in dic2){
-						var label:String = prop.toString().replace("geogas","");
-						label = label.toString().replace("::","");
+						var label:String = prop.toString().replace(this.workspace+"::","");
+//						label = label.toString().replace(,"");
 						if(label.toLocaleLowerCase().indexOf("price")>=0){
 							label.length;
 						}
@@ -379,7 +466,7 @@
 				return ret.source;
 			}
 			
-			public function failHttpRequest(e:Event):void {
+			public function failHttpRequest(e:FaultEvent):void {
 //				Alert.show('Ocorreu um erro com a comunicação, tente novamente mais tarde.');
 			}
 			
