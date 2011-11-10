@@ -6,6 +6,10 @@ package classes
 		{
 		}
 		
+		public static const SERVER_AD:String = "http://localhost:8080";
+		
+		public static const OPENPOPU_EVENT:String = "openpopup";
+		
 		public static const ENTITY:String = "entity";
 		
 		public static const REPLACE_PROP_NAME:String = "?replacePropName?";
