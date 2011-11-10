@@ -1,5 +1,6 @@
 package classes.model
 {
+	import classes.Constants;
 	import classes.views.GeoGasInfoWindow;
 	
 	import com.google.maps.InfoWindowOptions;
@@ -8,10 +9,12 @@ package classes.model
 	import com.google.maps.overlays.Marker;
 	import com.google.maps.overlays.MarkerOptions;
 	
+	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.utils.Dictionary;
 	
-	import mx.controls.Image;
-
+	import spark.components.Image;
+	
 	public class Entidade extends Marker
 	{
 		
@@ -21,22 +24,71 @@ package classes.model
 		
 		private var infoOpt:InfoWindowOptions;
 		
+		public var pricegasoline:Number;
+		
+		public var pricealcohol:Number;
+		
+		public var pricediesel:Number;
+		
+		public var pricegas:Number;
+		
+		public var pricegasoline_user:Number;
+		
+		public var pricealcohol_user:Number;
+		
+		public var pricediesel_user:Number;
+		
+		public var pricegas_user:Number;
+		
+		public var autuacoes:Number;
+		
+		public var denuncias:Number;
+		
+		public var bandeira:String;
+		
+		public var latitude:Number;
+		
+		public var longitude:Number;
+		
+		public var nomefantasia:String;
+		public var razaosocial:String; 
+			
+		public var img:String;
+		
+		private var content:GeoGasInfoWindow
+		
 		public function Entidade(latLong:LatLng, id:int = 0, data:Dictionary = null, otherData:Dictionary=null, options:MarkerOptions = null)
 		{
 			if(!options){
 				options = new MarkerOptions();
 			}
 			var img:Image = new Image();
-			img.source = "http://localhost:8080/geogas/imgs/posto.jpg";
-			img.width = 20;
+			img.source = Constants.SERVER_AD+"/geogas/imgs/"+data["img"];
+			img.width = 35;
 			img.height = 35;
 			options.icon = img;
 			super(latLong,options);
 			this._id = id;
 			this._data = data;
+			createEntity(data);
 			this._otherData = otherData;
 			this.infoOpt = getInfoWindowOptions();
 			
+		}
+		
+		public function getLabel():String{
+			if(nomefantasia && nomefantasia.length>0){
+				return nomefantasia;
+			}else if(razaosocial && razaosocial.length>0){
+				return razaosocial;
+			}else
+				return bandeira;
+		}
+		
+		private function createEntity(data:Dictionary):void{
+			for(var key:Object in data){
+					this[key.toString()] = data[key];
+				}
 		}
 		
 		public function get data():Dictionary{
@@ -55,16 +107,21 @@ package classes.model
 			this._otherData = othDat;
 		}
 		
+		public function openPopup(event:MouseEvent):void{
+			dispatchEvent(new Event(Constants.OPENPOPU_EVENT));
+			
+		}
+		
 		public function getInfoWindowOptions():InfoWindowOptions{
 			if(!this.infoOpt){
 				this.infoOpt = new InfoWindowOptions({drawDefaultFrame:true});
 				this.infoOpt.hasCloseButton = true;
-				var infoContent:GeoGasInfoWindow = GeoGasInfoWindow.getInstance(this.id,data,otherData);
-//				
-				this.infoOpt.customContent = infoContent;
-				this.infoOpt.width = infoContent.width+30;
-				this.infoOpt.height = infoContent.height+30;
+				content = GeoGasInfoWindow.getInstance(this,Constants.SERVER_AD+"/geogas/imgs/"+this.img);
+				this.infoOpt.customContent = content;
+				this.infoOpt.width = content.width+10;
+				this.infoOpt.height = content.height+10;
 			}
+			
 			
 			return this.infoOpt;
 		}

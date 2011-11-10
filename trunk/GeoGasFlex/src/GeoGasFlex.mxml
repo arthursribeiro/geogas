@@ -101,12 +101,16 @@
 			private var aplicarfiltros:Boolean = false;
 			
 			private function chamou(e:ListEvent):void{
-				openDetailsPopup(e.itemRenderer.data["id"],e.itemRenderer.data["type_entity"]);
+				for each(var ent:Entidade in markers){
+					if(ent.id == e.itemRenderer.data["id"]){
+						ent.dispatchEvent(new Event(Constants.OPENPOPU_EVENT));
+					}
+				}
 			}
 			
-			private function openDetailsPopup(id:int, typeEntity:String):void{
+			private function openDetailsPopup(event:Event):void{
 				var popUp:DetailPopUp = new DetailPopUp();
-				popUp.setVariables(id,typeEntity,Tesaurus.getInstance());
+				popUp.setVariables(event.target as Entidade,Tesaurus.getInstance());
 				popUp.isPopUp = true;
 				this.popUp = popUp;
 				PopUpManager.addPopUp(popUp,this,true);
@@ -145,7 +149,7 @@
 			}
 			
 			private function getLayersTree():void{
-				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName="+this.workspace+":layers";
+				var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs?request=GetFeature&version=1.0.0&typeName="+this.workspace+":layers";
 				var request:URLRequest = new URLRequest(serverUrl);
 				var urlLoader:URLLoader = new URLLoader(request);
 				urlLoader.addEventListener(Event.COMPLETE, resultHttpRequestLayersTree);
@@ -203,12 +207,16 @@
 						geodesic = new Polyline(coords.toArray(),polyOpt);
 						
 						map.addOverlay(geodesic);
+						var zoom:Number = map.getBoundsZoomLevel(geodesic.getLatLngBounds());
+						map.setCenter(latL,zoom);
+						
 					}
 				}
 			}
 			
 			public function addMarker(marker:Entidade):void{
 				marker.addEventListener(MapMouseEvent.CLICK,markerClicked);
+				marker.addEventListener(Constants.OPENPOPU_EVENT,openDetailsPopup);
 				map.addOverlay(marker);
 				markers.addItem(marker);
 				putEntidadeOnList(marker);
@@ -249,8 +257,8 @@
 			}
 			
 			private function requisitar():void {
-//				var serverUrl:String = "http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
-				var serverUrl:String = "http://localhost:8080/geoserver/wfs";
+//				var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
+				var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs";
 //				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
 				var filters:String = getMapBBox();
 				
@@ -444,7 +452,7 @@
 						}
 					}
 					var defaulData:Dictionary = new Dictionary();
-					defaulData["Not"+Constants.EDITABLE] = data;
+					defaulData = data;
 					var entidade:Entidade = new Entidade(new LatLng(lat,lng),id,defaulData);
 					addMarker(entidade);
 				}
@@ -485,15 +493,15 @@
 //				}
 				
 				
-				for(var editable2:String in data){
-					var dic2:Dictionary = data[editable2];
+//				for(var editable2:String in ){
+//					var dic2:Dictionary = data[editable2];
 					var obj:Object = new Object();
-					for(var key2:String in dic2){
-						obj[key2] = Tesaurus.getInstance().getTraducao(dic2[key2]);
+					for(var key2:String in data){
+						obj[key2] = Tesaurus.getInstance().getTraducao(data[key2]);
 					}
 					obj["id"] = marker.id;
 					rows.addItem(obj);
-				}
+//				}
 				
 			}
 			

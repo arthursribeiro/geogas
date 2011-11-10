@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="init()">
-	<s:layout>
-		<s:VerticalLayout/>
-	</s:layout>
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="362" height="198" creationComplete="init()">
 	<fx:Declarations>
 		
 	</fx:Declarations>
@@ -12,103 +9,113 @@
 	<fx:Script>
 		<![CDATA[
 			import classes.Constants;
+			import classes.model.Entidade;
 			import classes.model.Tesaurus;
 			
 			import mx.containers.FormItem;
 			import mx.controls.Alert;
 			import mx.controls.TextInput;
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
 			import spark.primitives.Rect;
 			
-			private var defaultTab:Dictionary; // String (Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)]
-			private var otherTabs:Dictionary; // String (TabName) -> Dictionary[String(Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)] ]
 			private var _id:int;
 			
 			private var dic:Tesaurus;
 			
-			public static function getInstance(id:int,data:Dictionary,othTabs:Dictionary = null):GeoGasInfoWindow{
+			[Bindable]
+			private var bandeiraSrc:String;
+			
+			[Bindable]
+			private var labelStr:String;
+			
+			[Bindable]
+			private var labelBandeiraStr:String;
+			
+			[Bindable]
+			private var pricegasolineStr:String;
+			[Bindable]
+			private var pricealcoholStr:String;
+			[Bindable]
+			private var pricedieselStr:String;
+			[Bindable]
+			private var pricegasStr:String;
+			
+			public static function getInstance(ent:Entidade,img:String):GeoGasInfoWindow{
 				var ret:GeoGasInfoWindow = new GeoGasInfoWindow();
-				ret._id = id;
-				ret.defaultTab = data;
-				ret.otherTabs = othTabs
+				ret._id = ent.id;
 				ret.dic = Tesaurus.getInstance();
+				ret.bandeiraSrc = img;
+				ret.labelBandeiraStr = ent.img.substring(0,ent.img.indexOf(".")).toUpperCase();
+				ret.labelStr = ent.getLabel();
+				ret.pricealcoholStr = ent.pricealcohol?ent.pricealcohol.toString():"--";
+				ret.pricegasolineStr = ent.pricegasoline?ent.pricegasoline.toString():"--";
+				ret.pricedieselStr = ent.pricediesel?ent.pricediesel.toString():"--";
+				ret.pricegasStr = ent.pricegas?ent.pricegas.toString():"--";
 				if(Tesaurus.needDictionary()){
 					ret.dic.updateDic();
 				}
+				
 				return ret;
 			}
 			
 			
 			public function init():void{
-				initDefaultData();
-				initOtherTabs();
-			}
-			
-			public function initOtherTabs():void{
-				if(this.otherTabs){
-					for(var tab:String in this.otherTabs){
-						var navCont:NavigatorContent = new NavigatorContent();
-						navCont.label = this.dic.getTraducao(tab);
-						navCont.width = basic.width;
-						navCont.height = basic.height;
-						
-						var scroller:Scroller = new Scroller();
-						scroller.minHeight = navCont.height;
-						var grp:Group = new Group();
-						scroller.addElement(grp);
-						navCont.addElement(scroller);
-						
-						var form:Form = new Form();
-						form.width = basicForm.width;
-						form.height = basicForm.height;
-						form.x = basicForm.x;
-						form.y = basicForm.y;
-						
-						grp.addElement(form);
-						
-						loadData(otherTabs[tab],form);
-						
-						tabs.addElement(navCont);
-					}
-				}
-			}
-						
-			private function initDefaultData():void{
-				if(this.defaultTab && basicForm){
-					loadData(defaultTab,basicForm);
-				}
-			}
-			
-			private function loadData(data:Dictionary, form:Form):void{
 				
-				for(var editable:String in data){
-					var dic:Dictionary = data[editable];
-					for(var key:String in dic){
-						var item:FormItem = new FormItem();
-						item.label = this.dic.getTraducao(key);
-						var itemInput:TextInput = new TextInput();
-						itemInput.text = dic[key];
-						itemInput.editable = (editable.toUpperCase() == Constants.EDITABLE.toUpperCase());
-						item.addElement(itemInput);
-						
-						form.addElement(item);
-					}
-				}
+			}
+			
+			
+			protected function detalhesClick(event:MouseEvent):void
+			{
+				dispatchEvent(event);
 			}
 			
 		]]>
 	</fx:Script>
+	<mx:VBox verticalAlign="middle" horizontalAlign="center" width="100%" height="100%">
+		<mx:HBox x="10" y="10" verticalAlign="middle" horizontalAlign="center" width="100%" height="20%"> 
+			<mx:VBox width="70" horizontalAlign="right" verticalAlign="middle">
+				<mx:Image  width="35" height="35" id="imgSrc" source="{this.bandeiraSrc}"/>
+				<s:Label width="70" text="{this.labelBandeiraStr}"/>
+			</mx:VBox>
+			<s:Label id="label" x="55" y="10" width="225" textAlign="center" height="35" fontSize="22"
+					 text="{this.labelStr}"/>
+		</mx:HBox>
+		
+		<mx:HBox x="-355" y="-94" width="100%" height="20" verticalAlign="middle">
+			<s:Label fontSize="18" text="" width="100"/>
+			<s:Label width="50" height="15" fontSize="18" text="G" textAlign="center"/>
+			<s:Label width="50" height="15" fontSize="18" text="A" textAlign="center"/>
+			<s:Label width="50" height="15" fontSize="18" text="D" textAlign="center"/>
+			<s:Label width="50" height="15" fontSize="18" text="GNV" textAlign="center"/>
+		</mx:HBox>
+		
+		<mx:HBox x="5" y="62" width="100%" height="31" verticalAlign="middle">
+			<s:Label fontSize="18" text="ANP" width="100" textAlign="center"/>
+			<s:TextInput x="70" y="77" width="50" textAlign="center" editable="false" id="pricegasoline" text="{this.pricegasolineStr}"/>
+			<s:TextInput x="128" y="77" width="50" textAlign="center" editable="false" id="pricealcohol" text="{this.pricealcoholStr}"/>
+			<s:TextInput x="186" y="77" width="50" textAlign="center" editable="false" id="pricediesel" text="{this.pricedieselStr}"/>
+			<s:TextInput x="244" y="77" width="50" textAlign="center" editable="false" id="pricegnv" text="{this.pricegasStr}"/>
+		</mx:HBox>
+		
+		<mx:HBox x="6" y="101" width="100%" height="15%" verticalAlign="middle">
+			<s:Label fontSize="18" text="Users" width="100" textAlign="center"/>
+			<s:TextInput x="70" y="107" width="50" textAlign="center" />
+			<s:TextInput x="128" y="107" width="50" textAlign="center" />
+			<s:TextInput x="186" y="107" width="50" textAlign="center" />
+			<s:TextInput x="244" y="107" width="50" textAlign="center" />
+		</mx:HBox>
+		
+		<mx:HBox x="10" y="137" width="100%" height="20%" verticalAlign="middle" horizontalAlign="right">
+			<s:Image  width="35" height="35" id="autuacoesImg" source="{Constants.SERVER_AD+'/geogas/imgs/autuacao.jpg'}"/>
+			<s:Label x="53" y="137" width="52" height="35" fontSize="27"/>
+			<s:Image x="113" y="137" width="35" height="35" id="denunciasImg" source="{Constants.SERVER_AD+'/geogas/imgs/denuncia.jpg'}"/>
+			<s:Label x="156" y="137" width="52" height="35" fontSize="27"/>
+			<s:Button x="250" y="144" width="68" height="28"  id="detailButton" label="Mais" click="detalhesClick(event)"/>
+		</mx:HBox>
 	
-	<mx:TabNavigator id="tabs" y="-9" width="100%" height="301">
-		<s:NavigatorContent width="100%" height="100%" label="Information" id="basic">
-			<s:Scroller minHeight="{basic.height}" scrollRect="{new Rectangle(0,0,basic.width,basic.height)}">
-				<s:Group id="dataGroup">
-					<s:Form id="basicForm">
-					</s:Form>
-				</s:Group>
-			</s:Scroller>
-		</s:NavigatorContent>
-	</mx:TabNavigator>
+	</mx:VBox>
 </s:Group>

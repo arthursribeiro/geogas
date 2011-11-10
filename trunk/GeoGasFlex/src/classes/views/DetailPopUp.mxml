@@ -6,12 +6,13 @@
 		<s:VerticalLayout/>
 	</s:layout>
 	<fx:Declarations>
-		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
+
 	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
 			import classes.Constants;
+			import classes.model.Entidade;
 			import classes.model.Tesaurus;
 			
 			import com.google.maps.controls.NavigationControl;
@@ -33,127 +34,10 @@
 			import spark.components.Scroller;
 			import spark.components.VGroup;
 			
-			private var entId:int;
-			private var typeEntity:String;
 			private var dic:Tesaurus;
 			
-			public function setVariables(entityId:int,typeEntity:String,dict:Tesaurus):void{
-				this.entId = entityId;
-				this.typeEntity = typeEntity;
+			public function setVariables(entity:Entidade,dict:Tesaurus):void{
 				this.dic = dict;
-				ro.getAllEntityData(this.entId,this.typeEntity);
-			}
-			
-			private function createPricesTab(data:Object):NavigatorContent{
-				var navCont:NavigatorContent = new NavigatorContent();
-				navCont.label = this.dic.getTraducao("Prices");
-				navCont.width = tabBar.width;
-				navCont.height = tabBar.height;
-				navCont.setStyle("borderVisible",false);
-				
-				var grp:DataGrid = new DataGrid();
-				grp.width = navCont.width;
-				grp.height = navCont.height;
-				navCont.addElement(grp);
-				
-				var form:Form = new Form();
-				form.width = navCont.width;
-				form.height = navCont.height;
-				form.setStyle("borderVisible",false);
-				
-				var columns:ArrayList = new ArrayList();
-				var g2Col:DataGridColumn = new DataGridColumn();
-				g2Col.dataField = "field";
-				g2Col.headerText = "Gas Type";
-				columns.addItem(g2Col);
-				var g2Col2:DataGridColumn = new DataGridColumn();
-				g2Col2.dataField = "anp";
-				g2Col2.headerText = "Price from ANP";
-				columns.addItem(g2Col2);
-				var g2Col3:DataGridColumn = new DataGridColumn();
-				g2Col3.dataField = "user";
-				g2Col3.headerText = "Price from User";
-				columns.addItem(g2Col3);
-				var g2Col4:DataGridColumn = new DataGridColumn();
-				g2Col4.dataField = "userId";
-				g2Col4.headerText = "User";
-				columns.addItem(g2Col4);
-				
-				var values:ArrayList = new ArrayList();
-				for(var tab:String in data){
-					if(tab.toLowerCase().indexOf("price ")>=0){
-						var fields:Array = tab.split(" ");
-						fields.shift();
-						var field:String = "";
-						for each(var str:String in fields){
-							field+=str;
-						}
-						var objValue:Object = data[tab];
-						objValue["field"] = field;
-						values.addItem(objValue);
-					}
-				}
-				grp.columns = columns.source;
-				grp.dataProvider = values;
-				return navCont;
-			}
-			
-			private function ro_resultHandler(e:ResultEvent):void{
-				var data:Object = e.result;
-				var prices:Boolean = false;
-				for(var tab:String in data){
-					var navCont:NavigatorContent = null;
-					if(tab.toLowerCase().indexOf("price ")>=0 ){
-						if(!prices){
-							navCont = createPricesTab(data);
-							tabBar.addElement(navCont);
-							prices = true;
-						}
-					}else{
-						navCont = new NavigatorContent();
-						navCont.label = this.dic.getTraducao(tab);
-						navCont.width = tabBar.width;
-						navCont.height = tabBar.height;
-						navCont.setStyle("borderVisible",false);
-						
-						var grp:DataGrid = new DataGrid();
-						grp.width = navCont.width;
-						grp.height = navCont.height;
-						navCont.addElement(grp);
-						
-						var form:Form = new Form();
-						form.width = navCont.width;
-						form.height = navCont.height;
-						form.setStyle("borderVisible",false);
-						
-						var dataProv:ArrayList = new ArrayList();
-						var dic:Object = data[tab];
-						var columns:ArrayList = new ArrayList();
-						
-						
-						var gCol:DataGridColumn = new DataGridColumn();
-						gCol.dataField = "field";
-						gCol.headerText = "Field";
-						columns.addItem(gCol);
-						var gCol2:DataGridColumn = new DataGridColumn();
-						gCol2.dataField = "value";
-						gCol2.headerText = "Value";
-						columns.addItem(gCol2);
-						
-						for(var key:String in dic){
-							if(!(key.toLowerCase() == Constants.LATITUDE || key.toLowerCase() == Constants.LONGITUDE || key.toLowerCase().indexOf(Constants.ID)>=0)){
-								var values:Object = new Object();
-								values["value"] = Tesaurus.getInstance().getTraducao(dic[key]);
-								values["field"] = Tesaurus.getInstance().getTraducao(key);
-								dataProv.addItem(values);
-							}
-						}
-						grp.columns = columns.source;
-						grp.dataProvider = dataProv;
-						tabBar.addElement(navCont);
-					}
-					
-				}
 			}
 			
 			private function close():void{
