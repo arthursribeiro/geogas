@@ -273,59 +273,62 @@
 						var propName:String = childNode.@folder;
 						var propLayer:String = withCleanFilter[propName];
 						var newPropFilter:String = '';
-						if(childNode.@islike_value != 'undefined'){
-							if(propLayer == null){
-								var propClean:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-								propClean = propClean.replace(Constants.REPLACE_VALUE,'#@!NENHUMA SELECIONADA!@#')+'\n';
-								propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,propClean+' '+Constants.REPLACE_FILTERS);
-							}
-							if(childNode.@checked == 1){
-								newPropFilter += propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-								newPropFilter = newPropFilter.replace(Constants.REPLACE_VALUE,'%'+childNode.@label+'%')+'\n';
-							}
-						}else if(childNode.@islike_value == 'undefined' && childNode.@min_value != 'undefined' && childNode.@max_value != 'undefined' ){
-							if(propLayer == null){
-								var prop2Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-								prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
-								prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
-								
-								if(childNode.@has_user_prop == 1){
-									prop2Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+						if(node.@checked != 1){
+							if(childNode.@islike_value != 'undefined'){
+								if(propLayer == null){
+									var propClean:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+									propClean = propClean.replace(Constants.REPLACE_VALUE,'#@!NENHUMA SELECIONADA!@#')+'\n';
+									propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,propClean+' '+Constants.REPLACE_FILTERS);
+								}
+								if(childNode.@checked == 1){
+									newPropFilter += propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+									newPropFilter = newPropFilter.replace(Constants.REPLACE_VALUE,'%'+childNode.@label+'%')+'\n';
+								}
+							}else if(childNode.@islike_value == 'undefined' && childNode.@min_value != 'undefined' && childNode.@max_value != 'undefined' ){
+								if(propLayer == null){
+									var prop2Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
 									prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
 									prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
-								}
-								
-								propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean+' '+Constants.REPLACE_FILTERS);
-							}else if(!propLayer.indexOf(childNode.@prop_name)>=0){
-								var prop3Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-								prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
-								prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
-								
-								if(childNode.@has_user_prop == 1){
-									prop3Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+									
+									if(childNode.@has_user_prop == 1){
+										prop2Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+										prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+										prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+									}
+									
+									propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean+' '+Constants.REPLACE_FILTERS);
+								}else if(!propLayer.indexOf(childNode.@prop_name)>=0){
+									var prop3Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
 									prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
 									prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+									
+									if(childNode.@has_user_prop == 1){
+										prop3Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+										prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+										prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+									}
+									propLayer = propLayer.replace(Constants.REPLACE_FILTERS,prop3Clean+ ' ' + Constants.REPLACE_FILTERS);
 								}
-								propLayer = propLayer.replace(Constants.REPLACE_FILTERS,prop3Clean+ ' ' + Constants.REPLACE_FILTERS);
-							}
-							
-//							var combFilt:String = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean + ' ' + Constants.REPLACE_FILTERS);
-							if(childNode.@checked == 1){
-								newPropFilter = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-								newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
-								newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
-								if(childNode.@has_user_prop == 1){
-									newPropFilter += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+								
+	//							var combFilt:String = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean + ' ' + Constants.REPLACE_FILTERS);
+								if(childNode.@checked == 1){
+									newPropFilter = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
 									newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
 									newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
+									if(childNode.@has_user_prop == 1){
+										newPropFilter += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+										newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
+										newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
+									}
 								}
+	//							propLayer = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+ ' ' + Constants.REPLACE_FILTERS);
 							}
-//							propLayer = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+ ' ' + Constants.REPLACE_FILTERS);
+							if(!hasString(props,propName)){
+								props.addItem(propName);
+							}
+							withCleanFilter[propName] = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+' '+Constants.REPLACE_FILTERS);
 						}
-						if(!hasString(props,propName)){
-							props.addItem(propName);
-						}
-						withCleanFilter[propName] = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+' '+Constants.REPLACE_FILTERS);
+						
 					}
 				}
 				

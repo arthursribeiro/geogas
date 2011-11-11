@@ -44,6 +44,13 @@
 			[Bindable]
 			private var pricegasStr:String;
 			
+			[Bindable]
+			private var denunciasStr:String;
+			[Bindable]
+			private var autuacoesStr:String;
+			
+			private var myEnt:Entidade;
+			
 			public static function getInstance(ent:Entidade,img:String):GeoGasInfoWindow{
 				var ret:GeoGasInfoWindow = new GeoGasInfoWindow();
 				ret._id = ent.id;
@@ -55,10 +62,12 @@
 				ret.pricegasolineStr = ent.pricegasoline?ent.pricegasoline.toString():"--";
 				ret.pricedieselStr = ent.pricediesel?ent.pricediesel.toString():"--";
 				ret.pricegasStr = ent.pricegas?ent.pricegas.toString():"--";
+				ret.autuacoesStr = ent.autuacoes?ent.autuacoes.toString():"--";
+				ret.denunciasStr = ent.denuncias?ent.denuncias.toString():"--";
 				if(Tesaurus.needDictionary()){
 					ret.dic.updateDic();
 				}
-				
+				ret.myEnt = ent;
 				return ret;
 			}
 			
@@ -70,18 +79,18 @@
 			
 			protected function detalhesClick(event:MouseEvent):void
 			{
-				dispatchEvent(event);
+				this.myEnt.openPopup(event);
 			}
 			
 		]]>
 	</fx:Script>
 	<mx:VBox verticalAlign="middle" horizontalAlign="center" width="100%" height="100%">
 		<mx:HBox x="10" y="10" verticalAlign="middle" horizontalAlign="center" width="100%" height="20%"> 
-			<mx:VBox width="70" horizontalAlign="right" verticalAlign="middle">
-				<mx:Image  width="35" height="35" id="imgSrc" source="{this.bandeiraSrc}"/>
-				<s:Label width="70" text="{this.labelBandeiraStr}"/>
+			<mx:VBox width="70" horizontalAlign="center" verticalAlign="middle">
+				<mx:Image  width="40" height="40" id="imgSrc" source="{this.bandeiraSrc}"/>
+				<s:Label width="70" fontSize="10" text="{this.labelBandeiraStr}"/>
 			</mx:VBox>
-			<s:Label id="label" x="55" y="10" width="225" textAlign="center" height="35" fontSize="22"
+			<s:Label id="label" x="55" y="10" width="225" textAlign="center" height="35" fontSize="18"
 					 text="{this.labelStr}"/>
 		</mx:HBox>
 		
@@ -111,9 +120,9 @@
 		
 		<mx:HBox x="10" y="137" width="100%" height="20%" verticalAlign="middle" horizontalAlign="right">
 			<s:Image  width="35" height="35" id="autuacoesImg" source="{Constants.SERVER_AD+'/geogas/imgs/autuacao.jpg'}"/>
-			<s:Label x="53" y="137" width="52" height="35" fontSize="27"/>
+			<s:Label x="53" y="137" width="52" height="35" fontSize="27" text="{this.autuacoesStr}"/>
 			<s:Image x="113" y="137" width="35" height="35" id="denunciasImg" source="{Constants.SERVER_AD+'/geogas/imgs/denuncia.jpg'}"/>
-			<s:Label x="156" y="137" width="52" height="35" fontSize="27"/>
+			<s:Label x="156" y="137" width="52" height="35" fontSize="27" text="{this.denunciasStr}"/>
 			<s:Button x="250" y="144" width="68" height="28"  id="detailButton" label="Mais" click="detalhesClick(event)"/>
 		</mx:HBox>
 	
