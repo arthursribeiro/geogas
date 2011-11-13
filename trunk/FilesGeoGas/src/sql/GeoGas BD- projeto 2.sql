@@ -51,6 +51,7 @@ CREATE TABLE PostoCombustivel(
 	pricegas_user double precision,
 	autuacoes integer DEFAULT 0,
 	denuncias integer DEFAULT 0,
+	img VARCHAR(255) DEFAULT 'posto.jpg',
 	CONSTRAINT pk_gasstation PRIMARY KEY (id_posto_combustivel)
 );
 
@@ -135,37 +136,38 @@ CREATE TABLE layers(
 	islike_value VARCHAR(255),
 	min_value DOUBLE PRECISION,
 	max_value DOUBLE PRECISION,
-	folder VARCHAR(255) NOT NULL
+	folder VARCHAR(255) NOT NULL,
+	has_user_prop INTEGER DEFAULT 0
 );
 
-INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value) VALUES
-('Bandeira','bandeira','BRANCA','%BRANCA%',null,null),
-('Bandeira','bandeira','PETROBRAS','PETROBRAS%',null,null),
-('Bandeira','bandeira','SHELL','SHELL%',null,null),
-('Bandeira','bandeira','SETTA','%SETTA%',null,null),
-('Bandeira','bandeira','DISLUB','DISLUB%',null,null),
-('Bandeira','bandeira','ALESAT','ALESAT%',null,null),
-('Bandeira','bandeira','COSAN','COSAN%',null,null),
-('Bandeira','bandeira','ELLO','ELLO%',null,null),
-('Bandeira','bandeira','FAN','FAN%',null,null),
-('Bandeira','bandeira','FEDERAL','FEDERAL%',null,null),
-('Bandeira','bandeira','IPP','IPP%',null,null),
-('Bandeira','bandeira','ALVO','ALVO%',null,null),
-('Bandeira','bandeira','SATELITE','SATELITE%',null,null),
-('Bandeira','bandeira','SP','SP%',null,null),
-('Bandeira','bandeira','TEMAPE','TEMAPE%',null,null),
-('Bandeira','bandeira','TOTAL','TOTAL%',null,null),
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES
+('Bandeira','bandeira','BRANCA','%BRANCA%',null,null,0),
+('Bandeira','bandeira','PETROBRAS','PETROBRAS%',null,null,0),
+('Bandeira','bandeira','SHELL','SHELL%',null,null,0),
+('Bandeira','bandeira','SETTA','%SETTA%',null,null,0),
+('Bandeira','bandeira','DISLUB','DISLUB%',null,null,0),
+('Bandeira','bandeira','ALESAT','ALESAT%',null,null,0),
+('Bandeira','bandeira','COSAN','COSAN%',null,null,0),
+('Bandeira','bandeira','ELLO','ELLO%',null,null,0),
+('Bandeira','bandeira','FAN','FAN%',null,null,0),
+('Bandeira','bandeira','FEDERAL','FEDERAL%',null,null,0),
+('Bandeira','bandeira','IPP','IPP%',null,null,0),
+('Bandeira','bandeira','ALVO','ALVO%',null,null,0),
+('Bandeira','bandeira','SATELITE','SATELITE%',null,null,0),
+('Bandeira','bandeira','SP','SP%',null,null,0),
+('Bandeira','bandeira','TEMAPE','TEMAPE%',null,null,0),
+('Bandeira','bandeira','TOTAL','TOTAL%',null,null,0),
 
-('Tipo Comb.','pricegasoline','Gasolina',null,0,1000),
-('Tipo Comb.','pricealcohol','Alcool',null,0,1000),
-('Tipo Comb.','pricediesel','Diesel',null,0,1000),
-('Tipo Comb.','pricegas','Gas',null,0,1000),
+('Tipo Comb.','pricegasoline','Gasolina',null,0,1000,1),
+('Tipo Comb.','pricealcohol','Alcool',null,0,1000,1),
+('Tipo Comb.','pricediesel','Diesel',null,0,1000,1),
+('Tipo Comb.','pricegas','Gas',null,0,1000,1),
 
-('Aval. ANP','autuacoes','Autuados',null,1,1000000),
-('Aval. ANP','autuacoes','Nao Autuados',null,-1,0),
+('Aval. ANP','autuacoes','Autuados',null,1,1000000,0),
+('Aval. ANP','autuacoes','Nao Autuados',null,-1,0,0),
 
-('Aval. Usuarios','denuncias','Com denuncias',null,1,1000000),
-('Aval. Usuarios','denuncias','Sem denuncias',null,-1,0);
+('Aval. Usuarios','denuncias','Com denuncias',null,1,1000000,0),
+('Aval. Usuarios','denuncias','Sem denuncias',null,-1,0,0);
 
 
 CREATE OR REPLACE FUNCTION update_postocombustivel_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
@@ -223,12 +225,24 @@ CREATE TRIGGER update_denuncias_usuarios
     BEFORE INSERT OR UPDATE ON Denuncia
     FOR EACH ROW EXECUTE PROCEDURE update_denuncias_usuarios();
     
-CREATE OR REPLACE VIEW gasstation AS
-SELECT p.nomefantasia,p.razaosocial,p.pricegasoline,p.pricegasoline_user,
-	p.pricealcohol,p.pricealcohol_user,
-	p.pricediesel, p.pricediesel_user,
-	p.pricegas,p.pricegas_user, p.bandeira, p.geom, p.latitude,p.longitude,p.autuacoes, p.denuncias, CAST('Posto de Combustivel' AS VARCHAR) AS type_entity FROM postocombustivel p;
+CREATE OR REPLACE VIEW gasstation AS 
+ SELECT p.nomefantasia, p.razaosocial, 
 
+	p.pricegasoline, p.pricegasoline_user, 
+	p.pricealcohol, p.pricealcohol_user, 
+	p.pricediesel, p.pricediesel_user, 
+	p.pricegas, p.pricegas_user, 
+
+	p.bandeira, 
+
+	p.geom, p.latitude, p.longitude, 
+
+	p.autuacoes, p.denuncias,
+
+	p.img
+   FROM postocombustivel p;
+   
+   
 --- TABLEA USUARIO ---
 INSERT INTO Traducao(coluna_banco,traducao,id_lingua) VALUES ('usuario','Usuário',1);
 INSERT INTO Traducao(coluna_banco,traducao,id_lingua) VALUES ('id_usuario','ID',1);
@@ -337,5 +351,22 @@ INSERT INTO Traducao(coluna_banco,traducao,id_lingua) VALUES ('entidade_denuncia
 
 
 /*
- * VIEWS PARA O GEOSERVER
+ * UPDATES DAS IMGS PARA O BANCO (rodar de vez em quando)
  */
+
+UPDATE postocombustivel SET img='alesat.jpg' WHERE bandeira LIKE 'ALESAT%';
+UPDATE postocombustivel SET img='alvo.jpg' WHERE bandeira LIKE 'ALVO%';
+UPDATE postocombustivel SET img='branca.jpg' WHERE bandeira LIKE '%BRANCA%';
+UPDATE postocombustivel SET img='cosan.jpg' WHERE bandeira LIKE 'COSAN%';
+UPDATE postocombustivel SET img='dislub.jpg' WHERE bandeira LIKE 'DISLUB%';
+UPDATE postocombustivel SET img='ello.jpg' WHERE bandeira LIKE 'ELLO%';
+UPDATE postocombustivel SET img='fan.jpg' WHERE bandeira LIKE 'FAN%';
+UPDATE postocombustivel SET img='federal.jpg' WHERE bandeira LIKE 'FEDERAL%';
+UPDATE postocombustivel SET img='ipp.jpg' WHERE bandeira LIKE 'IPP%';
+UPDATE postocombustivel SET img='petrobras.jpg' WHERE bandeira LIKE 'PETROBRAS%';
+UPDATE postocombustivel SET img='satelite.jpg' WHERE bandeira LIKE 'SATELITE%';
+UPDATE postocombustivel SET img='setta.jpg' WHERE bandeira LIKE 'SETTA%';
+UPDATE postocombustivel SET img='shell.jpg' WHERE bandeira LIKE 'SHELL%';
+UPDATE postocombustivel SET img='sp.jpg' WHERE bandeira LIKE 'SP%';
+UPDATE postocombustivel SET img='temape.jpg' WHERE bandeira LIKE 'TEMAPE%';
+UPDATE postocombustivel SET img='total.jpg' WHERE bandeira LIKE 'TOTAL%';
