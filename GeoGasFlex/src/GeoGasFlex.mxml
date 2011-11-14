@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*" currentState="State1">
+	<mx:states>
+		<s:State name="State1"/>
+		<s:State name="logadoFacebook"/>
+	</mx:states>
 	<fx:Declarations>
 		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
 		
@@ -16,6 +20,7 @@
 		<![CDATA[
 			import classes.Constants;
 			import classes.events.EventoPesquisa;
+			import classes.events.FacebookEvent;
 			import classes.model.Entidade;
 			import classes.model.GMLParser;
 			import classes.model.GeoLocation;
@@ -23,35 +28,23 @@
 			import classes.model.it.sephiroth.renderers.TreecheckboxItemRenderer;
 			import classes.views.DetailPopUp;
 			
-			import com.google.maps.Color;
-			import com.google.maps.InfoWindowOptions;
+			import com.facebook.graph.Facebook;
 			import com.google.maps.LatLng;
 			import com.google.maps.LatLngBounds;
 			import com.google.maps.MapEvent;
 			import com.google.maps.MapMouseEvent;
 			import com.google.maps.MapMoveEvent;
 			import com.google.maps.MapType;
-			import com.google.maps.MapTypeOptions;
 			import com.google.maps.controls.MapTypeControl;
 			import com.google.maps.controls.NavigationControl;
-			import com.google.maps.controls.NavigationControlOptions;
 			import com.google.maps.controls.OverviewMapControl;
-			import com.google.maps.controls.PositionControl;
 			import com.google.maps.controls.ScaleControl;
-			import com.google.maps.controls.ZoomControl;
-			import com.google.maps.overlays.Marker;
-			import com.google.maps.overlays.MarkerOptions;
-			import com.google.maps.overlays.Polygon;
 			import com.google.maps.overlays.Polyline;
 			import com.google.maps.overlays.PolylineOptions;
 			
-			import flashx.textLayout.formats.Float;
-			
-			import mx.charts.renderers.CircleItemRenderer;
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.controls.DataGrid;
-			import mx.controls.Label;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
@@ -60,10 +53,8 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.http.HTTPService;
-			import mx.utils.URLUtil;
 			
-			import spark.components.gridClasses.GridColumn;
-			import spark.effects.Scale;
+			import utils.FacebookConnection;
 			
 			private var markers:ArrayList = new ArrayList();
 			private var rows:ArrayList;
@@ -99,6 +90,7 @@
 			private var bandeira:String;
 			private var raio:Number = 0;
 			private var aplicarfiltros:Boolean = false;
+			private var fb:FacebookConnection = null;
 			
 			private function chamou(e:ListEvent):void{
 				for each(var ent:Entidade in markers){
@@ -127,6 +119,9 @@
 					Tesaurus.getInstance().updateDic();
 				}
 				Tesaurus.getInstance().ro.addEventListener(ResultEvent.RESULT,init_continue);
+				fb = FacebookConnection.getInstance();
+				fb.addEventListener(FacebookEvent.FACEBOOK_CONNECTED, loginHandler, false, 0, true);
+				fb.addEventListener(FacebookEvent.FACEBOOK_DISCONNECTED, logoutHandler, false, 0, true);
 			}
 			
 			private function init_continue(e:Event):void{
@@ -559,10 +554,28 @@
 				}
 			}
 			
+			protected function login():void
+			{
+				fb.login();
+			}
+			
+			protected function logout():void {
+				fb.logout();
+			}
+			
+			protected function loginHandler(ev:Event):void
+			{
+				currentState="logadoFacebook";
+			}
+			
+			protected function logoutHandler(ev:Event):void{
+				currentState="State1";
+			}
+			
 		]]>
 	</fx:Script>
-	
-	<s:HGroup width="100%" height="100%">
+	<s:Button  id="facebook" skinClass.State1="skins.FBLoginButtonSkin" skinClass.logadoFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.logadoFacebook="logout()"/>
+	<s:HGroup width="100%" height="100%" gap="6">
 	<s:BorderContainer width="20%" height="100%">
 		<mx:TabNavigator x="0" y="-1" width="100%" height="100%">
 			<s:NavigatorContent width="100%" height="100%" label="Layers">
@@ -595,4 +608,5 @@
 		</s:NavigatorContent>
 	</mx:TabNavigator>
 	</s:HGroup>
+	
 </mx:Application>
