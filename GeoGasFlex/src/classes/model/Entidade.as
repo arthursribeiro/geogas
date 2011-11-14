@@ -124,6 +124,7 @@ package classes.model
 				this.infoOpt.customContent = content;
 				this.infoOpt.width = content.width+10;
 				this.infoOpt.height = content.height+10;
+				
 			}
 			
 			var window:GeoGasInfoWindow = this.infoOpt.customContent as GeoGasInfoWindow;
