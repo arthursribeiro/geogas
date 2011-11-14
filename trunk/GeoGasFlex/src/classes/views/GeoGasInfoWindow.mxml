@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="362" height="198" creationComplete="init()" currentState="State1">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="420" height="198" creationComplete="init()" currentState="State1">
 	<s:states>
 		<s:State name="State1"/>
 		<s:State name="loggedFacebook"/>
+		<s:State name="ANP"/>
 	</s:states>
 	<fx:Declarations>
-		
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -52,6 +52,15 @@
 			private var pricegasStr:String;
 			
 			[Bindable]
+			private var pricegasolineStr_user:String;
+			[Bindable]
+			private var pricealcoholStr_user:String;
+			[Bindable]
+			private var pricedieselStr_user:String;
+			[Bindable]
+			private var pricegasStr_user:String;
+			
+			[Bindable]
 			private var denunciasStr:String;
 			[Bindable]
 			private var autuacoesStr:String;
@@ -67,10 +76,17 @@
 				ret.bandeiraSrc = img;
 				ret.labelBandeiraStr = ent.img.substring(0,ent.img.indexOf(".")).toUpperCase();
 				ret.labelStr = ent.getLabel();
+				
+				ret.pricealcoholStr_user = ent.pricealcohol_user?ent.pricealcohol_user.toString():"--";
+				ret.pricegasolineStr_user = ent.pricegasoline_user?ent.pricegasoline_user.toString():"--";
+				ret.pricedieselStr_user = ent.pricediesel_user?ent.pricediesel_user.toString():"--";
+				ret.pricegasStr_user = ent.pricegas_user?ent.pricegas_user.toString():"--";
+				
 				ret.pricealcoholStr = ent.pricealcohol?ent.pricealcohol.toString():"--";
 				ret.pricegasolineStr = ent.pricegasoline?ent.pricegasoline.toString():"--";
 				ret.pricedieselStr = ent.pricediesel?ent.pricediesel.toString():"--";
 				ret.pricegasStr = ent.pricegas?ent.pricegas.toString():"--";
+				
 				ret.autuacoesStr = ent.autuacoes?ent.autuacoes.toString():"--";
 				ret.denunciasStr = ent.denuncias?ent.denuncias.toString():"--";
 				if(Tesaurus.needDictionary()){
@@ -117,6 +133,14 @@
 				Alert.show("Você recomendou o posto no Facebook. Obrigado!");
 			}
 			
+			private function updatePricesANP(ev:MouseEvent):void{
+				//TODO
+			}
+			
+			private function updatePricesUser(ev:MouseEvent):void{
+				//TODO
+			}
+			
 		]]>
 	</fx:Script>
 	<mx:VBox verticalAlign="middle" horizontalAlign="center" width="100%" height="100%">
@@ -137,20 +161,23 @@
 			<s:Label width="50" height="15" fontSize="18" text="GNV" textAlign="center"/>
 		</mx:HBox>
 		
+		
 		<mx:HBox x="5" y="62" width="100%" height="31" verticalAlign="middle">
 			<s:Label fontSize="18" text="ANP" width="100" textAlign="center"/>
-			<s:TextInput x="70" y="77" width="50" textAlign="center" editable="false" id="pricegasoline" text="{this.pricegasolineStr}"/>
-			<s:TextInput x="128" y="77" width="50" textAlign="center" editable="false" id="pricealcohol" text="{this.pricealcoholStr}"/>
-			<s:TextInput x="186" y="77" width="50" textAlign="center" editable="false" id="pricediesel" text="{this.pricedieselStr}"/>
-			<s:TextInput x="244" y="77" width="50" textAlign="center" editable="false" id="pricegnv" text="{this.pricegasStr}"/>
+			<s:TextInput restrict="0-9 \." x="70" y="77" width="50" textAlign="center" editable.loggedFacebook="false"  editable.State1="false" editable.ANP="true" id="pricegasoline" text="{this.pricegasolineStr}"/>
+			<s:TextInput restrict="0-9 \." x="128" y="77" width="50" textAlign="center" editable.loggedFacebook="false"  editable.State1="false" editable.ANP="true" id="pricealcohol" text="{this.pricealcoholStr}"/>
+			<s:TextInput restrict="0-9 \." x="186" y="77" width="50" textAlign="center"  editable.loggedFacebook="false" editable.State1="false"  editable.ANP="true" id="pricediesel" text="{this.pricedieselStr}"/>
+			<s:TextInput restrict="0-9 \." x="244" y="77" width="50" textAlign="center" editable.loggedFacebook="false" editable.State1="false" editable.ANP="true" id="pricegnv" text="{this.pricegasStr}"/>
+			<s:Button label="Save" click="updatePricesANP(event)" visible.State1="false" visible.loggedFacebook="false" visible.ANP="true" />
 		</mx:HBox>
 		
 		<mx:HBox x="6" y="101" width="100%" height="15%" verticalAlign="middle">
 			<s:Label fontSize="18" text="Users" width="100" textAlign="center"/>
-			<s:TextInput x="70" y="107" width="50" textAlign="center" />
-			<s:TextInput x="128" y="107" width="50" textAlign="center" />
-			<s:TextInput x="186" y="107" width="50" textAlign="center" />
-			<s:TextInput x="244" y="107" width="50" textAlign="center" />
+			<s:TextInput restrict="0-9 \." x="70" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasolineStr_user}"/>
+			<s:TextInput restrict="0-9 \." x="128" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricealcoholStr_user}"/>
+			<s:TextInput restrict="0-9 \." x="186" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricedieselStr_user}"/>
+			<s:TextInput restrict="0-9 \." x="244" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasStr_user}"/>
+			<s:Button label="Save" click="updatePricesUser(event)" visible.State1="false" visible.ANP="false" visible.loggedFacebook="true" />
 		</mx:HBox>
 		
 		<mx:HBox x="10" y="137" width="100%" height="20%" verticalAlign="middle" horizontalAlign="right">

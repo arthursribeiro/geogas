@@ -15,7 +15,7 @@ package classes.model
 	
 	import spark.components.Image;
 	
-	public class Entidade extends Marker
+	public class Entidade extends PostoCombustivel
 	{
 		
 		private var _data:Dictionary; // String (Editable | NotEditable) -> Dictionary[String(Label) -> String(Value)]
@@ -67,12 +67,12 @@ package classes.model
 			img.width = 35;
 			img.height = 35;
 			options.icon = img;
-			super(latLong,options);
+			super(latLong,id, data,options);
 			this._id = id;
 			this._data = data;
 			createEntity(data);
 			this._otherData = otherData;
-			this.infoOpt = getInfoWindowOptions();
+			this.infoOpt = getInfoWindowOptions("State1");
 			
 		}
 		
@@ -87,8 +87,12 @@ package classes.model
 		
 		private function createEntity(data:Dictionary):void{
 			for(var key:Object in data){
+				try{
 					this[key.toString()] = data[key];
+				}catch(er:Error){
+					
 				}
+			}
 		}
 		
 		public function get data():Dictionary{
@@ -112,7 +116,7 @@ package classes.model
 			
 		}
 		
-		public function getInfoWindowOptions():InfoWindowOptions{
+		public function getInfoWindowOptions(currentState:String):InfoWindowOptions{
 			if(!this.infoOpt){
 				this.infoOpt = new InfoWindowOptions({drawDefaultFrame:true});
 				this.infoOpt.hasCloseButton = true;
@@ -122,7 +126,8 @@ package classes.model
 				this.infoOpt.height = content.height+10;
 			}
 			
-			
+			var window:GeoGasInfoWindow = this.infoOpt.customContent as GeoGasInfoWindow;
+			window.setCurrentState(currentState);
 			return this.infoOpt;
 		}
 	}

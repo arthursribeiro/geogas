@@ -5,6 +5,7 @@
 	<mx:states>
 		<s:State name="State1"/>
 		<s:State name="logadoFacebook"/>
+		<s:State name="ANP"/>
 	</mx:states>
 	<fx:Declarations>
 		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="ro_resultHandler(event)" fault="ro_faultHandler(event)"/>
@@ -64,7 +65,7 @@
 			private var popUp:DetailPopUp;
 			
 			private var workspace:String = 'geogas';
-			private var baseLayer:String = 'gasstation';
+			private var baseLayer:String = 'postocombustivel';
 			
 			private var bboxFilter:String = "<BBOX>" +
 				"<PropertyName>geom</PropertyName>" +
@@ -104,6 +105,7 @@
 				var popUp:DetailPopUp = new DetailPopUp();
 				popUp.setVariables(event.currentTarget.wrapper as Entidade,Tesaurus.getInstance());
 				popUp.isPopUp = true;
+				popUp.setCurrentState(this.currentState);
 				this.popUp = popUp;
 				PopUpManager.addPopUp(popUp,this,true);
 				PopUpManager.centerPopUp(this.popUp);
@@ -173,6 +175,7 @@
 			}
 			
 			private function limparMapa():void{
+				
 //				if(columnGrid)
 //					while(columnGrid.columns.length>0)
 //						columnGrid.columns.pop();
@@ -219,7 +222,7 @@
 			
 			public function markerClicked(event:MapEvent):void{
 				var marker:Entidade = event.target as Entidade;
-				marker.openInfoWindow(marker.getInfoWindowOptions());
+				marker.openInfoWindow(marker.getInfoWindowOptions(this.currentState));
 			}
 			
 			protected function ro_resultHandler(event:ResultEvent):void {
@@ -429,9 +432,6 @@
 					for(var prop:String in dic2){
 						var label:String = prop.toString().replace(this.workspace+"::","");
 //						label = label.toString().replace(,"");
-						if(label.toLocaleLowerCase().indexOf("price")>=0){
-							label.length;
-						}
 						if( label.toUpperCase() == Constants.LATITUDE.toUpperCase()){
 							lat = new Number( dic2[prop]);
 						}
@@ -443,7 +443,7 @@
 								id = new Number(dic[marker][prop]);
 							}else if(!(label.toUpperCase() == "GEOM")){
 								data[label] = dic2[prop];
-								if(!(columns.getItemIndex(label)>=0)){
+								if(!(columns.getItemIndex(label)>=0 || label.toUpperCase() == "IMG")){
 									columns.addItem(label);
 								}
 							}
@@ -473,7 +473,7 @@
 			}
 			
 			public function failHttpRequest(e:FaultEvent):void {
-//				Alert.show('Ocorreu um erro com a comunicação, tente novamente mais tarde.');
+				Alert.show('Ocorreu um erro com a comunicação, tente novamente mais tarde.');
 			}
 			
 			public function putEntidadeOnList(marker:Entidade):void{
@@ -496,6 +496,7 @@
 					var obj:Object = new Object();
 					for(var key2:String in data){
 						obj[key2] = Tesaurus.getInstance().getTraducao(data[key2]);
+						
 					}
 					obj["id"] = marker.id;
 					rows.addItem(obj);
@@ -568,13 +569,27 @@
 				currentState="logadoFacebook";
 			}
 			
+			protected function loginANP():void
+			{
+				currentState="ANP";
+			}
+			
+			protected function logoutANP():void
+			{
+				currentState="State1";
+			}
+			
 			protected function logoutHandler(ev:Event):void{
 				currentState="State1";
 			}
 			
 		]]>
 	</fx:Script>
-	<s:Button  id="facebook" skinClass.State1="skins.FBLoginButtonSkin" skinClass.logadoFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.logadoFacebook="logout()"/>
+	<s:HGroup>
+		<s:Button  id="facebook" visible.ANP="false" skinClass.State1="skins.FBLoginButtonSkin" skinClass.logadoFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.logadoFacebook="logout()"/>
+		<s:Image click.State1="loginANP()" width="100" height="50" click.ANP="logoutANP()" source="{Constants.SERVER_AD+'/geogas/imgs/anp.jpg'}"/>
+	</s:HGroup>
+		
 	<s:HGroup width="100%" height="100%" gap="6">
 	<s:BorderContainer width="20%" height="100%">
 		<mx:TabNavigator x="0" y="-1" width="100%" height="100%">
