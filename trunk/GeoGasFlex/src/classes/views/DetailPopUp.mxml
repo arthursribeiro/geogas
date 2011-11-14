@@ -87,7 +87,7 @@
 				}
 				var text:String;
 				if(comment != "") {
-					text = "Avaliei o posto " + this.ent.nomefantasia + " com nota " + rating.value + " pelo GeoGas: " + comment + ". Visite você também!";
+					text = "Avaliei o posto " + this.ent.nomefantasia + " com nota " + rating.value + " pelo GeoGas: " + comment + " - Visite você também!";
 				} else {
 					text = "Avaliei o posto " + this.ent.nomefantasia + " com nota " + rating.value + " pelo GeoGas. Visite você também!";
 				}
