@@ -586,8 +586,8 @@
 		]]>
 	</fx:Script>
 	<s:HGroup>
-		<s:Button  id="facebook" visible.ANP="false" skinClass.State1="skins.FBLoginButtonSkin" skinClass.loggedFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.loggedFacebook="logout()"/>
-		<s:Image click.State1="loginANP()" width="100" height="50" click.ANP="logoutANP()" source="{Constants.SERVER_AD+'/geogas/imgs/anp.jpg'}"/>
+		<s:Button  id="facebook" buttonMode="true" visible.ANP="false" skinClass.State1="skins.FBLoginButtonSkin" skinClass.loggedFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.loggedFacebook="logout()"/>
+		<s:Image visible.ANP="true" buttonMode="true" visible.loggedFacebook="false" visible.State1="true" click.State1="loginANP()" width="80" height="35" click.ANP="logoutANP()" source="{Constants.SERVER_AD+'/geogas/imgs/anp.jpg'}"/>
 	</s:HGroup>
 		
 	<s:HGroup width="100%" height="100%" gap="6">

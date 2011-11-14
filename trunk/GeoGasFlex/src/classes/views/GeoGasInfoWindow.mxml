@@ -99,11 +99,11 @@
 			}
 			
 			public function init():void{
-				if(fb.connected) {
-					currentState="loggedFacebook";
-				} else {
-					currentState="State1";
-				}
+//				if(fb.connected) {
+//					currentState="loggedFacebook";
+//				} else {
+//					currentState="State1";
+//				}
 				fb.addEventListener(FacebookEvent.FACEBOOK_CONNECTED, loginHandler);
 				fb.addEventListener(FacebookEvent.FACEBOOK_DISCONNECTED, logoutHandler);
 			}
