@@ -4,7 +4,7 @@
 			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*" currentState="State1">
 	<mx:states>
 		<s:State name="State1"/>
-		<s:State name="logadoFacebook"/>
+		<s:State name="loggedFacebook"/>
 		<s:State name="ANP"/>
 	</mx:states>
 	<fx:Declarations>
@@ -566,7 +566,7 @@
 			
 			protected function loginHandler(ev:Event):void
 			{
-				currentState="logadoFacebook";
+				currentState="loggedFacebook";
 			}
 			
 			protected function loginANP():void
@@ -586,7 +586,7 @@
 		]]>
 	</fx:Script>
 	<s:HGroup>
-		<s:Button  id="facebook" visible.ANP="false" skinClass.State1="skins.FBLoginButtonSkin" skinClass.logadoFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.logadoFacebook="logout()"/>
+		<s:Button  id="facebook" visible.ANP="false" skinClass.State1="skins.FBLoginButtonSkin" skinClass.loggedFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.loggedFacebook="logout()"/>
 		<s:Image click.State1="loginANP()" width="100" height="50" click.ANP="logoutANP()" source="{Constants.SERVER_AD+'/geogas/imgs/anp.jpg'}"/>
 	</s:HGroup>
 		
