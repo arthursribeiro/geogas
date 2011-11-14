@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="init()" currentState="State1">
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
+	<s:states>
+		<s:State name="State1"/>
+		<s:State name="loggedFacebook"/>
+	</s:states>
 	<fx:Declarations>
 
 	</fx:Declarations>
@@ -12,6 +16,7 @@
 	<fx:Script>
 		<![CDATA[
 			import classes.Constants;
+			import classes.events.FacebookEvent;
 			import classes.model.Entidade;
 			import classes.model.Tesaurus;
 			
@@ -34,10 +39,36 @@
 			import spark.components.Scroller;
 			import spark.components.VGroup;
 			
+			import utils.FacebookConnection;
+			
 			private var dic:Tesaurus;
+			private var ent:Entidade;
+			
+			private var fb:FacebookConnection;
+			
+			public function init():void {
+				fb = FacebookConnection.getInstance();
+				if(fb.connected) {
+					currentState="loggedFacebook";
+				} else {
+					currentState="State1";
+				}
+				fb.addEventListener(FacebookEvent.FACEBOOK_CONNECTED, loginHandler);
+				fb.addEventListener(FacebookEvent.FACEBOOK_DISCONNECTED, logoutHandler);
+			}
+			
+			protected function loginHandler(ev:Event):void
+			{
+				currentState="loggedFacebook";
+			}
+			
+			protected function logoutHandler(ev:Event):void{
+				currentState="State1";
+			}
 			
 			public function setVariables(entity:Entidade,dict:Tesaurus):void{
 				this.dic = dict;
+				this.ent = entity;
 			}
 			
 			private function close():void{
@@ -47,11 +78,43 @@
 			private function ro_faultHandler(e:FaultEvent):void{
 				Alert.show("Problema ao resgatar informações dessa entidade.");
 			}
+			
+			protected function submeter():void {
+				fb.addEventListener(FacebookEvent.FACEBOOK_POSTED, postHandler);
+				var comment:String = "";
+				if(commentArea.text != "") {
+					comment += "\"" + commentArea.text + "\""; 
+				}
+				var text:String;
+				if(comment != "") {
+					text = "Avaliei o posto " + this.ent.nomefantasia + " com nota " + rating.value + " pelo GeoGas: " + comment + ". Visite você também!";
+				} else {
+					text = "Avaliei o posto " + this.ent.nomefantasia + " com nota " + rating.value + " pelo GeoGas. Visite você também!";
+				}
+				
+				fb.submitPost(text);
+			}
+			
+			protected function postHandler(ev:Event):void {
+				fb.removeEventListener(FacebookEvent.FACEBOOK_POSTED, postHandler);
+				Alert.show("Avaliação foi publicada. Obrigado!");
+				close();
+			}
 		]]>
 	</fx:Script>
-	<s:TitleWindow width="100%" height="100%" borderVisible="false" title="Informations" close="close()">
+	<s:TitleWindow width="100%" height="100%" borderVisible="false" close="close()">
 		<mx:TabNavigator id="tabBar" width="100%" height="90%" borderVisible="false">
-			
+			<s:NavigatorContent label="Informações Gerais" width="100%" height="100%">
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Opinião" width="100%" height="100%">
+				<s:HSlider x="98" y="149" minimum="0" maximum="10" value="5" id="rating" width="198" height="10"  includeIn="loggedFacebook"/>
+				<s:Label x="10" y="121" text="Nota:" fontSize="14" width="41" height="17" includeIn="loggedFacebook"/>
+				<s:Label x="9" y="3" text="Comentário:" includeIn="loggedFacebook"/>
+				<s:TextArea x="10" y="23" height="85" width="380" id="commentArea" includeIn="loggedFacebook"/>
+				<s:Button x="315" y="188" label="Submeter" id="submitEvaluation" includeIn="loggedFacebook" click="submeter()"/>
+				<s:Label x="97" y="132" text="0                                                          10" width="200" includeIn="loggedFacebook"/>
+				<s:Label includeIn="State1" x="20" y="78" text="Faça login no Facebook para avaliar o posto." fontSize="18"/>
+			</s:NavigatorContent>
 		</mx:TabNavigator>
 	</s:TitleWindow>
 </s:Group>
