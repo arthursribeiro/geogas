@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="init()" currentState="State1">
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="400" height="334" creationComplete="init()" currentState="State1"
+		 >
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
 	<s:states>
 		<s:State name="State1"/>
+		<s:State name="ANP"/>
 		<s:State name="loggedFacebook"/>
 	</s:states>
 	<fx:Declarations>
@@ -46,13 +49,30 @@
 			
 			private var fb:FacebookConnection;
 			
+			[Bindable]
+			private var cnpjcpfStr:String;
+			[Bindable]
+			private var autorizacaoStr:String;
+			[Bindable]
+			private var razaoSocialStr:String;
+			[Bindable]
+			private var despachoStr:String;
+			[Bindable]
+			private var bandeiraStr:String;
+			[Bindable]
+			private var nomeFantasiaStr:String;
+			[Bindable]
+			private var denunciasStr:String;
+			[Bindable]
+			private var autuacoesStr:String;
+			
 			public function init():void {
 				fb = FacebookConnection.getInstance();
-				if(fb.connected) {
-					currentState="loggedFacebook";
-				} else {
-					currentState="State1";
-				}
+//				if(fb.connected) {
+//					currentState="loggedFacebook";
+//				} else {
+//					currentState="State1";
+//				}
 				fb.addEventListener(FacebookEvent.FACEBOOK_CONNECTED, loginHandler);
 				fb.addEventListener(FacebookEvent.FACEBOOK_DISCONNECTED, logoutHandler);
 			}
@@ -69,6 +89,13 @@
 			public function setVariables(entity:Entidade,dict:Tesaurus):void{
 				this.dic = dict;
 				this.ent = entity;
+				
+				this.autorizacaoStr = ent.autorizacao;
+				this.cnpjcpfStr = ent.cnpjcpf;
+				this.razaoSocialStr = ent.razaosocial;
+				this.despachoStr = ent.numerodespacho;
+				this.bandeiraStr = ent.bandeira;
+				this.nomeFantasiaStr = ent.getLabel();
 			}
 			
 			private function close():void{
@@ -102,9 +129,55 @@
 			}
 		]]>
 	</fx:Script>
-	<s:TitleWindow width="100%" height="100%" borderVisible="false" close="close()">
-		<mx:TabNavigator id="tabBar" width="100%" height="90%" borderVisible="false">
-			<s:NavigatorContent label="Informações Gerais" width="100%" height="100%">
+	<s:TitleWindow width="100%" height="100%" borderVisible="false" close="close()" >
+		<mx:TabNavigator id="tabBar" width="100%" height="100%" borderVisible="false">
+			<s:NavigatorContent label="Informações Gerais" id="info" width="100%" height="100%">
+				<s:Label x="21" y="40" width="99" height="22" fontSize="15" text="Autorização:"
+						 textAlign="right"
+						 />
+				<s:Label x="34" y="70" width="86" height="22" fontSize="15" text="CNPJ/CPF:"
+						 textAlign="right"
+						 />
+				<s:Label x="11" y="11" width="109" height="22" fontSize="15" text="Nome:"
+						 textAlign="right"
+						 />
+				<s:Label x="43" y="160" width="77" height="22" fontSize="15" text="Denúncias:"
+						 textAlign="right"
+						 />
+				<s:Label x="38" y="197" width="82" height="29" fontSize="15" text="Autuações:"
+						 textAlign="right"
+						 />
+				<s:Label x="50" y="132" width="71" height="20" fontSize="15" text="Bandeira:"
+						 textAlign="right"
+						/>
+				<s:Label x="38" y="100" width="86" height="25" fontSize="15" text="Despacho:"
+						 textAlign="right"
+						 />
+				<s:TextInput x="128" y="70" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
+							 text="{this.cnpjcpfStr}"
+							 />
+				<s:TextInput x="128" y="100" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true" text="{this.despachoStr}"/>
+				<s:TextInput x="128" y="130" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true" text="{this.bandeiraStr}"/>
+				<s:TextInput x="128" y="11" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
+							 text="{this.nomeFantasiaStr}"
+							 />
+				<s:TextInput x="128" y="160" width="40" height="30" editable="false"
+							 text="{this.denunciasStr}"
+							 />
+				<s:TextInput x="128" y="198" width="40" height="28" editable="false"
+							 text="{this.autuacoesStr}"
+							 />
+				<s:TextInput x="128" y="40" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
+							 text="{this.autorizacaoStr}"
+							/>
+				<s:Button includeIn="ANP" x="224" y="204" height="22" label="Save"/>
+				<s:Image x="176" y="196" width="40"
+						 source="{Constants.SERVER_AD+'/geogas/imgs/autuacao.jpg'}"
+						 />
+				<s:Image x="176" y="160" width="40"
+						 source="{Constants.SERVER_AD+'/geogas/imgs/denuncia.jpg'}"
+						 />
+				
 			</s:NavigatorContent>
 			<s:NavigatorContent label="Opinião" width="100%" height="100%">
 				<s:HSlider x="98" y="149" minimum="0" maximum="10" value="5" id="rating" width="198" height="10"  includeIn="loggedFacebook"/>
