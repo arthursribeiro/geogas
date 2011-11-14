@@ -102,7 +102,7 @@
 			
 			private function openDetailsPopup(event:Event):void{
 				var popUp:DetailPopUp = new DetailPopUp();
-				popUp.setVariables(event.target as Entidade,Tesaurus.getInstance());
+				popUp.setVariables(event.currentTarget.wrapper as Entidade,Tesaurus.getInstance());
 				popUp.isPopUp = true;
 				this.popUp = popUp;
 				PopUpManager.addPopUp(popUp,this,true);

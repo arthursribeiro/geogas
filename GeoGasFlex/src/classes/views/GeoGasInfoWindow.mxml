@@ -109,7 +109,7 @@
 			
 			protected function recomendarPosto():void {
 				fb.addEventListener(FacebookEvent.FACEBOOK_POSTED, postHandler);
-				fb.submitPost("Recomendo o " + this.labelStr + " pelo GeoGas, visite você também!");
+				fb.submitPost("Recomendo o " + this.labelStr + " pelo GeoGas. Visite você também!");
 			}
 			
 			protected function postHandler(ev:Event):void {
