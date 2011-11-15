@@ -99,6 +99,7 @@ CREATE TABLE Traducao(
 );
 
 CREATE TABLE historico_precos_anp(
+	id SERIAL NOT NULL,
 	id_posto_combustivel integer NOT NULL,
 	pricegasoline double precision,
 	pricealcohol double precision,
@@ -109,6 +110,7 @@ CREATE TABLE historico_precos_anp(
 );
 
 CREATE TABLE historico_precos_usuario(
+	id SERIAL NOT NULL,
 	id_posto_combustivel integer NOT NULL,
 	id_usuario integer NOT NULL,
 	pricegasoline double precision,
