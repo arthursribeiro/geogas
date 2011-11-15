@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
@@ -46,6 +47,8 @@ public class MyItemizedOverlay extends BalloonItemizedOverlay<OverlayItem> {
 		alert.setTitle("Informações do Posto");
 		Place p = a.get(item);
 		String info = "";
+		//alert.setContentView(R.layout.main);
+		
 		info += "Nome do posto: " + p.getName() + "\n";
 		info += "Latitude: " + p.getLat() + "\n";
 		info += "Longitude: " + p.getLonge() + "\n";

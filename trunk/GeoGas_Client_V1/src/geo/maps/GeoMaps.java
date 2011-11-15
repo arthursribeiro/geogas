@@ -4,6 +4,7 @@ import geo.data.Place;
 import geo.xmlhandler.GeoLocation;
 import geo.xmlhandler.XMLHandler;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -142,8 +143,8 @@ public class GeoMaps extends MapActivity {
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		mapView.displayZoomControls(true);
 		mc = mapView.getController();
-		lat = -7.000;
-		lng = -38.000;
+		lat = -7.118;
+		lng = -34.9;
 		int zoom = 13;
 
 		sucess = getIntent().getExtras().getBoolean("sucess");
@@ -423,7 +424,33 @@ public class GeoMaps extends MapActivity {
 			String allurl = "http://buchada.dsc.ufcg.edu.br/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER="
 					+ URLEncoder.encode(url, "UTF-8");
 			Log.i("URL", allurl);
-			xml.loadXMLfromURL(allurl);
+			String x = 
+			
+			"<gml>"+
+			"<gml:featureMember>"+
+			"<geogas:gasstation fid=\"gasstation.fid-22289114_13390dd9011_-761b\">"+
+			"<geogas:nomefantasia>POSTO MILLENIUM</geogas:nomefantasia>"+
+			"<geogas:razaosocial>MILLENIUM COM?RCIO DE COMBUST?VEIS LTDA</geogas:razaosocial>"+
+			"<geogas:pricegasoline>2.49</geogas:pricegasoline>"+
+			"<geogas:pricealcohol>1.99</geogas:pricealcohol>"+
+			"<geogas:pricediesel>2.06</geogas:pricediesel>"+
+			"<geogas:bandeira>ALESAT</geogas:bandeira>"+
+			"<geogas:geom>"+
+			"<gml:Point srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">"+
+			"<gml:coordinates xmlns:gml=\"http://www.opengis.net/gml\" decimal=\".\" cs=\",\" ts=\" \">-34.8610512,-7.11532</gml:coordinates>"+
+			"</gml:Point>"+
+			"</geogas:geom>"+
+			"<geogas:latitude>-7.11532</geogas:latitude>"+
+			"<geogas:longitude>-34.8610512</geogas:longitude>"+
+			"<geogas:autuacoes>0</geogas:autuacoes>"+
+			"<geogas:denuncias>0</geogas:denuncias>"+
+			"<geogas:img>alesat.jpg</geogas:img>"+
+			"</geogas:gasstation>"+
+			"</gml:featureMember>"+
+			"</gml>";
+
+			
+			xml.loadXMLfromString(x);
 
 			all_places1 = xml.getElementByPlaceBB();
 		} catch (IOException e) {

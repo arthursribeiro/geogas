@@ -6,7 +6,7 @@ public class Place {
 	double lat;
 	double longe;
 	GeoPoint point;
-	boolean validade;
+	int autuacoes;
 	String name;
 	String gasolina;
 	String gas;
@@ -14,29 +14,23 @@ public class Place {
 	String alcool;
 	String bandeira;
 	String endereco;
+	int denuncia;
 	
 	public Place(String lat, String longe) {
 		this.lat = Double.parseDouble(lat.replace(" ", "").replace(",", "."));
 		this.longe = Double.parseDouble(longe.replace(" ", "").replace(",", "."));
 	}
 	
-
-	public Place(String latitude, String longitude, boolean valido,
-			String posto_name) {
-		this.lat = Double.parseDouble(latitude.replace(" ", "").replace(",", "."));
-		this.longe = Double.parseDouble(longitude.replace(" ", "").replace(",", "."));
-		this.validade = valido;
-		this.name = posto_name;
-	}
-
-	public Place(String latitude, String longitude, boolean validade2,
+	public Place(String latitude, String longitude, String validade2, String denuncia,
 			String posto_name, String string_gasolina, String string_gas,
 			String string_disel, String string_alcool,String bandeira,String endereco) {
 		this.lat = Double.parseDouble(latitude.replace(" ", "").replace(",", "."));
 		this.longe = Double.parseDouble(longitude.replace(" ", "").replace(",", "."));
 		this.point = new GeoPoint((int) (lat * 1E6),
 				(int) (this.longe * 1E6));
-		this.validade = validade2;
+		
+		this.autuacoes = Integer.parseInt(validade2);
+		this.denuncia = Integer.parseInt(denuncia);
 		this.name = posto_name;
 		this.gasolina = string_gasolina;
 		this.gas = string_gas;
@@ -64,14 +58,11 @@ public class Place {
 	}
 
 	public boolean isValidade() {
-		return validade;
+		boolean result = false;
+		if(autuacoes == 0 && denuncia == 0)
+			result = true;
+		return result;
 	}
-
-
-	public void setValidade(boolean validade) {
-		this.validade = validade;
-	}
-
 
 	public String getName() {
 		return name;
@@ -140,5 +131,25 @@ public class Place {
 
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
+	}
+
+	public int getAutuacoes() {
+		return autuacoes;
+	}
+
+	public void setAutuacoes(int autuacoes) {
+		this.autuacoes = autuacoes;
+	}
+
+	public int getDenuncia() {
+		return denuncia;
+	}
+
+	public void setDenuncia(int denuncia) {
+		this.denuncia = denuncia;
+	}
+
+	public void setPoint(GeoPoint point) {
+		this.point = point;
 	}
 }

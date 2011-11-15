@@ -5,6 +5,7 @@ import geo.data.Place;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -74,7 +75,8 @@ public class XMLHandler {
 	}
 
 	public void loadXMLfromFile(File f) throws SAXException, IOException {
-		doc = db.parse(f);
+		FileInputStream byteArrayInputStream = new FileInputStream(f);
+		doc = db.parse(byteArrayInputStream);
 	}
 
 	public ArrayList<String> getElementByState() {
@@ -155,7 +157,8 @@ public class XMLHandler {
 
 			String lat = getElementByTag("geogas:latitude", fstElmnt);
 			String longi = getElementByTag("geogas:longitude", fstElmnt);
-			String val = getElementByTag("geogas:infracoes", fstElmnt);
+			String val = getElementByTag("geogas:autuacoes", fstElmnt);
+			String denun = getElementByTag("geogas:denuncias", fstElmnt);
 			String posto_name = getElementByTag("geogas:nomefantasia", fstElmnt);
 			String bandeira = getElementByTag("geogas:bandeira", fstElmnt);
 			String endereco = getElementByTag("geogas:endereco", fstElmnt)
@@ -166,10 +169,7 @@ public class XMLHandler {
 			String diesel = getElementByTag("geogas:pricediesel", fstElmnt);
 			String alcohol = getElementByTag("geogas:pricealcohol", fstElmnt);
 			String gas = getElementByTag("geogas:pricegas", fstElmnt);
-			boolean valido = true;
-			if (val != null && Integer.parseInt(val) > 0) {
-				valido = false;
-			}
+			Log.i("Place", lat + " " + longi + " " + gasolina + " " + diesel + " " + alcohol + " " + gas);
 			Log.i("GeoGas", lat + " " + longi + " " + posto_name + " " + val);
 			Log.i("GeoGas", "fim");
 			/*
@@ -192,7 +192,7 @@ public class XMLHandler {
 			 * preco_alcool1 = (Element) preco_alcool.item(0); String
 			 * string_alcool = preco_alcool1.getAttribute("value");
 			 */
-			result.add(new Place(lat, longi, valido, posto_name, gasolina, gas,
+			result.add(new Place(lat, longi, val,denun, posto_name, gasolina, gas,
 					diesel, alcohol, bandeira, endereco));
 
 		}
