@@ -8,6 +8,7 @@
 		<s:State name="ANP"/>
 	</s:states>
 	<fx:Declarations>
+		<s:RemoteObject id="ro" destination="PostoCombustivelService" result="savePricesResult(event)" fault="savePricesFault(event)"/>
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -24,6 +25,7 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
 			
 			import spark.primitives.Rect;
 			
@@ -134,11 +136,39 @@
 			}
 			
 			private function updatePricesANP(ev:MouseEvent):void{
-				//TODO
+				var service:HTTPService = new HTTPService();
+				service.url = Constants.SERVER_AD+"/geogas/struts/updatePrices?id="+myEnt.id+"&isAnp=true&idUser=-1"+
+												"&pricegasoline="+((!(this.pricegasoline.text.indexOf("--")>=0))?this.pricegasoline.text:"-1")+
+												"&pricealcohol="+((!(this.pricealcohol.text.indexOf("--")>=0))?this.pricealcohol.text:"-1")+
+												"&pricediesel="+((!(this.pricediesel.text.indexOf("--")>=0))?this.pricediesel.text:"-1")+
+												"&pricegas="+((!(this.pricegnv.text.indexOf("--")>=0))?this.pricegnv.text:"-1");
+				service.showBusyCursor = true;
+				service.addEventListener(ResultEvent.RESULT, savePricesResult);
+				service.addEventListener(FaultEvent.FAULT, savePricesFault);
+				service.send();
 			}
 			
 			private function updatePricesUser(ev:MouseEvent):void{
-				//TODO
+				var service:HTTPService = new HTTPService();
+				//COLCOAR O ID DO USUARIO!!
+				service.url = Constants.SERVER_AD+"/geogas/struts/updatePrices?id="+myEnt.id+"&isAnp=false&idUser=-1"+
+					"&pricegasoline_user="+((!(this.pricegasoline_user.text.indexOf("--")>=0))?this.pricegasoline_user.text:"-1")+
+					"&pricealcohol_user="+((!(this.pricealcohol_user.text.indexOf("--")>=0))?this.pricealcohol_user.text:"-1")+
+					"&pricediesel_user="+((!(this.pricediesel_user.text.indexOf("--")>=0))?this.pricediesel_user.text:"-1")+
+					"&pricegas_user="+((!(this.pricegnv_user.text.indexOf("--")>=0))?this.pricegnv_user.text:"-1");
+				service.showBusyCursor = true;
+				service.addEventListener(ResultEvent.RESULT, savePricesResult);
+				service.addEventListener(FaultEvent.FAULT, savePricesFault);
+				service.send();
+			}
+			
+			private function savePricesResult(ev:ResultEvent):void{
+				Alert.show("Preços atualizados com sucesso. \nObrigado pela contribuição.");
+			}
+			
+			private function savePricesFault(ev:FaultEvent):void{
+				Alert.show(ev.toString());
+				Alert.show("Atualização não foi possível ser feita. \nPor favor tente mais tarde.");
 			}
 			
 		]]>
@@ -173,10 +203,10 @@
 		
 		<mx:HBox x="6" y="101" width="100%" height="15%" verticalAlign="middle">
 			<s:Label fontSize="18" text="Users" width="100" textAlign="center"/>
-			<s:TextInput restrict="0-9 \." x="70" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasolineStr_user}"/>
-			<s:TextInput restrict="0-9 \." x="128" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricealcoholStr_user}"/>
-			<s:TextInput restrict="0-9 \." x="186" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricedieselStr_user}"/>
-			<s:TextInput restrict="0-9 \." x="244" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasStr_user}"/>
+			<s:TextInput restrict="0-9 \." x="70" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasolineStr_user}" id="pricegasoline_user"/>
+			<s:TextInput restrict="0-9 \." x="128" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricealcoholStr_user}" id="pricealcohol_user"/>
+			<s:TextInput restrict="0-9 \." x="186" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricedieselStr_user}" id="pricediesel_user"/>
+			<s:TextInput restrict="0-9 \." x="244" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasStr_user}" id="pricegnv_user"/>
 			<s:Button label="Save" click="updatePricesUser(event)" visible.State1="false" visible.ANP="false" visible.loggedFacebook="true" />
 		</mx:HBox>
 		
