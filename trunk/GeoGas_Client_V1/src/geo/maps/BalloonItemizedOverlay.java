@@ -17,7 +17,7 @@ import com.google.android.maps.OverlayItem;
 
 public class BalloonItemizedOverlay<Item extends OverlayItem> extends ItemizedOverlay<Item> {
 	
-	private MapView mapView;
+	public MapView mapView;
 	private BalloonOverlayView<Item> balloonView;
 	private View clickRegion;
 	private int viewOffset;

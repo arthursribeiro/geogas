@@ -15,6 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -27,6 +28,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -239,17 +241,17 @@ public class GeoMaps extends MapActivity {
 		Drawable ban6 = this.getResources().getDrawable(R.drawable.dislub);
 		Drawable ban7 = this.getResources().getDrawable(R.drawable.setta);
 		Drawable ban8 = this.getResources().getDrawable(R.drawable.ale);
-		itemizedOverlay = new MyItemizedOverlay(valido, mapView);
-		itemizedOverlay2 = new MyItemizedOverlay(invalido, mapView);
-		itemizedOverlay3 = new MyItemizedOverlay(ban, mapView);
-		itemizedOverlay4 = new MyItemizedOverlay(ban1, mapView);
-		itemizedOverlay5 = new MyItemizedOverlay(ban2, mapView);
-		itemizedOverlay6 = new MyItemizedOverlay(ban3, mapView);
-		itemizedOverlay7 = new MyItemizedOverlay(ban4, mapView);
-		itemizedOverlay8 = new MyItemizedOverlay(ban5, mapView);
-		itemizedOverlay9 = new MyItemizedOverlay(ban6, mapView);
-		itemizedOverlay10 = new MyItemizedOverlay(ban7, mapView);
-		itemizedOverlay11 = new MyItemizedOverlay(ban8, mapView);
+		itemizedOverlay = new MyItemizedOverlay(valido, mapView,this);
+		itemizedOverlay2 = new MyItemizedOverlay(invalido, mapView,this);
+		itemizedOverlay3 = new MyItemizedOverlay(ban, mapView,this);
+		itemizedOverlay4 = new MyItemizedOverlay(ban1, mapView,this);
+		itemizedOverlay5 = new MyItemizedOverlay(ban2, mapView,this);
+		itemizedOverlay6 = new MyItemizedOverlay(ban3, mapView,this);
+		itemizedOverlay7 = new MyItemizedOverlay(ban4, mapView,this);
+		itemizedOverlay8 = new MyItemizedOverlay(ban5, mapView,this);
+		itemizedOverlay9 = new MyItemizedOverlay(ban6, mapView,this);
+		itemizedOverlay10 = new MyItemizedOverlay(ban7, mapView,this);
+		itemizedOverlay11 = new MyItemizedOverlay(ban8, mapView,this);
 	}
 
 	private boolean testeCenter() {
@@ -264,6 +266,16 @@ public class GeoMaps extends MapActivity {
 		return false;
 	}
 
+	public void sugestao(Place p){
+		try {
+			Intent i = new Intent(GeoMaps.this, GeoFilter.class);
+			GeoMaps.this.startActivity(i);
+		} catch (Exception e) {
+			Toast.makeText(getApplicationContext(), e.toString(),
+					Toast.LENGTH_LONG).show();
+		}
+	}
+	
 	private boolean noIntervalo(double lat2, double latitudeInDegrees,
 			double latitudeInDegrees2) {
 		boolean result = false;
