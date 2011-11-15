@@ -105,7 +105,6 @@ CREATE TABLE historico_precos_anp(
 	pricediesel double precision,
 	pricegas double precision,
 	data TIMESTAMP,
-	CONSTRAINT pk_historico_precos_anp PRIMARY KEY (id_posto_combustivel),
 	CONSTRAINT fk_postocombustivel FOREIGN KEY (id_posto_combustivel) REFERENCES PostoCombustivel(id_posto_combustivel)
 );
 
@@ -117,7 +116,6 @@ CREATE TABLE historico_precos_usuario(
 	pricediesel double precision,
 	pricegas double precision,
 	data TIMESTAMP,
-	CONSTRAINT pk_historico_precos_usuario PRIMARY KEY (id_posto_combustivel,id_usuario),
 	CONSTRAINT fk_postocombustivel_usuario FOREIGN KEY (id_posto_combustivel) REFERENCES PostoCombustivel(id_posto_combustivel),
 	CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
