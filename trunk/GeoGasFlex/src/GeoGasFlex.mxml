@@ -439,9 +439,7 @@
 							lng = new Number( dic2[prop]);
 						}
 						else{
-							if( label.toUpperCase().indexOf(Constants.ID.toUpperCase())>=0){
-								id = new Number(dic[marker][prop]);
-							}else if(!(label.toUpperCase() == "GEOM")){
+							if(!(label.toUpperCase() == "GEOM")){
 								data[label] = dic2[prop];
 								if(!(columns.getItemIndex(label)>=0 || label.toUpperCase() == "IMG")){
 									columns.addItem(label);
@@ -451,6 +449,7 @@
 					}
 					var defaulData:Dictionary = new Dictionary();
 					defaulData = data;
+					id = Number(marker.split(".")[1]);
 					var entidade:Entidade = new Entidade(new LatLng(lat,lng),id,defaulData);
 					addMarker(entidade);
 				}
@@ -558,6 +557,14 @@
 			protected function login():void
 			{
 				fb.login();
+				/**
+				 *var nome:String = fb.getUserName(); 
+				 * var idade:int = fb.getUserAge();
+				 * var facebook_id = fb.getUserFacebookId();
+				 * var chave_facebook = fb.getUserFacebookKey();
+				 * 
+				 * ro.createUser(nome,facebook_id,null,idade,chave_facebook);
+				 */
 			}
 			
 			protected function logout():void {
