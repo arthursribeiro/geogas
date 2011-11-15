@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
 import br.edu.ufcg.geogas.dao.GasStationDAOFlex;
 import br.edu.ufcg.geogas.dao.GasStationDAOIF;
@@ -21,6 +22,8 @@ public class GasStationAction  extends ActionSupport{
 	private final String geoserverUrl = "http://buchada.dsc.ufcg.edu.br/geoserver";
 	
 	public int id;
+	
+	
 	public String pricegasoline = "-1";
 	public String pricegasoline_user = "-1";
 	public String pricealcohol = "-1";
@@ -38,6 +41,12 @@ public class GasStationAction  extends ActionSupport{
 	public Integer cpf;
 	public Integer idade;
 	public String chave_facebook;
+	
+	public String nomeFantasia;
+	public String bandeira;
+	public String cnpjCpf;
+	public String autorizacao;
+	public String numeroDespacho;
 
 	private boolean coordValid(double longiMin, double latiMin) {
 		if(longiMin<=180 && longiMin>=-180){
@@ -56,6 +65,26 @@ public class GasStationAction  extends ActionSupport{
 					Double.parseDouble(pricegas), Double.parseDouble(pricegas_user),isAnp,idUser);
 		}catch(Exception e){
 			
+		}
+	}
+	
+	public void updateData(){
+		if(id>0){
+			PostoCombustivel p = gasStationDAO.getGasStationById(id);
+			if(p!=null){
+				if(nomeFantasia != null && nomeFantasia.length()>0)
+					p.setNomeFantasia(nomeFantasia);
+				if(bandeira != null && bandeira.length()>0)
+					p.setBandeira(bandeira);
+				if(cnpjCpf != null && cnpjCpf.length()>0)
+					p.setCnpjCpf(cnpjCpf);
+				if(autorizacao != null && autorizacao.length()>0)
+					p.setAutorizacao(autorizacao);
+				if(numeroDespacho != null && numeroDespacho.length()>0)
+					p.setNumeroDespacho(numeroDespacho);
+				
+				gasStationDAO.mergeObject(p);
+			}
 		}
 	}
 	

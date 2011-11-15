@@ -8,21 +8,15 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario;
-import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario_PK;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
 
@@ -247,13 +241,6 @@ public class GasStationDAO implements GasStationDAOIF{
 			if(pricegasoline>0)
 			h.setPricegasoline(pricegasoline);
 			h.setData(new Date());
-//			sql+="("+id;
-//			sql+=","+(pricegasoline>0?pricegasoline:"null");
-//			sql+=","+(pricealcohol>0?pricealcohol:"null");
-//			sql+=","+(pricediesel>0?pricediesel:"null");
-//			sql+=","+(pricegas>0?pricegas:"null");
-//			sql+=",current_date)";
-//			sql = sql.replace("<?table?>", "historico_precos_anp(id_posto_combustivel,pricegasoline,pricealcohol,pricediesel,pricegas,data)");
 			
 			try{
 				getEntityManager().persist(h);
@@ -264,10 +251,9 @@ public class GasStationDAO implements GasStationDAOIF{
 		}
 		else if(!isAnp && idUser>0){
 			Historico_Precos_Usuario hu = new Historico_Precos_Usuario();
-			hu.id = new Historico_Precos_Usuario_PK();
-			hu.id.setData(new Date());
-			hu.id.setId_posto_combustivel(id);
-			hu.id.setId_usuario(idUser);
+			hu.setData(new Date());
+			hu.setId_posto_combustivel(id);
+			hu.setId_usuario(idUser);
 			if(pricealcohol_user>0)
 			hu.setPricealcohol(pricealcohol_user);
 			if(pricediesel_user>0)
@@ -276,19 +262,9 @@ public class GasStationDAO implements GasStationDAOIF{
 			hu.setPricegas(pricegas_user);
 			if(pricegasoline_user>0)
 			hu.setPricegasoline(pricegasoline_user);
-//			sql+="("+id;
-//			sql+=","+idUser;
-//			sql+=","+(pricegasoline_user>0?pricegasoline_user:"null");
-//			sql+=","+(pricealcohol_user>0?pricealcohol_user:"null");
-//			sql+=","+(pricediesel_user>0?pricediesel_user:"null");
-//			sql+=","+(pricegas_user>0?pricegas_user:"null");
-//			sql+=",current_date)";
-//			sql = sql.replace("<?table?>", "historico_precos_usuario(id_posto_combustivel,id_usuario,pricegasoline,pricealcohol,pricediesel,pricegas,data)");
 			getEntityManager().persist(hu);
 		}
 		
-//		Query q = getEntityManager().createNativeQuery(sql);
-//		q.executeUpdate();
 		
 	}
 
