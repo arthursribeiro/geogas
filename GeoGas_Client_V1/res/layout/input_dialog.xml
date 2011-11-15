@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:id="@+id/widget84" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">	<LinearLayout 
+		android:id="@+id/widget83" 
+		android:layout_height="fill_parent" 
+		android:orientation="horizontal" 
+		android:layout_width="fill_parent">
+
+		<LinearLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="484dp"
+		    android:layout_gravity="center"
+		    android:orientation="vertical"
+		    android:paddingLeft="20dip"
+		    android:paddingRight="20dip" >
+
+			<LinearLayout
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_gravity="center"
+			    android:orientation="horizontal" >
+
+			    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="@string/gasolina" />
+
+			    <EditText
+			        android:id="@+id/price_gasolina"
+			        android:layout_width="141dp"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="0.71"
+			        android:textSize="16sp" >
+			    </EditText>
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center">
+				<TextView
+					android:text="@string/gas"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content" />
+				<EditText android:textSize="16sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/price_gas"></EditText>
+			</LinearLayout>
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center">
+				<TextView
+					android:text="@string/alcool"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content" />
+				<EditText android:textSize="16sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/price_alcool"></EditText>
+			</LinearLayout>
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center">
+				<TextView
+					android:text="@string/diesel"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content" />
+				<EditText android:textSize="16sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/price_diesel"></EditText>
+			</LinearLayout>
+			<Button android:id="@+id/button_precos_ok" android:text="Continuar" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_gravity="center"/>
+			<Button android:id="@+id/button_precos_cancel" android:text="Cancelar" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_gravity="center"/>
+		</LinearLayout>
+	</LinearLayout>
+</ScrollView>

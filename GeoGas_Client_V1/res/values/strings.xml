@@ -10,4 +10,9 @@
     <string name="precoMin">Preço Mínimo (em reais):</string>
     <string name="precoMax">Preço Máximo (em reais):</string>
     <string name="bandeira">Bandeira:</string>
+    <string name="gasolina">Preço gasolina</string>
+    <string name="gas">Preço gás</string>
+    <string name="alcool">Preço álcool</string>
+    <string name="diesel">Preço diesel</string>
+    <string name="denuncia">denuncia</string>
 </resources>
