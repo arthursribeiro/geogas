@@ -12,7 +12,10 @@
 	    <action name="kml" class="gasStationAction" method="giveGasStationsKML" >
 	    </action>
 	    
-	     <action name="updatePrices" class="gasStationAction" method="updatePrices" >
+	    <action name="updatePrices" class="gasStationAction" method="updatePrices" >
+	    </action>
+	    
+	    <action name="updateData" class="gasStationAction" method="updateData" >
 	    </action>
 	    
 	    <action name="updateUsuario" class="gasStationAction" method="createUsuario" >
