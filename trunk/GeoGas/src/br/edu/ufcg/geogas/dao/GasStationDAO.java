@@ -1,6 +1,7 @@
 package br.edu.ufcg.geogas.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -19,7 +20,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ufcg.geogas.bean.Entidade;
+import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
+import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario;
+import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario_PK;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
+import br.edu.ufcg.geogas.bean.Usuario;
 
 
 public class GasStationDAO implements GasStationDAOIF{
@@ -222,5 +227,95 @@ public class GasStationDAO implements GasStationDAOIF{
 	public HashMap<String,Object> getPricesByGasStationId(int id, HashMap<String,Object> ret) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public void updatePrices(int id, double pricegasoline,
+			double pricegasoline_user, double pricealcohol,
+			double pricealcohol_user, double pricediesel,
+			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, Integer idUser) {
+		if(isAnp){
+			Historico_Precos_Anp h = new Historico_Precos_Anp();
+			h.setId_posto_combustivel(id);
+			if(pricealcohol>0)
+			h.setPricealcohol(pricealcohol);
+			if(pricediesel>0)
+			h.setPricediesel(pricediesel);
+			if(pricegas>0)
+			h.setPricegas(pricegas);
+			if(pricegasoline>0)
+			h.setPricegasoline(pricegasoline);
+			h.setData(new Date());
+//			sql+="("+id;
+//			sql+=","+(pricegasoline>0?pricegasoline:"null");
+//			sql+=","+(pricealcohol>0?pricealcohol:"null");
+//			sql+=","+(pricediesel>0?pricediesel:"null");
+//			sql+=","+(pricegas>0?pricegas:"null");
+//			sql+=",current_date)";
+//			sql = sql.replace("<?table?>", "historico_precos_anp(id_posto_combustivel,pricegasoline,pricealcohol,pricediesel,pricegas,data)");
+			
+			try{
+				getEntityManager().persist(h);
+				getEntityManager().merge(h);
+			}catch(Throwable t){
+				t.printStackTrace();
+			}
+		}
+		else if(!isAnp && idUser>0){
+			Historico_Precos_Usuario hu = new Historico_Precos_Usuario();
+			hu.id = new Historico_Precos_Usuario_PK();
+			hu.id.setData(new Date());
+			hu.id.setId_posto_combustivel(id);
+			hu.id.setId_usuario(idUser);
+			if(pricealcohol_user>0)
+			hu.setPricealcohol(pricealcohol_user);
+			if(pricediesel_user>0)
+			hu.setPricediesel(pricediesel_user);
+			if(pricegas_user>0)
+			hu.setPricegas(pricegas_user);
+			if(pricegasoline_user>0)
+			hu.setPricegasoline(pricegasoline_user);
+//			sql+="("+id;
+//			sql+=","+idUser;
+//			sql+=","+(pricegasoline_user>0?pricegasoline_user:"null");
+//			sql+=","+(pricealcohol_user>0?pricealcohol_user:"null");
+//			sql+=","+(pricediesel_user>0?pricediesel_user:"null");
+//			sql+=","+(pricegas_user>0?pricegas_user:"null");
+//			sql+=",current_date)";
+//			sql = sql.replace("<?table?>", "historico_precos_usuario(id_posto_combustivel,id_usuario,pricegasoline,pricealcohol,pricediesel,pricegas,data)");
+			getEntityManager().persist(hu);
+		}
+		
+//		Query q = getEntityManager().createNativeQuery(sql);
+//		q.executeUpdate();
+		
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public Integer createUsuario(Usuario u) {
+		getEntityManager().persist(u);
+		getEntityManager().merge(u);
+		return u.getId_usuario();
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public Usuario findUsuario(String facebook_id) {
+		Query q = getEntityManager().createQuery("SELECT u FROM Usuario WHERE facebook_id = "+facebook_id);
+		Usuario u = null;
+		try{
+			u = (Usuario) q.getSingleResult();
+		}catch(Exception e){
+			
+		}
+		return u;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public void mergeObject(Object u) {
+		getEntityManager().merge(u);
 	}
 }
