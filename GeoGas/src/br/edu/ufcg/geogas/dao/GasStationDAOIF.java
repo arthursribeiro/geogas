@@ -11,6 +11,7 @@ import javax.persistence.Query;
 
 import org.springframework.transaction.annotation.Propagation;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
+import br.edu.ufcg.geogas.bean.Usuario;
 
 public interface GasStationDAOIF {
 	
@@ -46,4 +47,15 @@ public interface GasStationDAOIF {
 	public HashMap<String, Object> getEntity(int id, String typeEntity);
 
 	public HashMap<String, Object> getPricesByGasStationId(int id, HashMap<String, Object> ret);
+
+	public void updatePrices(int id, double pricegasoline,
+			double pricegasoline_user, double pricealcohol,
+			double pricealcohol_user, double pricediesel,
+			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, Integer idUser);
+
+	public Integer createUsuario(Usuario u);
+
+	public Usuario findUsuario(String facebook_id);
+
+	public void mergeObject(Object u);
 }

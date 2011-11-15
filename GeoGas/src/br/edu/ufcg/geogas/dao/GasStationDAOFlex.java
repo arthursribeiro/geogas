@@ -1,7 +1,7 @@
 package br.edu.ufcg.geogas.dao;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -21,7 +21,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ufcg.geogas.bean.Entidade;
+import br.edu.ufcg.geogas.bean.Historico_Precos_ANP_PK;
+import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
+import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario;
+import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario_PK;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
+import br.edu.ufcg.geogas.bean.Usuario;
 
 
 public class GasStationDAOFlex extends HibernateDaoSupport implements GasStationDAOIF{
@@ -260,5 +265,34 @@ public class GasStationDAOFlex extends HibernateDaoSupport implements GasStation
 		}catch(Exception e){
 			return null;
 		}
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public void updatePrices(int id, double pricegasoline,
+			double pricegasoline_user, double pricealcohol,
+			double pricealcohol_user, double pricediesel,
+			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, Integer idUser) {
+		
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public Integer createUsuario(Usuario u) {
+
+		return null;
+		
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public Usuario findUsuario(String facebook_id) {
+		return null;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public void mergeObject(Object u) {
+		
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.flex.remoting.RemotingDestination;
 
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
+import br.edu.ufcg.geogas.bean.Usuario;
 import br.edu.ufcg.geogas.dao.GasStationDAOIF;
 import br.edu.ufcg.geogas.service.PostoCombustivelServiceIF;
 
@@ -22,6 +23,7 @@ public class PostoCombustivelServiceFlex implements PostoCombustivelServiceIF{
 	public String olaJava(String nome) {
 		return "Olá Mundo! Olá "+nome;
 	}
+	
 	
 	public String encodeUrl(String url,String filters) throws UnsupportedEncodingException{
 		return url+URLEncoder.encode(filters, "UTF-8");
