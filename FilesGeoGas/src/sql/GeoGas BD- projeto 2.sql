@@ -1,10 +1,10 @@
 CREATE TABLE Usuario(
-	id_usuario SERIAL PRIMARY KEY,
 	nome VARCHAR(255) NOT NULL,
 	facebook_id VARCHAR(255) NOT NULL,
-	cpf BIGINT,
-	idade INTEGER,
-	chave_facebook VARCHAR(255) NOT NULL
+	cpf character varying(255),
+	data_nascimento time without time zone,
+	chave_facebook VARCHAR(255),
+	CONSTRAINT pk_usuario PRIMARY KEY (facebook_id)
 );
 
 CREATE TABLE Entidade(
@@ -71,7 +71,9 @@ CREATE TABLE Avaliacao_Entidade_Usuario(
 
 CREATE TABLE Denuncia(
 	id_denuncia SERIAL PRIMARY KEY,
-	reclamacao VARCHAR(255) NOT NULL
+	reclamacao VARCHAR(255) NOT NULL,
+	id_usuario integer,
+	CONSTRAINT fk_usuario_denuncia FOREIGN KEY (id_usuario) REFERENCES usuario (facebook_id)
 );
 
 CREATE TABLE Entidade_Denuncia(
