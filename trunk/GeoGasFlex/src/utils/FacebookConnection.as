@@ -1,15 +1,25 @@
 package utils
 {
+	import classes.Constants;
 	import classes.events.FacebookEvent;
 	
 	import com.facebook.graph.Facebook;
 	
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	
+	import mx.controls.Alert;
+	import mx.rpc.events.FaultEvent;
+	import mx.rpc.events.ResultEvent;
+	import mx.rpc.http.HTTPService;
 
 	public class FacebookConnection extends EventDispatcher
 	{
 		public var connected:Boolean = false;
+		public var nome:String;
+		public var id:String;
+		public var birthday:String;
 		private static var instance:FacebookConnection;
 		
 		public function FacebookConnection(enforcer:SingletonEnforcer)
@@ -47,8 +57,25 @@ package utils
 		}
 		
 		protected function getMeHandler(result:Object,fail:Object):void{
-			//nameLbl.text=result.name;
-			//birthdayLbl.text=result.birthday;
+			this.dispatchEvent(new FacebookEvent(FacebookEvent.FACEBOOK_ME));
+			nome = result.name;
+			id = result.id;
+			birthday = result.birthday;
+			var service:HTTPService = new HTTPService();
+			service.url = Constants.SERVER_AD+"/geogas/struts/updateUsuario?facebook_id="+id+"&chave_facebook="+id+"&idade="+21+
+				"&nome="+nome;
+			
+			service.addEventListener(ResultEvent.RESULT, saveUserResult);
+			service.addEventListener(FaultEvent.FAULT, saveUserFault);
+			service.send();
+		}
+		
+		protected function saveUserResult(ev:Event):void {
+			Alert.show("deu certo!");
+		}
+		
+		protected function saveUserFault(ev:Event):void {
+			Alert.show("deu merda!");
 		}
 		
 		protected function logoutHandler(response:Object):void{
@@ -57,7 +84,7 @@ package utils
 		}
 		
 		public function submitPost(post:String):void {
-			Facebook.api("/me/feed",submitPostHandler,{message:post}, "POST");
+			//Facebook.api("/me/feed",submitPostHandler,{message:post}, "POST");
 		}
 		
 		protected function submitPostHandler(result:Object,fail:Object):void
