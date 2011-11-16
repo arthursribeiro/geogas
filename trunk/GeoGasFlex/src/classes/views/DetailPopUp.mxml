@@ -189,6 +189,27 @@
 				Alert.show("Autuação não pôde ser realizada. \nPor favor tente novamente mais tarde.");
 			}
 			
+			private function saveAvaliacao():void{
+				var service:HTTPService = new HTTPService();
+				service.url = Constants.SERVER_AD+"/geogas/struts/avaliar?id="+ent.id+
+					"&nota="+this.rating.value+"&idUser="+this.fb.id;
+				service.showBusyCursor = true;
+				service.addEventListener(ResultEvent.RESULT, saveAvalaiacaoResult);
+				service.addEventListener(FaultEvent.FAULT, saveAvalaiacaoFault);
+				service.send();
+			}
+			
+			private function saveAvalaiacaoResult(ev:ResultEvent):void{
+				Alert.show("Autuação realizada com sucesso.");
+				updateLabels();
+				ent.updateInfoWindow();
+			}
+			
+			private function saveAvalaiacaoFault(ev:FaultEvent):void{
+				Alert.show(ev.fault.toString());
+				Alert.show("Avaliação não pôde ser realizada. \nPor favor tente novamente mais tarde.");
+			}
+			
 			public function updateLabels():void{
 				this.autuacoesStr = ent.autuacoes?ent.autuacoes.toString():"--";
 				this.denunciasStr = ent.denuncias?ent.denuncias.toString():"--";
@@ -311,7 +332,8 @@
 				<s:Label x="10" y="121" text="Nota:" fontSize="14" width="41" height="17" includeIn="loggedFacebook"/>
 				<s:Label x="9" y="3" text="Comentário:" includeIn="loggedFacebook"/>
 				<s:TextArea x="10" y="23" height="85" width="380" id="commentArea" includeIn="loggedFacebook"/>
-				<s:Button x="315" y="188" label="Submeter" id="submitEvaluation" includeIn="loggedFacebook" click="submeter()"/>
+				<s:Button x="10" y="189" width="60" height="19" buttonMode="true"  id="shareButton" label="Share" click="submeter()" skinClass="skins.FBShareButton" includeIn="loggedFacebook"/>
+				<s:Button x="315" y="188" label="Submeter" id="submitEvaluation" includeIn="loggedFacebook" click="saveAvaliacao()"/>
 				<s:Label x="97" y="132" text="0                                                          10" width="200" includeIn="loggedFacebook"/>
 			</s:NavigatorContent>
 		</mx:TabNavigator>
