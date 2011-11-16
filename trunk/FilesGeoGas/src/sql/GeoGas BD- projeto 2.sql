@@ -62,7 +62,7 @@ CREATE TABLE AvaliacaoANP(
 
 CREATE TABLE Avaliacao_Entidade_Usuario(
 	id_entidade INTEGER REFERENCES Entidade(id_entidade),
-	id_usuario INTEGER REFERENCES Usuario(id_usuario),
+	id_usuario VARCHAR(255) REFERENCES Usuario(facebook_id),
 	nota INTEGER NOT NULL,
 	data TIMESTAMP NOT NULL,
 	CONSTRAINT pk_avaliacao_postocombustivel_usuario PRIMARY KEY (id_entidade, id_usuario)
@@ -72,7 +72,7 @@ CREATE TABLE Avaliacao_Entidade_Usuario(
 CREATE TABLE Denuncia(
 	id_denuncia SERIAL PRIMARY KEY,
 	reclamacao VARCHAR(255) NOT NULL,
-	id_usuario integer,
+	id_usuario VARCHAR(255),
 	CONSTRAINT fk_usuario_denuncia FOREIGN KEY (id_usuario) REFERENCES usuario (facebook_id)
 );
 
@@ -114,14 +114,14 @@ CREATE TABLE historico_precos_anp(
 CREATE TABLE historico_precos_usuario(
 	id SERIAL NOT NULL,
 	id_posto_combustivel integer NOT NULL,
-	id_usuario integer NOT NULL,
+	id_usuario VARCHAR NOT NULL,
 	pricegasoline double precision,
 	pricealcohol double precision,
 	pricediesel double precision,
 	pricegas double precision,
 	data TIMESTAMP,
 	CONSTRAINT fk_postocombustivel_usuario FOREIGN KEY (id_posto_combustivel) REFERENCES PostoCombustivel(id_posto_combustivel),
-	CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+	CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(facebook_id)
 );
 
 CREATE TABLE Autuacoes_ANP(
