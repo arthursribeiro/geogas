@@ -3,6 +3,7 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*" currentState="State1">
 	<mx:states>
+		<s:State name="hidden"/>
 		<s:State name="State1"/>
 		<s:State name="loggedFacebook"/>
 		<s:State name="ANP"/>
@@ -139,7 +140,8 @@
 				columnGrid.width = mapC.width;
 				columnGrid.height = mapC.height;
 				columnGrid.addEventListener(ListEvent.ITEM_CLICK,chamou);
-				colGridContainer.addElement(columnGrid);
+				if(colGridContainer)
+					colGridContainer.addElement(columnGrid);
 				this.map.enableScrollWheelZoom();
 				this.map.addControl(new MapTypeControl());
 				this.map.addControl(new NavigationControl());
@@ -148,7 +150,7 @@
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
 				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
-				search.addEventListener("submeter", realizarPesquisa);
+//				search.addEventListener("submeter", realizarPesquisa);
 				getLayersTree();
 				//				updateMap(null);
 			}
@@ -699,7 +701,7 @@
 				</controls:TreeCheckBox>
 			</s:NavigatorContent>
 			<s:NavigatorContent width="100%" height="100%" label="Ferramentas">
-				<views:SearchComponent id="search" x="0" y="0" width="100%" height="100%">
+				<views:SearchComponent  id="search" x="0" y="0" width="100%" height="100%">
 				</views:SearchComponent>
 			</s:NavigatorContent>
 		</mx:TabNavigator>
@@ -711,7 +713,7 @@
 							  key="ABQIAAAArTOg12ENOoBN3O9kedACIxRkOv5Oc89yJ4sUflDi_EcLCzRIOBTMHpzPf7PADkHpU0-4GpQuUVpflw"/>
 				</s:BorderContainer>
 		</s:NavigatorContent>
-		<s:NavigatorContent width="100%" height="100%" label="List" id="colGridContainer">
+		<s:NavigatorContent includeIn="hidden" width="100%" height="100%" label="List" id="colGridContainer">
 		</s:NavigatorContent>
 	</mx:TabNavigator>
 	</s:HGroup>
