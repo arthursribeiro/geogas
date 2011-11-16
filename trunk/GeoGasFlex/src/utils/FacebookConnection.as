@@ -9,6 +9,7 @@ package utils
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	
+	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
@@ -21,6 +22,7 @@ package utils
 		public var id:String;
 		public var birthday:String;
 		private static var instance:FacebookConnection;
+		public var amigos:ArrayCollection = null;
 		
 		public function FacebookConnection(enforcer:SingletonEnforcer)
 		{
@@ -47,13 +49,26 @@ package utils
 			Facebook.logout(logoutHandler);
 		}
 		
+		public function getFriends():void {
+			Facebook.api("/me/friends", friends);
+		}
+		
+		public function friends(result:Object, fail:Object):void {
+			if(result != null) {
+				amigos = new ArrayCollection(result as Array);
+			}
+			Alert.show(amigos.getItemAt(0).name.toString());
+		}
+		
 		protected function loginHandler(success:Object,fail:Object):void{
 			if(success) {
 				Facebook.api("/me",getMeHandler);
+				getFriends();
 				connected = true;
 				this.dispatchEvent(new FacebookEvent(FacebookEvent.FACEBOOK_CONNECTED));
 			}
 		}
+		
 		
 		protected function getMeHandler(result:Object,fail:Object):void{
 			nome = result.name;
