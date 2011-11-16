@@ -14,6 +14,7 @@ import javax.persistence.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.edu.ufcg.geogas.bean.AvaliacaoANP;
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario;
@@ -273,13 +274,13 @@ public class GasStationDAO implements GasStationDAOIF{
 	public Integer createUsuario(Usuario u) {
 		getEntityManager().persist(u);
 		getEntityManager().merge(u);
-		return u.getId_usuario();
+		return 0;
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public Usuario findUsuario(String facebook_id) {
-		Query q = getEntityManager().createQuery("SELECT u FROM Usuario WHERE facebook_id = "+facebook_id);
+		Query q = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.facebook_id = "+facebook_id);
 		Usuario u = null;
 		try{
 			u = (Usuario) q.getSingleResult();
@@ -293,5 +294,11 @@ public class GasStationDAO implements GasStationDAOIF{
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void mergeObject(Object u) {
 		getEntityManager().merge(u);
+	}
+
+	@Override
+	public void saveAutuacao(AvaliacaoANP a) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -1,9 +1,18 @@
 package br.edu.ufcg.geogas.action;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import br.edu.ufcg.geogas.bean.AvaliacaoANP;
+import br.edu.ufcg.geogas.bean.AvaliacaoANP_PK;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
 import br.edu.ufcg.geogas.dao.GasStationDAOFlex;
@@ -38,8 +47,8 @@ public class GasStationAction  extends ActionSupport{
 	
 	public String nome;
 	public String facebook_id;
-	public Integer cpf;
-	public Integer idade;
+	public String cpf;
+	public String data_nascimento;
 	public String chave_facebook;
 	
 	public String nomeFantasia;
@@ -47,6 +56,8 @@ public class GasStationAction  extends ActionSupport{
 	public String cnpjCpf;
 	public String autorizacao;
 	public String numeroDespacho;
+	
+	public String autuacao;
 
 	private boolean coordValid(double longiMin, double latiMin) {
 		if(longiMin<=180 && longiMin>=-180){
@@ -88,26 +99,52 @@ public class GasStationAction  extends ActionSupport{
 		}
 	}
 	
-	public Integer createUsuario(){
+	public void createUsuario() throws ParseException{
+		SimpleDateFormat sf = new SimpleDateFormat("MM/dd/yyyy");
 		Usuario u = gasStationDAO.findUsuario(facebook_id);
 		if(u==null){
 			u = new Usuario();
-			u.setChave_facebook(chave_facebook);
-			u.setCpf(cpf);
+			if(chave_facebook!=null && chave_facebook.length()>0)
+				u.setChave_facebook(chave_facebook);
+			if(cpf!=null && cpf.length()>0)
+				u.setCpf(cpf);
 			u.setFacebook_id(facebook_id);
-			u.setIdade(idade);
+			if(data_nascimento!=null&&data_nascimento.length()>0)
+				u.setData_nascimento(sf.parse(data_nascimento));
 			u.setNome(nome);
 			gasStationDAO.createUsuario(u);
 		}else{
-			u.setChave_facebook(chave_facebook);
-			u.setCpf(cpf);
-			u.setFacebook_id(facebook_id);
-			u.setIdade(idade);
-			u.setNome(nome);
+			if(chave_facebook!=null && chave_facebook.length()>0)
+				u.setChave_facebook(chave_facebook);
+			if(cpf!=null && cpf.length()>0)
+				u.setCpf(cpf);
+			if(facebook_id!=null && facebook_id.length()>0)
+				u.setFacebook_id(facebook_id);
+			if(data_nascimento!=null&&data_nascimento.length()>0)
+				u.setData_nascimento(sf.parse(data_nascimento));
+			if(chave_facebook!=null && chave_facebook.length()>0)
+				u.setNome(nome);
 			gasStationDAO.mergeObject(u);
 		}
-		
-		return u.getId_usuario();
+	}
+	
+	public void autuar(){
+		if(id>0){
+			AvaliacaoANP a = new AvaliacaoANP();
+			AvaliacaoANP_PK id_avaliacao_anp = new AvaliacaoANP_PK();
+			id_avaliacao_anp.setData(new Date());
+			id_avaliacao_anp.setId_posto_combustivel(id);
+			a.setId_avaliacao_anp(id_avaliacao_anp);
+			a.setAvaliacao(autuacao);
+			
+			gasStationDAO.saveAutuacao(a);
+		}
+	}
+	
+	public void denunciar(){
+		if(id>0){
+			
+		}
 	}
 	
 	public GasStationDAOIF getGasStationDAO() {

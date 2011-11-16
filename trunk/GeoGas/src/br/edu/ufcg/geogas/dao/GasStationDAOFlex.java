@@ -20,6 +20,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.edu.ufcg.geogas.bean.AvaliacaoANP;
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario;
@@ -291,6 +292,12 @@ public class GasStationDAOFlex extends HibernateDaoSupport implements GasStation
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void mergeObject(Object u) {
+		
+	}
+
+	@Override
+	public void saveAutuacao(AvaliacaoANP a) {
+		// TODO Auto-generated method stub
 		
 	}
 }

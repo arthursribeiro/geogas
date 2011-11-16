@@ -1,6 +1,8 @@
 package br.edu.ufcg.geogas.bean;
 
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,37 +16,24 @@ import javax.validation.constraints.NotNull;
 @Table(name = "Usuario")
 public class Usuario {
 	
-	@Id
-    @NotNull
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-    @SequenceGenerator(name = "seq", sequenceName = "usuario_id_usuario_seq")
-    private Integer id_usuario;
-	
 	@NotNull
     @Column(name="nome")
 	private String nome;
 	
+	@Id
 	@NotNull
     @Column(name="facebook_id")
 	private String facebook_id;
 	
     @Column(name="cpf")
-	private long cpf;
+	private String cpf;
     
-    @Column(name="idade")
-	private Integer idade;
+    @Column(name="data_nascimento")
+	private Date data_nascimento;
 	
 	@NotNull
     @Column(name="chave_facebook")
 	private String chave_facebook;
-
-	public Integer getId_usuario() {
-		return id_usuario;
-	}
-
-	public void setId_usuario(Integer id_usuario) {
-		this.id_usuario = id_usuario;
-	}
 
 	public String getNome() {
 		return nome;
@@ -62,20 +51,20 @@ public class Usuario {
 		this.facebook_id = facebook_id;
 	}
 
-	public long getCpf() {
+	public String getCpf() {
 		return cpf;
 	}
 
-	public void setCpf(long cpf) {
+	public void setCpf(String cpf) {
 		this.cpf = cpf;
 	}
 
-	public Integer getIdade() {
-		return idade;
+	public Date getData_nascimento() {
+		return data_nascimento;
 	}
 
-	public void setIdade(Integer idade) {
-		this.idade = idade;
+	public void setData_nascimento(Date idade) {
+		this.data_nascimento = idade;
 	}
 
 	public String getChave_facebook() {
