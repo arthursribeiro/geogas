@@ -65,4 +65,6 @@ public interface GasStationDAOIF {
 	public void saveAutuacao(AvaliacaoANP a);
 
 	public void saveDenuncia(Denuncia d);
+	
+	public ArrayList<Integer> getAvaliacoesAmigos(int notaMinima, ArrayList<String> amigos);
 }
