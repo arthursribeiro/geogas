@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
 import br.edu.ufcg.geogas.bean.AvaliacaoANP_PK;
+import br.edu.ufcg.geogas.bean.Avaliacao_Entidade_Usuario;
+import br.edu.ufcg.geogas.bean.Avaliacao_Entidade_Usuario_PK;
 import br.edu.ufcg.geogas.bean.Denuncia;
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
@@ -63,6 +65,7 @@ public class GasStationAction  extends ActionSupport{
 	public String numeroDespacho;
 	
 	public String autuacao;
+	public String nota;
 
 	private boolean coordValid(double longiMin, double latiMin) {
 		if(longiMin<=180 && longiMin>=-180){
@@ -102,6 +105,7 @@ public class GasStationAction  extends ActionSupport{
 		numeroDespacho = "";
 		
 		autuacao = "";
+		nota = "";
 	}
 	
 	public void updatePrices(){
@@ -197,6 +201,22 @@ public class GasStationAction  extends ActionSupport{
 			}
 		}
 		resetParameters();
+	}
+	
+	public void avaliar(){
+		if(id>0 && idUser.length()>0){
+			Avaliacao_Entidade_Usuario aval = null;
+			aval = gasStationDAO.findAvaliacaoUsuario(""+id,idUser);
+			if(aval==null){
+				aval = new Avaliacao_Entidade_Usuario();
+				aval.setId(new Avaliacao_Entidade_Usuario_PK());
+			}
+			aval.getId().setId_entidade(id);
+			aval.getId().setId_usuario(idUser);
+			aval.setData(new Date());
+			aval.setNota(Integer.parseInt(nota));
+			gasStationDAO.saveAvaliacao(aval);
+		}
 	}
 	
 	public GasStationDAOIF getGasStationDAO() {

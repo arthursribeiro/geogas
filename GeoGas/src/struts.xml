@@ -27,6 +27,9 @@
 	    <action name="denunciar" class="gasStationAction" method="denunciar" >
 	    </action>
 	    
+	    <action name="avaliar" class="gasStationAction" method="avaliar" >
+	    </action>
+	    
 	        <!-- Add actions here
 	        	Exs.:
 	        	

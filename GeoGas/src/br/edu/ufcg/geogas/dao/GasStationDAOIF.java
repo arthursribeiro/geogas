@@ -12,6 +12,7 @@ import javax.persistence.Query;
 import org.springframework.transaction.annotation.Propagation;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
+import br.edu.ufcg.geogas.bean.Avaliacao_Entidade_Usuario;
 import br.edu.ufcg.geogas.bean.Denuncia;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
@@ -65,6 +66,12 @@ public interface GasStationDAOIF {
 	public void saveAutuacao(AvaliacaoANP a);
 
 	public void saveDenuncia(Denuncia d);
-	
-	public ArrayList<Integer> getAvaliacoesAmigos(int notaMinima, ArrayList<String> amigos);
+
+	public Avaliacao_Entidade_Usuario findAvaliacaoUsuario(String string,
+			String idUser);
+
+	public void saveAvaliacao(Avaliacao_Entidade_Usuario aval);
+
+	ArrayList<Integer> getAvaliacoesAmigos(int notaMinima,
+			ArrayList<String> amigos);
 }
