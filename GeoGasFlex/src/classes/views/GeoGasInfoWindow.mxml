@@ -202,24 +202,24 @@
 		
 		<mx:HBox x="5" y="62" width="100%" height="31" verticalAlign="middle">
 			<s:Label fontSize="18" text="ANP" width="100" textAlign="center"/>
-			<s:TextInput restrict="0-9 \." x="70" y="77" width="50" textAlign="center" editable.loggedFacebook="false"  editable.State1="false" editable.ANP="true" id="pricegasoline" text="{this.pricegasolineStr}"/>
-			<s:TextInput restrict="0-9 \." x="128" y="77" width="50" textAlign="center" editable.loggedFacebook="false"  editable.State1="false" editable.ANP="true" id="pricealcohol" text="{this.pricealcoholStr}"/>
-			<s:TextInput restrict="0-9 \." x="186" y="77" width="50" textAlign="center"  editable.loggedFacebook="false" editable.State1="false"  editable.ANP="true" id="pricediesel" text="{this.pricedieselStr}"/>
-			<s:TextInput restrict="0-9 \." x="244" y="77" width="50" textAlign="center" editable.loggedFacebook="false" editable.State1="false" editable.ANP="true" id="pricegnv" text="{this.pricegasStr}"/>
+			<s:TextInput restrict="0-9\." x="70" y="77" width="50" textAlign="center" editable.loggedFacebook="false"  editable.State1="false" editable.ANP="true" id="pricegasoline" text="{this.pricegasolineStr}"/>
+			<s:TextInput restrict="0-9\." x="128" y="77" width="50" textAlign="center" editable.loggedFacebook="false"  editable.State1="false" editable.ANP="true" id="pricealcohol" text="{this.pricealcoholStr}"/>
+			<s:TextInput restrict="0-9\." x="186" y="77" width="50" textAlign="center"  editable.loggedFacebook="false" editable.State1="false"  editable.ANP="true" id="pricediesel" text="{this.pricedieselStr}"/>
+			<s:TextInput restrict="0-9\." x="244" y="77" width="50" textAlign="center" editable.loggedFacebook="false" editable.State1="false" editable.ANP="true" id="pricegnv" text="{this.pricegasStr}"/>
 			<s:Button label="Save" click="updatePricesANP(event)" visible.State1="false" visible.loggedFacebook="false" visible.ANP="true" />
 		</mx:HBox>
 		
 		<mx:HBox x="6" y="101" width="100%" height="15%" verticalAlign="middle">
 			<s:Label fontSize="18" text="Users" width="100" textAlign="center"/>
-			<s:TextInput restrict="0-9 \." x="70" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasolineStr_user}" id="pricegasoline_user"/>
-			<s:TextInput restrict="0-9 \." x="128" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricealcoholStr_user}" id="pricealcohol_user"/>
-			<s:TextInput restrict="0-9 \." x="186" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricedieselStr_user}" id="pricediesel_user"/>
-			<s:TextInput restrict="0-9 \." x="244" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasStr_user}" id="pricegnv_user"/>
+			<s:TextInput restrict="0-9\." x="70" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasolineStr_user}" id="pricegasoline_user"/>
+			<s:TextInput restrict="0-9\." x="128" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricealcoholStr_user}" id="pricealcohol_user"/>
+			<s:TextInput restrict="0-9\." x="186" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricedieselStr_user}" id="pricediesel_user"/>
+			<s:TextInput restrict="0-9\." x="244" y="107" width="50" textAlign="center" editable.State1="false" editable.ANP="false" editable.loggedFacebook="true" text="{this.pricegasStr_user}" id="pricegnv_user"/>
 			<s:Button label="Save" click="updatePricesUser(event)" visible.State1="false" visible.ANP="false" visible.loggedFacebook="true" />
 		</mx:HBox>
 		
 		<mx:HBox x="10" y="137" width="100%" height="20%" verticalAlign="middle" horizontalAlign="right">
-			<s:Button x="250" y="144" width="60" height="19"  id="shareButton" label="Recomendar" click="recomendarPosto()" skinClass="skins.FBShareButton" includeIn="loggedFacebook"/>
+			<s:Button x="250" y="144" width="60" height="19" buttonMode="true"  id="shareButton" label="Recomendar" click="recomendarPosto()" skinClass="skins.FBShareButton" includeIn="loggedFacebook"/>
 			<s:Image  width="35" height="35" id="autuacoesImg" source="{Constants.SERVER_AD+'/geogas/imgs/autuacao.jpg'}"/>
 			<s:Label x="53" y="137" width="52" height="35" fontSize="27" text="{this.autuacoesStr}"/>
 			<s:Image x="113" y="137" width="35" height="35" id="denunciasImg" source="{Constants.SERVER_AD+'/geogas/imgs/denuncia.jpg'}"/>

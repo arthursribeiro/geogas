@@ -40,8 +40,12 @@
 			import com.google.maps.controls.NavigationControl;
 			import com.google.maps.controls.OverviewMapControl;
 			import com.google.maps.controls.ScaleControl;
+			import com.google.maps.interfaces.IPolyline;
+			import com.google.maps.overlays.Marker;
 			import com.google.maps.overlays.Polyline;
 			import com.google.maps.overlays.PolylineOptions;
+			import com.google.maps.services.Directions;
+			import com.google.maps.services.DirectionsEvent;
 			
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
@@ -63,6 +67,9 @@
 			
 			private var columnGrid:DataGrid;
 			private var popUp:DetailPopUp;
+			
+			private var rotaOrigem:Marker;
+			private var directionsPolyline:IPolyline;
 			
 			private var workspace:String = 'geogas';
 			private var baseLayer:String = 'postocombustivel';
@@ -181,9 +188,12 @@
 //				if(columnGrid)
 //					while(columnGrid.columns.length>0)
 //						columnGrid.columns.pop();
-				for(var i:int = 0; i<markers.length;i++){
-					var marker:Entidade = markers.getItemAt(i) as Entidade;
-					map.removeOverlay(marker);
+				map.clearOverlays();
+				if(search && search.raioCheck.selected)
+					map.addOverlay(geodesic);
+				if(search && search.rotaCheck.selected){
+					map.addOverlay(directionsPolyline);
+					map.addOverlay(rotaOrigem);
 				}
 				markers = new ArrayList();
 				rows = new ArrayList();
@@ -192,15 +202,12 @@
 			
 			public function mapClicked(event:MapMouseEvent):void{
 				if(search){
-					var r:Number = new Number(search.raioInput.text);
+					var latL:LatLng = event.latLng;
 					if(geodesic) map.removeOverlay(geodesic);
-					if(map && search.raioCheck.selected && r>0){
-						//					var circle:Polygon = new Polygon(
-						//					var marker:Entidade = new Entidade(latLng,1,defaultData,otherTabs);
-						var latL:LatLng = event.latLng;
+					if(map && search.raioCheck.selected){
+						var r:Number = new Number(search.raioInput.text);
 						var geoLoc:GeoLocation = GeoLocation.getInstanceDegrees(latL.lat(),latL.lng());
 						var coords:ArrayList = geoLoc.boundingCoordinates(r);
-						
 						var polyOpt:PolylineOptions = new PolylineOptions();
 						polyOpt.geodesic = true;
 						
@@ -209,7 +216,13 @@
 						map.addOverlay(geodesic);
 						var zoom:Number = map.getBoundsZoomLevel(geodesic.getLatLngBounds());
 						map.setCenter(latL,zoom);
-						
+					} else if(map && search.rotaCheck.selected){
+						if(directionsPolyline)
+							map.removeOverlay(directionsPolyline);
+						if(rotaOrigem)
+							map.removeOverlay(rotaOrigem);
+						rotaOrigem = new Marker(latL);
+						map.addOverlay(rotaOrigem);
 					}
 				}
 			}
@@ -226,7 +239,35 @@
 			
 			public function markerClicked(event:MapEvent):void{
 				var marker:Entidade = event.target as Entidade;
-				marker.openInfoWindow(marker.getInfoWindowOptions(this.currentState));
+				if(search && search.rotaCheck.selected){
+					var directions:Directions = new Directions();
+					directions.addEventListener(DirectionsEvent.DIRECTIONS_SUCCESS,
+						onDirectionsSuccess);
+					directions.addEventListener(DirectionsEvent.DIRECTIONS_FAILURE,
+						onDirectionsFail);
+					directions.load("from: " +
+						rotaOrigem.getLatLng().toString() + " to: " + marker.getLatLng().toString());
+				}else{
+					marker.openInfoWindow(marker.getInfoWindowOptions(this.currentState));
+				}
+			}
+			
+			private function onDirectionsSuccess(ev:DirectionsEvent):void{
+				var directions:Directions =
+					ev.directions as Directions;
+				if(directions){
+					if(directionsPolyline)
+						map.removeOverlay(directionsPolyline);
+					directionsPolyline =
+						directions.createPolyline();
+					map.addOverlay(directionsPolyline);
+					var zoom:Number = map.getBoundsZoomLevel(directionsPolyline.getLatLngBounds());
+					map.setCenter(directionsPolyline.getLatLngBounds().getCenter(),zoom);
+				}
+			}
+			
+			private function onDirectionsFail(ev:DirectionsEvent):void{
+				Alert.show("Rota não pôde ser calculada. \nPor favor tente novamente mais tarde.");
 			}
 			
 			protected function ro_resultHandler(event:ResultEvent):void {
@@ -340,11 +381,54 @@
 					layersFilterData += filter;
 				}
 				filters+='<And>'+layersFilterData+'</And>';
-				
-				if(search && this.search.bandCheck.selected && (search.getBandeira().length>0)){
-					var filbandeira:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,"bandeira").replace(Constants.REPLACE_VALUE,"%"+search.getBandeira()+"%");
-					filters+=filbandeira;
+				var filterPrecos:String = "";
+				if(search && search.precoCheck.selected){
+					var priceGasolineMin:Number = Number(search.gasolineInput.text);
+					var priceGNVMin:Number = Number(search.gnvInput.text);
+					var priceAlcoholMin:Number = Number(search.alcoholInput.text);
+					var priceDieselMin:Number = Number(search.dieselInput.text);
+					var precosFilt:String = "";
+					if(priceGasolineMin>0){
+						var gasolineFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegasoline')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegasoline_user')+"</Or>";
+						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MAX_VALUE,priceGasolineMin);
+						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MAX_VALUE,priceGasolineMin);
+						precosFilt += gasolineFilter;
+					}
+					
+					if(priceGNVMin>0){
+						var gasFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegas')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegas_user')+"</Or>";
+						gasFilter = gasFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						gasFilter = gasFilter.replace(Constants.REPLACE_MAX_VALUE,priceGNVMin);
+						gasFilter = gasFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						gasFilter = gasFilter.replace(Constants.REPLACE_MAX_VALUE,priceGNVMin);
+						precosFilt += gasFilter;
+					}
+					
+					if(priceAlcoholMin>0){
+						var alcoholFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricealcohol')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricealcohol_user')+"</Or>";
+						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MAX_VALUE,priceAlcoholMin);
+						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MAX_VALUE,priceAlcoholMin);
+						precosFilt += alcoholFilter;
+					}
+					
+					if(priceDieselMin > 0){
+						var dieselFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricediesel')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricediesel_user')+"</Or>";
+						dieselFilter = dieselFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						dieselFilter = dieselFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+						dieselFilter = dieselFilter.replace(Constants.REPLACE_MAX_VALUE,priceDieselMin);
+						dieselFilter = dieselFilter.replace(Constants.REPLACE_MAX_VALUE,priceDieselMin);
+						precosFilt += dieselFilter;
+					}
+					
+					if(precosFilt.length>0){
+						filterPrecos = "<And>"+precosFilt+"</And>";
+					}
 				}
+				
 				var xmlRequest:String = 
 					'<wfs:GetFeature service="WFS" version="1.0.0" ' +
 						'	outputFormat="GML2" ' +
@@ -357,7 +441,7 @@
 						'  		http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd"> \n' +
 						
 						'	<wfs:Query typeName="'+this.workspace+':'+this.baseLayer+'"> \n' +
-						'		<ogc:Filter><And>\n' + filters +
+						'		<ogc:Filter><And>\n' + filters + filterPrecos +
 						'		</And></ogc:Filter> \n' +
 						'	</wfs:Query>\n ' +
 					'</wfs:GetFeature>\n'
@@ -617,7 +701,7 @@
 					
 				</controls:TreeCheckBox>
 			</s:NavigatorContent>
-			<s:NavigatorContent width="100%" height="100%" label="Search">
+			<s:NavigatorContent width="100%" height="100%" label="Ferramentas">
 				<views:SearchComponent id="search" x="0" y="0" width="100%" height="100%">
 				</views:SearchComponent>
 			</s:NavigatorContent>
