@@ -148,7 +148,7 @@
 				this.map.setCenter(new LatLng(-7.224206,-35.881004), 12, MapType.NORMAL_MAP_TYPE);
 				map.addEventListener(MapMouseEvent.CLICK,mapClicked);
 				map.addEventListener(MapMoveEvent.MOVE_END, updateMap);
-				//				search.addEventListener("submeter", realizarPesquisa);
+				search.addEventListener("submeter", realizarPesquisa);
 				getLayersTree();
 				//				updateMap(null);
 			}
@@ -166,9 +166,6 @@
 			
 			private function realizarPesquisa(ev:EventoPesquisa):void {
 //				trace("bla");
-				this.preco = ev.preco;
-				this.raio = ev.raio;
-				this.bandeira = ev.bandeira;
 				updateMap(null);
 			}
 			
