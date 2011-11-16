@@ -354,8 +354,7 @@ public class GasStationDAO implements GasStationDAOIF{
     	
     	Query q = getEntityManager().createNativeQuery(sql);
     	for (Object result : q.getResultList()) {
-    		Object[] tupla = (Object[]) result;
-			int num = (Integer) tupla[0];
+    		int num = (Integer) result;
 			arr.add(num);
 		}
     	return arr;
