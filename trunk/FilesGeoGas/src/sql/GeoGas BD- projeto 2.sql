@@ -218,13 +218,13 @@ CREATE TRIGGER update_autuacoes_anp
 CREATE OR REPLACE FUNCTION update_denuncias_usuarios() RETURNS TRIGGER AS $update_denuncias_usuarios$
 BEGIN
 UPDATE postocombustivel SET denuncias = denuncias+1
-			WHERE id_posto_combustivel = NEW.id_posto_combustivel;
+			WHERE id_posto_combustivel = NEW.id_entidade;
 RETURN NEW;
 END;
 $update_denuncias_usuarios$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_denuncias_usuarios
-    BEFORE INSERT OR UPDATE ON Denuncia
+    BEFORE INSERT OR UPDATE ON Entidade_Denuncia
     FOR EACH ROW EXECUTE PROCEDURE update_denuncias_usuarios();
     
 CREATE OR REPLACE VIEW gasstation AS 
