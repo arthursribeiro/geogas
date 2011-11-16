@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
+import br.edu.ufcg.geogas.bean.Denuncia;
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario;
@@ -229,7 +230,7 @@ public class GasStationDAO implements GasStationDAOIF{
 	public void updatePrices(int id, double pricegasoline,
 			double pricegasoline_user, double pricealcohol,
 			double pricealcohol_user, double pricediesel,
-			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, Integer idUser) {
+			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, String idUser) {
 		if(isAnp){
 			Historico_Precos_Anp h = new Historico_Precos_Anp();
 			h.setId_posto_combustivel(id);
@@ -250,7 +251,7 @@ public class GasStationDAO implements GasStationDAOIF{
 				t.printStackTrace();
 			}
 		}
-		else if(!isAnp && idUser>0){
+		else if(!isAnp && idUser.length()>0){
 			Historico_Precos_Usuario hu = new Historico_Precos_Usuario();
 			hu.setData(new Date());
 			hu.setId_posto_combustivel(id);
@@ -297,8 +298,18 @@ public class GasStationDAO implements GasStationDAOIF{
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void saveAutuacao(AvaliacaoANP a) {
-		// TODO Auto-generated method stub
+		getEntityManager().persist(a);
+		getEntityManager().merge(a);
+		
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public void saveDenuncia(Denuncia d) {
+		getEntityManager().persist(d);
+		getEntityManager().merge(d);
 		
 	}
 }

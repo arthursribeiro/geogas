@@ -16,7 +16,7 @@ public class Avaliacao_Entidade_Usuario_PK implements Serializable{
 	
 	@NotNull
 	@Column(name="id_usuario")
-	private Integer id_usuario;
+	private String id_usuario;
 	
 	public Integer getId_entidade() {
 		return id_entidade;
@@ -26,11 +26,11 @@ public class Avaliacao_Entidade_Usuario_PK implements Serializable{
 		this.id_entidade = id_entidade;
 	}
 
-	public Integer getId_usuario() {
+	public String getId_usuario() {
 		return id_usuario;
 	}
 
-	public void setId_usuario(Integer id_usuario) {
+	public void setId_usuario(String id_usuario) {
 		this.id_usuario = id_usuario;
 	}
 }
