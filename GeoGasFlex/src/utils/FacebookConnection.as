@@ -57,7 +57,7 @@ package utils
 			if(result != null) {
 				amigos = new ArrayCollection(result as Array);
 			}
-			Alert.show(amigos.getItemAt(0).name.toString());
+//			Alert.show(amigos.getItemAt(0).name.toString());
 		}
 		
 		protected function loginHandler(success:Object,fail:Object):void{
