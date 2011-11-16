@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="400" height="334" creationComplete="init()" currentState="State1"
+		 width="400" height="400" creationComplete="init()" currentState="State1" borderVisible="false" close="close()"
 		 >
 	<s:layout>
 		<s:VerticalLayout/>
@@ -20,7 +20,6 @@
 		<![CDATA[
 			import classes.Constants;
 			import classes.events.FacebookEvent;
-			
 			import classes.model.Entidade;
 			import classes.model.Tesaurus;
 			
@@ -38,6 +37,7 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
 			
 			import spark.components.NavigatorContent;
 			import spark.components.Scroller;
@@ -132,70 +132,170 @@
 			}
 			
 			private function saveData(ev:MouseEvent):void{
-				
+				var service:HTTPService = new HTTPService();
+				//COLCOAR O ID DO USUARIO!!
+				service.url = Constants.SERVER_AD+"/geogas/struts/updateData?id="+ent.id+
+					"&nomeFantasia="+this.nomeFantasia.text+
+					"&bandeira="+this.bandeira.text+
+					"&autorizacao="+this.autorizacao.text+
+					"&numeroDespacho="+this.numeroDespacho.text+
+					"&cnpjCpf="+this.cnpjCpf.text;
+				service.showBusyCursor = true;
+				service.addEventListener(ResultEvent.RESULT, saveDataResult);
+				service.addEventListener(FaultEvent.FAULT, saveDataFault);
+				service.send();
+			}
+			
+			private function denunciarPosto():void{
+				var service:HTTPService = new HTTPService();
+				//COLCOAR O ID DO USUARIO!!
+				service.url = Constants.SERVER_AD+"/geogas/struts/denunciar?id="+ent.id+
+					"&autuacao="+this.autuacaoArea.text;
+				service.showBusyCursor = true;
+				service.addEventListener(ResultEvent.RESULT, saveAutuacaoResult);
+				service.addEventListener(FaultEvent.FAULT, saveAutuacaoFault);
+				service.send();
+			}
+			
+			private function autuarPosto():void{
+				var service:HTTPService = new HTTPService();
+				//COLCOAR O ID DO USUARIO!!
+				service.url = Constants.SERVER_AD+"/geogas/struts/autuar?id="+ent.id+
+					"&autuacao="+this.autuacaoArea.text;
+				service.showBusyCursor = true;
+				service.addEventListener(ResultEvent.RESULT, saveAutuacaoResult);
+				service.addEventListener(FaultEvent.FAULT, saveAutuacaoFault);
+				service.send();
+			}
+			
+			private function saveAutuacaoResult(ev:ResultEvent):void{
+				Alert.show("Autuação realizada com sucesso.");
+				ent.autuacoes = ent.autuacoes?(ent.autuacoes+1):1;
+				updateLabels();
+			}
+			
+			private function saveAutuacaoFault(ev:FaultEvent):void{
+				Alert.show("Autuação não pôde ser realizada. \nPor favor tente novamente mais tarde.");
+			}
+			
+			public function updateLabels():void{
+				this.autuacoesStr = ent.autuacoes?ent.autuacoes.toString():"--";
+				this.denunciasStr = ent.denuncias?ent.denuncias.toString():"--";
 			}
 			
 			private function saveDataResult(ev:ResultEvent):void{
-				
+				Alert.show("Informações atualizadas com sucesso. \nObrigado pela contribuição.");
+				ent.autorizacao = this.autorizacao.text;
+				ent.nomefantasia = this.nomeFantasia.text;
+				ent.bandeira = this.bandeira.text;
+				ent.numerodespacho = this.numeroDespacho.text;
+				ent.cnpjcpf = this.cnpjCpf.text;
+				updateLabels();
+				ent.updateInfoWindow();
 			}
 			
 			private function saveDataFault(ev:FaultEvent):void{
-				
+				Alert.show("Informações não puderam ser atualizadas. \nPor favor tente novamente mais tarde.");
 			}
 			
 		]]>
 	</fx:Script>
-	<s:TitleWindow width="100%" height="100%" borderVisible="false" close="close()" >
+	<!--< width="100%" height="100%" borderVisible="false" close="close()" >-->
 		<mx:TabNavigator id="tabBar" width="100%" height="100%" borderVisible="false">
 			<s:NavigatorContent label="Informações Gerais" id="info" width="100%" height="100%">
-				<s:Label x="21" y="40" width="99" height="22" fontSize="15" text="Autorização:"
-						 textAlign="right"
-						 />
-				<s:Label x="34" y="70" width="86" height="22" fontSize="15" text="CNPJ/CPF:"
-						 textAlign="right"
-						 />
-				<s:Label x="11" y="11" width="109" height="22" fontSize="15" text="Nome:"
-						 textAlign="right"
-						 />
-				<s:Label x="43" y="160" width="77" height="22" fontSize="15" text="Denúncias:"
-						 textAlign="right"
-						 />
-				<s:Label x="38" y="197" width="82" height="29" fontSize="15" text="Autuações:"
-						 textAlign="right"
-						 />
-				<s:Label x="50" y="132" width="71" height="20" fontSize="15" text="Bandeira:"
-						 textAlign="right"
-						/>
-				<s:Label x="38" y="100" width="86" height="25" fontSize="15" text="Despacho:"
-						 textAlign="right"
-						 />
-				<s:TextInput x="128" y="70" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
-							 text="{this.cnpjcpfStr}"
-							 />
-				<s:TextInput x="128" y="100" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true" text="{this.despachoStr}"/>
-				<s:TextInput x="128" y="130" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true" text="{this.bandeiraStr}"/>
-				<s:TextInput x="128" y="11" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
-							 text="{this.nomeFantasiaStr}"
-							 />
-				<s:TextInput x="128" y="160" width="40" height="30" editable="false"
-							 text="{this.denunciasStr}"
-							 />
-				<s:TextInput x="128" y="198" width="40" height="28" editable="false"
-							 text="{this.autuacoesStr}"
-							 />
-				<s:TextInput x="128" y="40" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
-							 text="{this.autorizacaoStr}"
-							/>
-				<s:Button includeIn="ANP" x="224" y="204" height="22" label="Save" click="saveData(event)"/>
-				<s:Image x="176" y="196" width="40"
-						 source="{Constants.SERVER_AD+'/geogas/imgs/autuacao.jpg'}"
-						 />
-				<s:Image x="176" y="160" width="40"
-						 source="{Constants.SERVER_AD+'/geogas/imgs/denuncia.jpg'}"
-						 />
-				
+				<s:Form width="100%" height="100%">
+					<mx:HBox width="100%" height="36" verticalAlign="middle" borderVisible="false">
+						<s:Label width="109" height="30" fontSize="15" text="Nome:"
+								 textAlign="right" verticalAlign="middle"
+								 />
+						<s:TextInput editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
+									 text="{this.nomeFantasiaStr}" height="30" width="258"
+									 id="nomeFantasia"
+									 />
+					</mx:HBox>
+					
+					<mx:HBox width="100%" height="36" verticalAlign="middle" borderVisible="false">
+						<s:Label width="109" height="30" fontSize="15" text="Bandeira:"
+								 textAlign="right" verticalAlign="middle"
+								 />
+						<s:TextInput height="30"  width="258" editable.State1="false" editable.loggedFacebook="false" editable.ANP="false"
+									 text="{this.bandeiraStr}"
+									 id="bandeira"/>
+					</mx:HBox>	
+					
+					<mx:HBox  width="100%" height="36" verticalAlign="middle" borderVisible="false">
+						<s:Label width="109" height="30" fontSize="15" text="CNPJ/CPF:"
+								 textAlign="right" verticalAlign="middle"
+								 />
+						<s:TextInput restrict="0-9 \. \/ \-" height="30" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
+									 text="{this.cnpjcpfStr}"  width="258"
+									 id="cnpjCpf"/>
+					</mx:HBox>
+					
+					<mx:HBox  width="100%" height="36" verticalAlign="middle" borderVisible="false">
+						<s:Label width="109" height="30" fontSize="15" text="Autorização:"
+								 textAlign="right" verticalAlign="middle"
+								 />
+						<s:TextInput height="30"  width="258" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
+									 text="{this.autorizacaoStr}"
+									 id="autorizacao"/>
+					</mx:HBox>
+					
+					<mx:HBox width="100%" height="36" verticalAlign="middle" borderVisible="false">
+						<s:Label width="109" height="30" fontSize="15" text="Despacho:"
+								 textAlign="right" verticalAlign="middle"
+								 />
+						<s:TextInput height="30" width="258" editable.State1="false" editable.loggedFacebook="false"
+									 editable.ANP="true" text="{this.despachoStr}"
+									 id="numeroDespacho"/>
+					</mx:HBox>
+					
+					<mx:HBox  width="100%" height="36" verticalAlign="middle" borderVisible="false">
+						<s:Label width="109" height="22" fontSize="15" text="Denúncias:"
+								 textAlign="right" verticalAlign="middle"
+								 />
+						<s:TextInput height="30" width="40" editable="false"
+									 text="{this.denunciasStr}"
+									 />
+						<s:Image x="176" y="160" width="40"
+								 source="{Constants.SERVER_AD+'/geogas/imgs/denuncia.jpg'}"
+								 />
+					</mx:HBox>
+					
+					
+					<mx:HBox  width="100%" height="36" verticalAlign="middle" borderVisible="false">
+						<s:Label width="109" height="30" fontSize="15" text="Autuações:"
+								 textAlign="right" verticalAlign="middle"
+								 />
+						<s:TextInput width="40" height="30" editable="false"
+									 text="{this.autuacoesStr}"
+									 />
+						<s:Image x="176" y="196" width="40"
+								 source="{Constants.SERVER_AD+'/geogas/imgs/autuacao.jpg'}"
+								 />
+						<s:Spacer includeIn="ANP" width="85" height="10"/>
+						<s:Button includeIn="ANP" height="30" label="Save" click="saveData(event)"
+								  cornerRadius="0"/>
+					</mx:HBox>
+					
+				</s:Form>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="Avaliação" width="100%" height="100%" includeIn="loggedFacebook,ANP">
+				<s:Label includeIn="ANP" left="10" top="10" width="131" height="34"
+						 fontSize="18" text="Nova Autuação:"
+						 textAlign="center" verticalAlign="middle"/>
+				<s:TextArea id="autuacaoArea" includeIn="ANP" left="10" top="48" width="380" height="90" maxChars="140"/>
+				<s:Button includeIn="ANP" right="9" bottom="160" width="103" height="34"
+						  label="Autuar" click="autuarPosto()"/>
+				
+				<s:Label includeIn="loggedFacebook" left="10" top="10" width="131" height="34"
+						 fontSize="18" text="Nova Autuação:"
+						 textAlign="center" verticalAlign="middle"/>
+				<s:TextArea id="denunciaArea" includeIn="loggedFacebook" left="10" top="48" width="380" height="90" maxChars="140"/>
+				<s:Button includeIn="loggedFacebook" right="9" bottom="160" width="103" height="34"
+						  label="Denunciar" click="denunciarPosto()"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Opinião" width="100%" height="100%" includeIn="loggedFacebook">
 				<s:HSlider x="98" y="149" minimum="0" maximum="10" value="5" id="rating" width="198" height="10"  includeIn="loggedFacebook"/>
 				<s:Label x="10" y="121" text="Nota:" fontSize="14" width="41" height="17" includeIn="loggedFacebook"/>
 				<s:Label x="9" y="3" text="Comentário:" includeIn="loggedFacebook"/>
@@ -204,5 +304,6 @@
 				<s:Label x="97" y="132" text="0                                                          10" width="200" includeIn="loggedFacebook"/>
 			</s:NavigatorContent>
 		</mx:TabNavigator>
-	</s:TitleWindow>
-</s:Group>
+	
+<!--</s:Group>-->
+</s:TitleWindow>

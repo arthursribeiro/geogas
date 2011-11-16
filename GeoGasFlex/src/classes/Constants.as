@@ -9,6 +9,7 @@ package classes
 		public static const SERVER_AD:String = "http://localhost:8080";
 		
 		public static const OPENPOPU_EVENT:String = "openpopup";
+		public static const UPDATE_MAP_EVENT:String = "updatemap";
 		
 		public static const ENTITY:String = "entity";
 		

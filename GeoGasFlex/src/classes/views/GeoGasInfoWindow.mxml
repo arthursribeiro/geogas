@@ -100,12 +100,13 @@
 				return ret;
 			}
 			
+			public function updateLabels():void{
+				this.labelStr = myEnt.getLabel();
+				this.autuacoesStr = myEnt.autuacoes?myEnt.autuacoes.toString():"--";
+				this.denunciasStr = myEnt.denuncias?myEnt.denuncias.toString():"--";
+			}
+			
 			public function init():void{
-//				if(fb.connected) {
-//					currentState="loggedFacebook";
-//				} else {
-//					currentState="State1";
-//				}
 				fb.addEventListener(FacebookEvent.FACEBOOK_CONNECTED, loginHandler);
 				fb.addEventListener(FacebookEvent.FACEBOOK_DISCONNECTED, logoutHandler);
 			}
@@ -164,6 +165,14 @@
 			
 			private function savePricesResult(ev:ResultEvent):void{
 				Alert.show("Preços atualizados com sucesso. \nObrigado pela contribuição.");
+				myEnt.pricegasoline = ((!(this.pricegasoline.text.indexOf("--")>=0))?Number(this.pricegasoline.text):null);
+				myEnt.pricealcohol = ((!(this.pricealcohol.text.indexOf("--")>=0))?Number(this.pricealcohol.text):null);
+				myEnt.pricediesel = ((!(this.pricediesel.text.indexOf("--")>=0))?Number(this.pricediesel.text):null);
+				myEnt.pricegas = ((!(this.pricegnv.text.indexOf("--")>=0))?Number(this.pricegnv.text):null);
+				myEnt.pricegasoline_user = ((!(this.pricegasoline_user.text.indexOf("--")>=0))?Number(this.pricegasoline_user.text):null);
+				myEnt.pricealcohol_user = ((!(this.pricealcohol_user.text.indexOf("--")>=0))?Number(this.pricealcohol_user.text):null);
+				myEnt.pricediesel_user = ((!(this.pricediesel_user.text.indexOf("--")>=0))?Number(this.pricediesel_user.text):null);
+				myEnt.pricegas_user = ((!(this.pricegnv_user.text.indexOf("--")>=0))?Number(this.pricegnv_user.text):null);
 			}
 			
 			private function savePricesFault(ev:FaultEvent):void{

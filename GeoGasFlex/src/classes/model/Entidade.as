@@ -5,6 +5,7 @@ package classes.model
 	
 	import com.google.maps.InfoWindowOptions;
 	import com.google.maps.LatLng;
+	import com.google.maps.MapMoveEvent;
 	import com.google.maps.interfaces.IInfoWindow;
 	import com.google.maps.overlays.Marker;
 	import com.google.maps.overlays.MarkerOptions;
@@ -114,6 +115,12 @@ package classes.model
 		public function openPopup(event:MouseEvent):void{
 			dispatchEvent(new Event(Constants.OPENPOPU_EVENT));
 			
+		}
+		
+		public function updateInfoWindow():void{
+			if(this.content){
+				content.updateLabels();
+			}
 		}
 		
 		public function getInfoWindowOptions(currentState:String):InfoWindowOptions{

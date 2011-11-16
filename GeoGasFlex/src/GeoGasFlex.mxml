@@ -105,6 +105,7 @@
 				var popUp:DetailPopUp = new DetailPopUp();
 				popUp.setVariables(event.currentTarget.wrapper as Entidade,Tesaurus.getInstance());
 				popUp.isPopUp = true;
+				
 				popUp.setCurrentState(this.currentState);
 				this.popUp = popUp;
 				PopUpManager.addPopUp(popUp,this,true);
@@ -144,6 +145,7 @@
 				getLayersTree();
 				//				updateMap(null);
 			}
+			
 			
 			private function getLayersTree():void{
 				var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs?request=GetFeature&version=1.0.0&typeName="+this.workspace+":layers";
@@ -215,9 +217,11 @@
 			public function addMarker(marker:Entidade):void{
 				marker.addEventListener(MapMouseEvent.CLICK,markerClicked);
 				marker.addEventListener(Constants.OPENPOPU_EVENT,openDetailsPopup);
+				marker.addEventListener(Constants.UPDATE_MAP_EVENT,updateMap);
 				map.addOverlay(marker);
 				markers.addItem(marker);
 				putEntidadeOnList(marker);
+				
 			}
 			
 			public function markerClicked(event:MapEvent):void{
