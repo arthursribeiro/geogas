@@ -4,7 +4,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
 import br.edu.ufcg.geogas.bean.AvaliacaoANP_PK;
+import br.edu.ufcg.geogas.bean.Denuncia;
+import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
 import br.edu.ufcg.geogas.dao.GasStationDAOFlex;
@@ -42,7 +47,7 @@ public class GasStationAction  extends ActionSupport{
 	public String pricegas = "-1";
 	public String pricegas_user = "-1";
 	public boolean isAnp = false; 
-	public Integer idUser = -1;
+	public String idUser = "";
 	
 	
 	public String nome;
@@ -68,6 +73,37 @@ public class GasStationAction  extends ActionSupport{
 		return false;
 	}
 	
+	private void resetParameters(){
+		id = 0;
+		
+		
+		pricegasoline = "-1";
+		pricegasoline_user = "-1";
+		pricealcohol = "-1";
+		pricealcohol_user = "-1";
+		pricediesel = "-1"; 
+		pricediesel_user = "-1";
+		pricegas = "-1";
+		pricegas_user = "-1";
+		isAnp = false; 
+		idUser = "";
+		
+		
+		nome = "";
+		facebook_id = "";
+		cpf = "";
+		data_nascimento = "";
+		chave_facebook = "";
+		
+		nomeFantasia = "";
+		bandeira = "";
+		cnpjCpf = "";
+		autorizacao = "";
+		numeroDespacho = "";
+		
+		autuacao = "";
+	}
+	
 	public void updatePrices(){
 		try{
 			gasStationDAO.updatePrices(id, Double.parseDouble(pricegasoline), Double.parseDouble(pricegasoline_user),
@@ -77,6 +113,7 @@ public class GasStationAction  extends ActionSupport{
 		}catch(Exception e){
 			
 		}
+		resetParameters();
 	}
 	
 	public void updateData(){
@@ -97,6 +134,7 @@ public class GasStationAction  extends ActionSupport{
 				gasStationDAO.mergeObject(p);
 			}
 		}
+		resetParameters();
 	}
 	
 	public void createUsuario() throws ParseException{
@@ -126,6 +164,7 @@ public class GasStationAction  extends ActionSupport{
 				u.setNome(nome);
 			gasStationDAO.mergeObject(u);
 		}
+		resetParameters();
 	}
 	
 	public void autuar(){
@@ -139,12 +178,25 @@ public class GasStationAction  extends ActionSupport{
 			
 			gasStationDAO.saveAutuacao(a);
 		}
+		resetParameters();
 	}
 	
 	public void denunciar(){
-		if(id>0){
-			
+		if(id>0 && idUser.length()>0){
+			Denuncia d = new Denuncia();
+			d.setId_usuario(idUser);
+			d.setReclamacao(autuacao);
+			PostoCombustivel p = gasStationDAO.getGasStationById(id);
+			if(p!=null){
+				if(d.getEntidades()==null){
+					d.setEntidades(new TreeSet<Entidade>());
+				}
+				gasStationDAO.saveDenuncia(d);
+				d.getEntidades().add((Entidade) p);
+				gasStationDAO.mergeObject(d);
+			}
 		}
+		resetParameters();
 	}
 	
 	public GasStationDAOIF getGasStationDAO() {

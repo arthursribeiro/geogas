@@ -24,7 +24,7 @@ public class Historico_Precos_Usuario {
 	private Integer id_posto_combustivel;
 	
 	@Column(name="id_usuario")
-	private Integer id_usuario;
+	private String id_usuario;
 
 	@Column(name="data")
 	private Date data;
@@ -97,11 +97,11 @@ public class Historico_Precos_Usuario {
 		this.id = id;
 	}
 
-	public Integer getId_usuario() {
+	public String getId_usuario() {
 		return id_usuario;
 	}
 
-	public void setId_usuario(Integer id_usuario) {
-		this.id_usuario = id_usuario;
+	public void setId_usuario(String idUser) {
+		this.id_usuario = idUser;
 	}
 }

@@ -12,6 +12,7 @@ import javax.persistence.Query;
 import org.springframework.transaction.annotation.Propagation;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
+import br.edu.ufcg.geogas.bean.Denuncia;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
 
@@ -53,7 +54,7 @@ public interface GasStationDAOIF {
 	public void updatePrices(int id, double pricegasoline,
 			double pricegasoline_user, double pricealcohol,
 			double pricealcohol_user, double pricediesel,
-			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, Integer idUser);
+			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, String idUser);
 
 	public Integer createUsuario(Usuario u);
 
@@ -62,4 +63,6 @@ public interface GasStationDAOIF {
 	public void mergeObject(Object u);
 
 	public void saveAutuacao(AvaliacaoANP a);
+
+	public void saveDenuncia(Denuncia d);
 }

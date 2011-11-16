@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
+import br.edu.ufcg.geogas.bean.Denuncia;
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Usuario;
@@ -271,7 +272,7 @@ public class GasStationDAOFlex extends HibernateDaoSupport implements GasStation
 	public void updatePrices(int id, double pricegasoline,
 			double pricegasoline_user, double pricealcohol,
 			double pricealcohol_user, double pricediesel,
-			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, Integer idUser) {
+			double pricediesel_user, double pricegas, double pricegas_user, boolean isAnp, String idUser) {
 		
 	}
 
@@ -297,6 +298,12 @@ public class GasStationDAOFlex extends HibernateDaoSupport implements GasStation
 
 	@Override
 	public void saveAutuacao(AvaliacaoANP a) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveDenuncia(Denuncia p) {
 		// TODO Auto-generated method stub
 		
 	}
