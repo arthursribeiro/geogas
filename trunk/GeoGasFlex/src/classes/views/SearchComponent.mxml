@@ -27,7 +27,7 @@
 	<s:Label x="136" y="164" width="24" height="20" fontSize="18" fontWeight="bold" text="A"/>
 	<s:Label x="136" y="193" width="24" height="20" fontSize="18" fontWeight="bold" text="D"/>
 	<s:Label x="136" y="222" width="47" height="20" fontSize="18" fontWeight="bold" text="GNV"/>
-	<s:CheckBox x="33" y="301" label="Amigos" enabled="{avaliacaoCheck.selected}"/>
+	<s:CheckBox x="33" y="301" label="Amigos" id="amigos" enabled="{avaliacaoCheck.selected}"/>
 	<s:Label x="107" y="271" width="65" height="22" text="Nota Min." verticalAlign="middle"/>
 	<s:Button x="38" y="347" label="Atualizar Mapa" id="atualizarMapa" click="atualiza()"/>
 	
@@ -43,25 +43,40 @@
 			import utils.FacebookConnection;
 			
 			private var dispatcher:IEventDispatcher = new EventDispatcher();
+			public var buscaAvaliacoes:Array = new Array();
+			public var main:GeoGasFlex;
 			
 			public function init():void {
 			}
 			
 			public function atualiza():void {
 				if(avaliacaoCheck.selected) {
-					var ro:RemoteObject = new RemoteObject("PostoCombustivelService");
-					ro.addEventListener(ResultEvent.RESULT,receiveDic);
-					ro.addEventListener(FaultEvent.FAULT,error);
-					ro.getAvaliacoesAmigos(parseInt(avaliacaoInput.text), new Array());
+					if(avaliacaoInput.text == "") {
+						Alert.show("Preencha algo no campo antes de fazer a busca.");
+					} else {
+						var ro:RemoteObject = new RemoteObject("PostoCombustivelService");
+						ro.addEventListener(ResultEvent.RESULT,receiveDic);
+						ro.addEventListener(FaultEvent.FAULT,error);
+						if(amigos.selected) {
+							ro.getAvaliacoesAmigos(parseInt(avaliacaoInput.text), main.fb.getAmigos());
+						} else {
+							ro.getAvaliacoesAmigos(parseInt(avaliacaoInput.text), new Array());
+						}
+					}
+				} else {
+					main.realizarPesquisa(null);
 				}
 			}
 			
-			public function receiveDic(ev:Event):void {
-				
+			public function receiveDic(result:ResultEvent):void {
+				if(result as Array != null) {
+					buscaAvaliacoes = result.result as Array;
+				}
+				main.realizarPesquisa(null);
 			}
 			
 			public function error(ev:Event):void {
-				
+				Alert.show("Não foi possível pegar os dados. Tente novamente mais tarde.");
 			}
 			
 			

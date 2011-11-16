@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*" currentState="State1">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*" currentState="State1" >
 	<mx:states>
 		<s:State name="hidden"/>
 		<s:State name="State1"/>
@@ -99,7 +99,7 @@
 			private var bandeira:String;
 			private var raio:Number = 0;
 			private var aplicarfiltros:Boolean = false;
-			private var fb:FacebookConnection = null;
+			public var fb:FacebookConnection = null;
 			
 			private function chamou(e:ListEvent):void{
 				for each(var ent:Entidade in markers){
@@ -108,6 +108,7 @@
 					}
 				}
 			}
+			
 			
 			private function openDetailsPopup(event:Event):void{
 				var popUp:DetailPopUp = new DetailPopUp();
@@ -133,6 +134,7 @@
 				fb = FacebookConnection.getInstance();
 				fb.addEventListener(FacebookEvent.FACEBOOK_CONNECTED, loginHandler, false, 0, true);
 				fb.addEventListener(FacebookEvent.FACEBOOK_DISCONNECTED, logoutHandler, false, 0, true);
+				//search.addEventListener("submeter", realizarPesquisa);
 			}
 			
 			private function init_continue(e:Event):void{
@@ -166,7 +168,7 @@
 				urlLoader.load(request);
 			}
 			
-			private function realizarPesquisa(ev:EventoPesquisa):void {
+			public function realizarPesquisa(ev:EventoPesquisa):void {
 //				trace("bla");
 				updateMap(null);
 			}
@@ -427,7 +429,21 @@
 						filterPrecos = "<And>"+precosFilt+"</And>";
 					}
 				}
-				
+				var filterPostos:String = "";
+
+				if(search && search.avaliacaoCheck.selected) {
+					var idPostosfilt:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,'id_posto_combustivel');
+					idPostosfilt = idPostosfilt.replace(Constants.REPLACE_VALUE, 10);
+					for(var i:int=0; i < search.buscaAvaliacoes.length; i++) {
+						var idPostoFilter:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,'id_posto_combustivel');
+						idPostoFilter = idPostoFilter.replace(Constants.REPLACE_VALUE, search.buscaAvaliacoes[i]);
+						idPostosfilt += idPostoFilter;
+					}
+					if(idPostosfilt.length > 0) {
+						filterPostos = "<Or>"+idPostosfilt+"</Or>";
+					}
+				}
+				 
 				var xmlRequest:String = 
 					'<wfs:GetFeature service="WFS" version="1.0.0" ' +
 						'	outputFormat="GML2" ' +
@@ -440,12 +456,11 @@
 						'  		http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd"> \n' +
 						
 						'	<wfs:Query typeName="'+this.workspace+':'+this.baseLayer+'"> \n' +
-						'		<ogc:Filter><And>\n' + filters + filterPrecos +
+						'		<ogc:Filter><And>\n' + filters + filterPrecos + filterPostos +
 						'		</And></ogc:Filter> \n' +
 						'	</wfs:Query>\n ' +
 					'</wfs:GetFeature>\n'
 				//ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
-				
 				var service:HTTPService = new HTTPService();
 				service.url = serverUrl;
 				service.resultFormat = "e4x";
@@ -701,7 +716,7 @@
 				</controls:TreeCheckBox>
 			</s:NavigatorContent>
 			<s:NavigatorContent width="100%" height="100%" label="Ferramentas">
-				<views:SearchComponent  id="search" x="0" y="0" width="100%" height="100%">
+				<views:SearchComponent  id="search" x="0" y="0" width="100%" height="100%" main="{this}" > 
 				</views:SearchComponent>
 			</s:NavigatorContent>
 		</mx:TabNavigator>
