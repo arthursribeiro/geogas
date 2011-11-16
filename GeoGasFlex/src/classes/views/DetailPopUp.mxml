@@ -133,7 +133,6 @@
 			
 			private function saveData(ev:MouseEvent):void{
 				var service:HTTPService = new HTTPService();
-				//COLCOAR O ID DO USUARIO!!
 				service.url = Constants.SERVER_AD+"/geogas/struts/updateData?id="+ent.id+
 					"&nomeFantasia="+this.nomeFantasia.text+
 					"&bandeira="+this.bandeira.text+
@@ -148,9 +147,9 @@
 			
 			private function denunciarPosto():void{
 				var service:HTTPService = new HTTPService();
-				//COLCOAR O ID DO USUARIO!!
-				service.url = Constants.SERVER_AD+"/geogas/struts/denunciar?id="+ent.id+
-					"&autuacao="+this.autuacaoArea.text;
+				service.url = Constants.SERVER_AD+"/geogas/struts/denunciar?id="+ent.id+"&idUser="+this.fb.id+
+					"&reclamacao="+this.autuacaoArea.text+
+					"&idUser="+this.fb.id;
 				service.showBusyCursor = true;
 				service.addEventListener(ResultEvent.RESULT, saveAutuacaoResult);
 				service.addEventListener(FaultEvent.FAULT, saveAutuacaoFault);
@@ -159,7 +158,6 @@
 			
 			private function autuarPosto():void{
 				var service:HTTPService = new HTTPService();
-				//COLCOAR O ID DO USUARIO!!
 				service.url = Constants.SERVER_AD+"/geogas/struts/autuar?id="+ent.id+
 					"&autuacao="+this.autuacaoArea.text;
 				service.showBusyCursor = true;
@@ -289,7 +287,7 @@
 						  label="Autuar" click="autuarPosto()"/>
 				
 				<s:Label includeIn="loggedFacebook" left="10" top="10" width="131" height="34"
-						 fontSize="18" text="Nova Autuação:"
+						 fontSize="18" text="Nova Denúncia:"
 						 textAlign="center" verticalAlign="middle"/>
 				<s:TextArea id="denunciaArea" includeIn="loggedFacebook" left="10" top="48" width="380" height="90" maxChars="140"/>
 				<s:Button includeIn="loggedFacebook" right="9" bottom="160" width="103" height="34"

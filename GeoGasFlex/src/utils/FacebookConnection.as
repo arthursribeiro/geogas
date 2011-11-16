@@ -47,8 +47,7 @@ package utils
 			Facebook.logout(logoutHandler);
 		}
 		
-		protected function loginHandler(success:Object,fail:Object):void
-		{
+		protected function loginHandler(success:Object,fail:Object):void{
 			if(success) {
 				Facebook.api("/me",getMeHandler);
 				connected = true;
@@ -61,20 +60,19 @@ package utils
 			id = result.id;
 			birthday = result.birthday;
 			var service:HTTPService = new HTTPService();
-			service.url = Constants.SERVER_AD+"/geogas/struts/updateUsuario?facebook_id="+id+"&chave_facebook="+id+"&idade="+21+
+			service.url = Constants.SERVER_AD+"/geogas/struts/updateUsuario?facebook_id="+id+"&chave_facebook="+id+"&data_nascimento="+birthday+
 				"&nome="+nome;
-			
 			service.addEventListener(ResultEvent.RESULT, saveUserResult);
 			service.addEventListener(FaultEvent.FAULT, saveUserFault);
 			service.send();
 		}
 		
 		protected function saveUserResult(ev:Event):void {
-			Alert.show("deu certo!");
+//			Alert.show("deu certo!");
 		}
 		
 		protected function saveUserFault(ev:Event):void {
-			Alert.show("deu merda!");
+//			Alert.show("deu merda!");
 		}
 		
 		protected function logoutHandler(response:Object):void{
