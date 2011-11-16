@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
+import br.edu.ufcg.geogas.bean.Avaliacao_Entidade_Usuario;
 import br.edu.ufcg.geogas.bean.Denuncia;
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
@@ -332,4 +333,18 @@ public class GasStationDAOFlex extends HibernateDaoSupport implements GasStation
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public Avaliacao_Entidade_Usuario findAvaliacaoUsuario(String string,
+			String idUser) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveAvaliacao(Avaliacao_Entidade_Usuario aval) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ufcg.geogas.bean.AvaliacaoANP;
+import br.edu.ufcg.geogas.bean.Avaliacao_Entidade_Usuario;
 import br.edu.ufcg.geogas.bean.Denuncia;
 import br.edu.ufcg.geogas.bean.Entidade;
 import br.edu.ufcg.geogas.bean.Historico_Precos_Anp;
@@ -312,7 +313,28 @@ public class GasStationDAO implements GasStationDAOIF{
 		getEntityManager().merge(d);
 		
 	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public Avaliacao_Entidade_Usuario findAvaliacaoUsuario(String id_entidade, String id_usuario){
+		String sql = "SELECT u FROM Avaliacao_Entidade_Usuario u WHERE u.id.id_usuario = '"+id_usuario+"' AND u.id.id_entidade="+id_entidade;
+		Query q = getEntityManager().createQuery(sql);
+		Avaliacao_Entidade_Usuario u = null;
+		try{
+			u = (Avaliacao_Entidade_Usuario) q.getSingleResult();
+		}catch(Exception e){
+			
+		}
+		return u;
+	}
 
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public void saveAvaliacao(Avaliacao_Entidade_Usuario aval) {
+		getEntityManager().persist(aval);
+		getEntityManager().merge(aval);
+		
+	}
+	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public ArrayList<Integer> getAvaliacoesAmigos(int notaMinima, ArrayList<String> amigos){
