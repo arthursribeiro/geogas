@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="182" height="350" creationComplete="init()">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="182" height="398" creationComplete="init()">
 	<fx:Declarations>
 		<s:RadioButtonGroup id="radiogroup1"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	<s:VGroup left="0" top="10" width="181" height="100%">
+	<s:VGroup left="0" top="10" width="181" height="329">
 		<s:RadioButton id="raioCheck" label="Raio (em KM)" groupName="radiogroup1"/>
 		<s:Spacer width="39" height="20"/>
 		<s:RadioButton label="Calcular Rota" id="rotaCheck" groupName="radiogroup1"/>
@@ -29,16 +29,39 @@
 	<s:Label x="136" y="222" width="47" height="20" fontSize="18" fontWeight="bold" text="GNV"/>
 	<s:CheckBox x="33" y="301" label="Amigos" enabled="{avaliacaoCheck.selected}"/>
 	<s:Label x="107" y="271" width="65" height="22" text="Nota Min." verticalAlign="middle"/>
+	<s:Button x="38" y="347" label="Atualizar Mapa" id="atualizarMapa" click="atualiza()"/>
 	
 	<fx:Script>
 		<![CDATA[
 			import classes.events.EventoPesquisa;
 			
 			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import utils.FacebookConnection;
 			
 			private var dispatcher:IEventDispatcher = new EventDispatcher();
 			
 			public function init():void {
+			}
+			
+			public function atualiza():void {
+				if(avaliacaoCheck.selected) {
+					var ro:RemoteObject = new RemoteObject("PostoCombustivelService");
+					ro.addEventListener(ResultEvent.RESULT,receiveDic);
+					ro.addEventListener(FaultEvent.FAULT,error);
+					ro.getAvaliacoesAmigos(parseInt(avaliacaoInput.text), new Array());
+				}
+			}
+			
+			public function receiveDic(ev:Event):void {
+				
+			}
+			
+			public function error(ev:Event):void {
+				
 			}
 			
 			
