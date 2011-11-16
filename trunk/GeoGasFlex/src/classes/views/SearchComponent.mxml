@@ -3,16 +3,32 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="182" height="350" creationComplete="init()">
 	<fx:Declarations>
+		<s:RadioButtonGroup id="radiogroup1"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	<s:CheckBox x="10" y="32" label="Bandeira" fontSize="11" id="bandCheck" change="changeBandInput()"/>
-	<s:TextInput x="45" y="57" width="118" fontSize="11" id="bandInput"/>
-	<s:CheckBox x="10" y="115" label="Raio (em KM)" fontSize="11" id="raioCheck" change="changeRaioInput()"/>
-	<s:TextInput x="46" y="140" width="119" fontSize="11" id="raioInput" restrict=".0-9"/>
-	<s:TextInput x="46" y="178" width="118" fontSize="11" id="precoInput" restrict=".0-9" visible="false"/>
-	<s:CheckBox x="10" y="157" label="Preço Máximo" visible="false" fontSize="11" id="precoCheck" change="changePrecoInput()"/>
-	<s:Button x="86" y="304" label="Update Map" id="botaoSubmeter" click="submeter()"/>
+	<s:VGroup left="0" top="10" width="181" height="100%">
+		<s:RadioButton id="raioCheck" label="Raio (em KM)" groupName="radiogroup1"/>
+		<s:Spacer width="39" height="20"/>
+		<s:RadioButton label="Calcular Rota" id="rotaCheck" groupName="radiogroup1"/>
+		<s:Spacer width="39" height="17"/>
+		<s:RadioButton label="Filtro de Preço" id="precoCheck" groupName="radiogroup1"/>
+		<s:Spacer width="39" height="111"/>
+		<s:RadioButton label="Filtro de Avaliação" id="avaliacaoCheck" groupName="radiogroup1"/>
+	</s:VGroup>
+	
+	<s:TextInput x="57" y="33" width="66" fontSize="11" id="raioInput" editable="{raioCheck.selected}" restrict=".0-9"/>
+	<s:TextInput x="33" y="272" width="66" fontSize="11" id="avaliacaoInput" editable="{avaliacaoCheck.selected}" restrict=".0-9"/>
+	<s:TextInput x="62" y="221" width="66" fontSize="11" id="gnvInput" editable="{precoCheck.selected}" restrict=".0-9"/>
+	<s:TextInput x="62" y="134" width="66" fontSize="11" id="gasolineInput" editable="{precoCheck.selected}" restrict=".0-9"/>
+	<s:TextInput x="62" y="163" width="66" fontSize="11" id="alcoholInput" editable="{precoCheck.selected}" restrict=".0-9"/>
+	<s:TextInput x="62" y="192" width="66" fontSize="11" id="dieselInput" editable="{precoCheck.selected}" restrict=".0-9"/>
+	<s:Label x="136" y="134" width="24" height="20" fontSize="18" fontWeight="bold" text="G"/>
+	<s:Label x="136" y="164" width="24" height="20" fontSize="18" fontWeight="bold" text="A"/>
+	<s:Label x="136" y="193" width="24" height="20" fontSize="18" fontWeight="bold" text="D"/>
+	<s:Label x="136" y="222" width="47" height="20" fontSize="18" fontWeight="bold" text="GNV"/>
+	<s:CheckBox x="33" y="301" label="Amigos" enabled="{avaliacaoCheck.selected}"/>
+	<s:Label x="107" y="271" width="65" height="22" text="Nota Min." verticalAlign="middle"/>
 	
 	<fx:Script>
 		<![CDATA[
@@ -23,62 +39,8 @@
 			private var dispatcher:IEventDispatcher = new EventDispatcher();
 			
 			public function init():void {
-				bandInput.enabled = bandCheck.selected;
-				raioInput.enabled = raioCheck.selected;
-				precoInput.enabled = precoCheck.selected;
-				ativarBotao();
 			}
 			
-			public function changeBandInput():void {
-				bandInput.enabled = bandCheck.selected;
-				ativarBotao();
-			}
-			
-			public function changeRaioInput():void {
-				raioInput.enabled = raioCheck.selected;
-				ativarBotao();
-			}
-			
-			public function changePrecoInput():void {
-				precoInput.enabled = precoCheck.selected;
-				ativarBotao();
-			}
-			
-			public function ativarBotao():void {
-				if(precoCheck.selected || bandCheck.selected) {
-					botaoSubmeter.enabled = true;
-				} else {
-					botaoSubmeter.enabled = false;
-				}
-			}
-			
-			public function submeter():void {
-				if(precoCheck.selected && precoInput.text == "") {
-					Alert.show("Preencha o campo de preço!", "Erro!");
-				} else if (bandCheck.selected && bandInput.text == "") {
-					Alert.show("Preencha o campo de bandeira!", "Erro!");
-				} else if (raioCheck.selected && raioInput.text == "") {
-					Alert.show("Preencha o campo de raio!", "Erro!");
-				} else {
-					var preco:Number = 0;
-					var raio:Number = 0;
-					var bandeira:String = null;
-					if(precoCheck.selected) {
-						preco = Number(precoInput.text);
-					}
-					if(raioCheck.selected) {
-						raio = Number(raioInput.text);
-					}
-					if(bandCheck.selected) {
-						bandeira = bandInput.text.toUpperCase();
-					}
-					this.dispatchEvent(new EventoPesquisa(bandeira, raio, preco));
-				}
-			}
-			
-			public function getBandeira():String{
-				return bandInput.text.toUpperCase();
-			}
 			
 		]]>
 	</fx:Script>

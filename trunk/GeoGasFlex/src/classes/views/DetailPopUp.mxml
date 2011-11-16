@@ -147,13 +147,24 @@
 			
 			private function denunciarPosto():void{
 				var service:HTTPService = new HTTPService();
-				service.url = Constants.SERVER_AD+"/geogas/struts/denunciar?id="+ent.id+"&idUser="+this.fb.id+
-					"&reclamacao="+this.autuacaoArea.text+
+				service.url = Constants.SERVER_AD+"/geogas/struts/denunciar?id="+ent.id+
+					"&autuacao="+this.denunciaArea.text+
 					"&idUser="+this.fb.id;
 				service.showBusyCursor = true;
-				service.addEventListener(ResultEvent.RESULT, saveAutuacaoResult);
-				service.addEventListener(FaultEvent.FAULT, saveAutuacaoFault);
+				service.addEventListener(ResultEvent.RESULT, saveDenunciaResult);
+				service.addEventListener(FaultEvent.FAULT, saveDenunciaFault);
 				service.send();
+			}
+			
+			private function saveDenunciaResult(ev:ResultEvent):void{
+				Alert.show("Denúncia realizada com sucesso.");
+				ent.denuncias = ent.denuncias?(ent.denuncias+1):1;
+				updateLabels();
+				ent.updateInfoWindow();
+			}
+			
+			private function saveDenunciaFault(ev:FaultEvent):void{
+				Alert.show("Denúncia não pôde ser realizada. \nPor favor tente novamente mais tarde.");
 			}
 			
 			private function autuarPosto():void{
@@ -169,7 +180,9 @@
 			private function saveAutuacaoResult(ev:ResultEvent):void{
 				Alert.show("Autuação realizada com sucesso.");
 				ent.autuacoes = ent.autuacoes?(ent.autuacoes+1):1;
+				this.autuacaoArea.text = "";
 				updateLabels();
+				ent.updateInfoWindow();
 			}
 			
 			private function saveAutuacaoFault(ev:FaultEvent):void{
@@ -225,7 +238,7 @@
 						<s:Label width="109" height="30" fontSize="15" text="CNPJ/CPF:"
 								 textAlign="right" verticalAlign="middle"
 								 />
-						<s:TextInput restrict="0-9 \. \/ \-" height="30" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
+						<s:TextInput restrict="0-9\.\/\-" height="30" editable.State1="false" editable.loggedFacebook="false" editable.ANP="true"
 									 text="{this.cnpjcpfStr}"  width="258"
 									 id="cnpjCpf"/>
 					</mx:HBox>
