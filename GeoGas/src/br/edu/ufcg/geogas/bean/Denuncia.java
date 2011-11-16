@@ -30,6 +30,10 @@ public class Denuncia {
 	@Column(name="reclamacao")
 	private String reclamacao;
 	
+	@NotNull
+	@Column(name="id_usuario")
+	private Integer id_usuario;
+	
 	@ManyToMany(
 	         targetEntity=Entidade.class,
 	         cascade={CascadeType.ALL}, 
@@ -64,6 +68,14 @@ public class Denuncia {
 
 	public void setEntidades(Set<Entidade> entidades) {
 		this.entidades = entidades;
+	}
+
+	public Integer getId_usuario() {
+		return id_usuario;
+	}
+
+	public void setId_usuario(Integer id_usuario) {
+		this.id_usuario = id_usuario;
 	}
 
 }

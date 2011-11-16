@@ -10,6 +10,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.springframework.transaction.annotation.Propagation;
+
+import br.edu.ufcg.geogas.bean.AvaliacaoANP;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
 
@@ -58,4 +60,6 @@ public interface GasStationDAOIF {
 	public Usuario findUsuario(String facebook_id);
 
 	public void mergeObject(Object u);
+
+	public void saveAutuacao(AvaliacaoANP a);
 }

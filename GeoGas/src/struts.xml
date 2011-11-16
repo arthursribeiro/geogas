@@ -21,6 +21,9 @@
 	    <action name="updateUsuario" class="gasStationAction" method="createUsuario" >
 	    </action>
 	    
+	    <action name="autuar" class="gasStationAction" method="autuar" >
+	    </action>
+	    
 	        <!-- Add actions here
 	        	Exs.:
 	        	
