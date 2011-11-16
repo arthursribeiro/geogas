@@ -57,7 +57,6 @@ package utils
 		}
 		
 		protected function getMeHandler(result:Object,fail:Object):void{
-			this.dispatchEvent(new FacebookEvent(FacebookEvent.FACEBOOK_ME));
 			nome = result.name;
 			id = result.id;
 			birthday = result.birthday;
@@ -84,7 +83,7 @@ package utils
 		}
 		
 		public function submitPost(post:String):void {
-			//Facebook.api("/me/feed",submitPostHandler,{message:post}, "POST");
+			Facebook.api("/me/feed",submitPostHandler,{message:post}, "POST");
 		}
 		
 		protected function submitPostHandler(result:Object,fail:Object):void
