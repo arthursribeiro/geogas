@@ -151,8 +151,7 @@
 			
 			private function updatePricesUser(ev:MouseEvent):void{
 				var service:HTTPService = new HTTPService();
-				//COLCOAR O ID DO USUARIO!!
-				service.url = Constants.SERVER_AD+"/geogas/struts/updatePrices?id="+myEnt.id+"&isAnp=false&idUser=-1"+
+				service.url = Constants.SERVER_AD+"/geogas/struts/updatePrices?id="+myEnt.id+"&isAnp=false&idUser="+this.fb.id+
 					"&pricegasoline_user="+((!(this.pricegasoline_user.text.indexOf("--")>=0))?this.pricegasoline_user.text:"-1")+
 					"&pricealcohol_user="+((!(this.pricealcohol_user.text.indexOf("--")>=0))?this.pricealcohol_user.text:"-1")+
 					"&pricediesel_user="+((!(this.pricediesel_user.text.indexOf("--")>=0))?this.pricediesel_user.text:"-1")+
