@@ -281,7 +281,7 @@ public class GasStationDAO implements GasStationDAOIF{
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public Usuario findUsuario(String facebook_id) {
-		Query q = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.facebook_id = "+facebook_id);
+		Query q = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.facebook_id = '"+facebook_id+"'");
 		Usuario u = null;
 		try{
 			u = (Usuario) q.getSingleResult();
@@ -312,4 +312,30 @@ public class GasStationDAO implements GasStationDAOIF{
 		getEntityManager().merge(d);
 		
 	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public ArrayList<Integer> getAvaliacoesAmigos(int notaMinima, ArrayList<String> amigos){
+    	ArrayList<Integer> arr = new ArrayList<Integer>();
+    	String sql = "";
+    	if(amigos.size() == 0) {
+    		sql = "SELECT a.id_entidade FROM avaliacao_entidade_usuario a WHERE a.nota > " + notaMinima;
+    	} else {
+    		String where = "WHERE";
+    		String separador = "";
+    		for(String id_facebook : amigos) {
+    			where += separador + " id_usuario = '" + id_facebook + "'";
+    			separador = " OR";
+    		}
+    		sql = "SELECT a.id_entidade FROM avaliacao_entidade_usuario a "+where+ " AND a.nota > "+ notaMinima;
+    	}
+    	
+    	Query q = getEntityManager().createNativeQuery(sql);
+    	for (Object result : q.getResultList()) {
+    		Object[] tupla = (Object[]) result;
+			int num = (Integer) tupla[0];
+			arr.add(num);
+		}
+    	return arr;
+    }
 }

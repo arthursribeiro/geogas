@@ -9,8 +9,10 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.flex.remoting.RemotingDestination;
 
+import br.edu.ufcg.geogas.bean.Avaliacao_Entidade_Usuario;
 import br.edu.ufcg.geogas.bean.PostoCombustivel;
 import br.edu.ufcg.geogas.bean.Usuario;
+import br.edu.ufcg.geogas.dao.GasStationDAOFlex;
 import br.edu.ufcg.geogas.dao.GasStationDAOIF;
 import br.edu.ufcg.geogas.service.PostoCombustivelServiceIF;
 
@@ -27,6 +29,10 @@ public class PostoCombustivelServiceFlex implements PostoCombustivelServiceIF{
 	
 	public String encodeUrl(String url,String filters) throws UnsupportedEncodingException{
 		return url+URLEncoder.encode(filters, "UTF-8");
+	}
+	
+	public ArrayList<Integer> getAvaliacoesAmigos(int notaMinima, ArrayList<String> amigos) {
+		return gasStationDAOFlex.getAvaliacoesAmigos(notaMinima, amigos);
 	}
 	
 	public Dictionary<String, String> getTraducoes(){
