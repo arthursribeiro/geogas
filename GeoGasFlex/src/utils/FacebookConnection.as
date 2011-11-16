@@ -22,7 +22,7 @@ package utils
 		public var id:String;
 		public var birthday:String;
 		private static var instance:FacebookConnection;
-		public var amigos:ArrayCollection = null;
+		public var amigos:ArrayCollection = new ArrayCollection();
 		
 		public function FacebookConnection(enforcer:SingletonEnforcer)
 		{
@@ -51,6 +51,14 @@ package utils
 		
 		public function getFriends():void {
 			Facebook.api("/me/friends", friends);
+		}
+		
+		public function getAmigos():Array {
+			var ret:Array = new Array();
+			for(var i:int=0; i < amigos.length; i++) {
+				ret.push(amigos.getItemAt(i).id);
+			}
+			return ret;
 		}
 		
 		public function friends(result:Object, fail:Object):void {

@@ -9,7 +9,7 @@ package classes.events
 		public var raio:Number;
 		public var preco:Number;
 		
-		public function EventoPesquisa(bandeira:String, raio:Number, preco:Number,type:String="submeter", bubbles:Boolean=false, cancelable:Boolean=false)
+		public function EventoPesquisa(amigos:Boolean = false,type:String="submeter", bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			this.bandeira = bandeira;
