@@ -79,9 +79,9 @@
     <bean id="dataSourceGeoGas"
         class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 	   <property name="driverClassName" value="org.postgresql.Driver" />
-	   <property name="url" value="jdbc:postgresql://localhost:5432/geogas" />
+	   <property name="url" value="jdbc:postgresql://150.165.75.168:5433/geogas" />
 	   <property name="username" value="postgres" />
-	   <property name="password" value="admin" />
+	   <property name="password" value="oradb2010pgsql" />
     </bean>
 	
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
