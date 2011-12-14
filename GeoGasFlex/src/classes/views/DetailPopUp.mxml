@@ -128,7 +128,7 @@
 			protected function postHandler(ev:Event):void {
 				fb.removeEventListener(FacebookEvent.FACEBOOK_POSTED, postHandler);
 				Alert.show("Avaliação foi publicada. Obrigado!");
-				close();
+//				close();
 			}
 			
 			private function saveData(ev:MouseEvent):void{

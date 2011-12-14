@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*" currentState="State1" >
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" stateChangeComplete="updateSearch()" xmlns:classes="classes.*" xmlns:views="classes.views.*" xmlns:controls="classes.model.it.sephiroth.controls.*" currentState="State1" >
 	<mx:states>
 		<s:State name="hidden"/>
 		<s:State name="State1"/>
@@ -54,6 +54,7 @@
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
+			import mx.events.StateChangeEvent;
 			import mx.events.TreeEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
@@ -61,6 +62,8 @@
 			import mx.rpc.http.HTTPService;
 			
 			import utils.FacebookConnection;
+			
+			
 			
 			private var markers:ArrayList = new ArrayList();
 			private var rows:ArrayList;
@@ -100,6 +103,15 @@
 			private var raio:Number = 0;
 			private var aplicarfiltros:Boolean = false;
 			public var fb:FacebookConnection = null;
+			
+			private function updateSearch():void{
+				if(search){
+					search.amigos.visible = fb.connected;
+					search.amigos.selected = fb.connected;
+					search.disableAllRadios();
+				}
+				updateMap(null);
+			}
 			
 			private function chamou(e:ListEvent):void{
 				for each(var ent:Entidade in markers){
@@ -180,8 +192,10 @@
 			}
 			
 			private function updateList():void{
-				columnGrid.data = rows;
-				columnGrid.dataProvider = rows;
+				if(map && columnGrid){
+					columnGrid.data = rows;
+					columnGrid.dataProvider = rows;
+				}
 			}
 			
 			private function limparMapa():void{
@@ -189,12 +203,17 @@
 //				if(columnGrid)
 //					while(columnGrid.columns.length>0)
 //						columnGrid.columns.pop();
-				map.clearOverlays();
-				if(search && search.raioCheck.selected)
-					map.addOverlay(geodesic);
-				if(search && search.rotaCheck.selected){
-					map.addOverlay(directionsPolyline);
-					map.addOverlay(rotaOrigem);
+				if(map){
+					map.clearOverlays();
+					if(search && search.raioCheck.selected)
+						if(geodesic)
+							map.addOverlay(geodesic);
+					if(search && search.rotaCheck.selected){
+						if(directionsPolyline)
+							map.addOverlay(directionsPolyline);
+						if(rotaOrigem)
+							map.addOverlay(rotaOrigem);
+					}
 				}
 				markers = new ArrayList();
 				rows = new ArrayList();
@@ -241,13 +260,17 @@
 			public function markerClicked(event:MapEvent):void{
 				var marker:Entidade = event.target as Entidade;
 				if(search && search.rotaCheck.selected){
-					var directions:Directions = new Directions();
-					directions.addEventListener(DirectionsEvent.DIRECTIONS_SUCCESS,
-						onDirectionsSuccess);
-					directions.addEventListener(DirectionsEvent.DIRECTIONS_FAILURE,
-						onDirectionsFail);
-					directions.load("from: " +
-						rotaOrigem.getLatLng().toString() + " to: " + marker.getLatLng().toString());
+					if(rotaOrigem){
+						var directions:Directions = new Directions();
+						directions.addEventListener(DirectionsEvent.DIRECTIONS_SUCCESS,
+							onDirectionsSuccess);
+						directions.addEventListener(DirectionsEvent.DIRECTIONS_FAILURE,
+							onDirectionsFail);
+						directions.load("from: " +
+							rotaOrigem.getLatLng().toString() + " to: " + marker.getLatLng().toString());
+					}else{
+						Alert.show("Indique um local para início da rota clicando no mapa.");
+					}
 				}else{
 					marker.openInfoWindow(marker.getInfoWindowOptions(this.currentState));
 				}
@@ -288,164 +311,168 @@
 			}
 			
 			private function getMapBBox():String{
-				var bbox:LatLngBounds = map.getLatLngBounds();
-				var bboxStr:String = 
-					'<ogc:BBOX> ' +
-					'        <ogc:PropertyName>geom</ogc:PropertyName> ' +
-					'        <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"> ' +
-					'           <gml:coordinates>'+ bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat() +'</gml:coordinates> ' +
-					'        </gml:Box> ' +
-					'</ogc:BBOX>';
-				
-				return bboxStr;
+				if(map){
+					var bbox:LatLngBounds = map.getLatLngBounds();
+					var bboxStr:String = 
+						'<ogc:BBOX> ' +
+						'        <ogc:PropertyName>geom</ogc:PropertyName> ' +
+						'        <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"> ' +
+						'           <gml:coordinates>'+ bbox.getSouthWest().lng()+","+bbox.getSouthWest().lat()+" "+bbox.getNorthEast().lng()+","+bbox.getNorthEast().lat() +'</gml:coordinates> ' +
+						'        </gml:Box> ' +
+						'</ogc:BBOX>';
+					
+					return bboxStr;
+				}
+				return "";
 			}
 			
 			private function requisitar():void {
-//				var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
-				var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs";
-//				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
-				var filters:String = getMapBBox();
-				
-				var data2:XML = new XML(myTree.dataProvider);
-				var layersFilter:String = '<Or>'+Constants.REPLACE_FILTERS+'</Or>';
-				var layersFilterData:String = '';
-				var withCleanFilter:Dictionary = new Dictionary();
-				var props:ArrayList = new ArrayList();
-				for each(var node:XML in data2.children()){
-					var label:String = node.@label;
-					for each(var childNode:XML in node.children()){
-						var propName:String = childNode.@folder;
-						var propLayer:String = withCleanFilter[propName];
-						var newPropFilter:String = '';
-						if(node.@checked != 1){
-							if(childNode.@islike_value != 'undefined'){
-								if(propLayer == null){
-									var propClean:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-									propClean = propClean.replace(Constants.REPLACE_VALUE,'#@!NENHUMA SELECIONADA!@#')+'\n';
-									propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,propClean+' '+Constants.REPLACE_FILTERS);
-								}
-								if(childNode.@checked == 1){
-									newPropFilter += propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-									newPropFilter = newPropFilter.replace(Constants.REPLACE_VALUE,'%'+childNode.@label+'%')+'\n';
-								}
-							}else if(childNode.@islike_value == 'undefined' && childNode.@min_value != 'undefined' && childNode.@max_value != 'undefined' ){
-								if(propLayer == null){
-									var prop2Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-									prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
-									prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
-									
-									if(childNode.@has_user_prop == 1){
-										prop2Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+				if(map){
+					//				var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs?request=GetFeature&version=1.0.0&typeName=geogas:gasstation&FILTER=";
+					var serverUrl:String = Constants.SERVER_AD+"/geoserver/wfs";
+					//				var filters:String = bboxFilter.replace(Constants.REPLACE_VALUE,getMapBBox());
+					var filters:String = getMapBBox();
+					
+					var data2:XML = new XML(myTree.dataProvider);
+					var layersFilter:String = '<Or>'+Constants.REPLACE_FILTERS+'</Or>';
+					var layersFilterData:String = '';
+					var withCleanFilter:Dictionary = new Dictionary();
+					var props:ArrayList = new ArrayList();
+					for each(var node:XML in data2.children()){
+						var label:String = node.@label;
+						for each(var childNode:XML in node.children()){
+							var propName:String = childNode.@folder;
+							var propLayer:String = withCleanFilter[propName];
+							var newPropFilter:String = '';
+							if(node.@checked != 1){
+								if(childNode.@islike_value != 'undefined'){
+									if(propLayer == null){
+										var propClean:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+										propClean = propClean.replace(Constants.REPLACE_VALUE,'#@!NENHUMA SELECIONADA!@#')+'\n';
+										propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,propClean+' '+Constants.REPLACE_FILTERS);
+									}
+									if(childNode.@checked == 1){
+										newPropFilter += propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
+										newPropFilter = newPropFilter.replace(Constants.REPLACE_VALUE,'%'+childNode.@label+'%')+'\n';
+									}
+								}else if(childNode.@islike_value == 'undefined' && childNode.@min_value != 'undefined' && childNode.@max_value != 'undefined' ){
+									if(propLayer == null){
+										var prop2Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
 										prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
 										prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
-									}
-									
-									propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean+' '+Constants.REPLACE_FILTERS);
-								}else if(!propLayer.indexOf(childNode.@prop_name)>=0){
-									var prop3Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-									prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
-									prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
-									
-									if(childNode.@has_user_prop == 1){
-										prop3Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+										
+										if(childNode.@has_user_prop == 1){
+											prop2Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+											prop2Clean = prop2Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+											prop2Clean = prop2Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+										}
+										
+										propLayer = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean+' '+Constants.REPLACE_FILTERS);
+									}else if(!propLayer.indexOf(childNode.@prop_name)>=0){
+										var prop3Clean:String = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
 										prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
 										prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+										
+										if(childNode.@has_user_prop == 1){
+											prop3Clean += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+											prop3Clean = prop3Clean.replace(Constants.REPLACE_MIN_VALUE,'-2');
+											prop3Clean = prop3Clean.replace(Constants.REPLACE_MAX_VALUE,'-1')+'\n';
+										}
+										propLayer = propLayer.replace(Constants.REPLACE_FILTERS,prop3Clean+ ' ' + Constants.REPLACE_FILTERS);
 									}
-									propLayer = propLayer.replace(Constants.REPLACE_FILTERS,prop3Clean+ ' ' + Constants.REPLACE_FILTERS);
-								}
-								
-	//							var combFilt:String = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean + ' ' + Constants.REPLACE_FILTERS);
-								if(childNode.@checked == 1){
-									newPropFilter = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
-									newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
-									newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
-									if(childNode.@has_user_prop == 1){
-										newPropFilter += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+									
+									//							var combFilt:String = layersFilter.replace(Constants.REPLACE_FILTERS,prop2Clean + ' ' + Constants.REPLACE_FILTERS);
+									if(childNode.@checked == 1){
+										newPropFilter = propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name);
 										newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
 										newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
+										if(childNode.@has_user_prop == 1){
+											newPropFilter += propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,childNode.@prop_name+'_user');
+											newPropFilter = newPropFilter.replace(Constants.REPLACE_MIN_VALUE,childNode.@min_value);
+											newPropFilter = newPropFilter.replace(Constants.REPLACE_MAX_VALUE,childNode.@max_value)+'\n';
+										}
 									}
+									//							propLayer = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+ ' ' + Constants.REPLACE_FILTERS);
 								}
-	//							propLayer = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+ ' ' + Constants.REPLACE_FILTERS);
+								if(!hasString(props,propName)){
+									props.addItem(propName);
+								}
+								withCleanFilter[propName] = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+' '+Constants.REPLACE_FILTERS);
 							}
-							if(!hasString(props,propName)){
-								props.addItem(propName);
-							}
-							withCleanFilter[propName] = propLayer.replace(Constants.REPLACE_FILTERS,newPropFilter+' '+Constants.REPLACE_FILTERS);
+							
+						}
+					}
+					
+					for(var index:int = 0; index < props.length; index++){
+						var propStr:String = props.getItemAt(index).toString();
+						var filter:String = withCleanFilter[propStr].toString().replace(Constants.REPLACE_FILTERS, '');
+						layersFilterData += filter;
+					}
+					filters+='<And>'+layersFilterData+'</And>';
+					var filterPrecos:String = "";
+					if(search && search.precoCheck.selected){
+						var priceGasolineMin:Number = Number(search.gasolineInput.text);
+						var priceGNVMin:Number = Number(search.gnvInput.text);
+						var priceAlcoholMin:Number = Number(search.alcoholInput.text);
+						var priceDieselMin:Number = Number(search.dieselInput.text);
+						var precosFilt:String = "";
+						if(priceGasolineMin>0){
+							var gasolineFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegasoline')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegasoline_user')+"</Or>";
+							gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MAX_VALUE,priceGasolineMin);
+							gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MAX_VALUE,priceGasolineMin);
+							precosFilt += gasolineFilter;
 						}
 						
+						if(priceGNVMin>0){
+							var gasFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegas')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegas_user')+"</Or>";
+							gasFilter = gasFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							gasFilter = gasFilter.replace(Constants.REPLACE_MAX_VALUE,priceGNVMin);
+							gasFilter = gasFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							gasFilter = gasFilter.replace(Constants.REPLACE_MAX_VALUE,priceGNVMin);
+							precosFilt += gasFilter;
+						}
+						
+						if(priceAlcoholMin>0){
+							var alcoholFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricealcohol')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricealcohol_user')+"</Or>";
+							alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MAX_VALUE,priceAlcoholMin);
+							alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MAX_VALUE,priceAlcoholMin);
+							precosFilt += alcoholFilter;
+						}
+						
+						if(priceDieselMin > 0){
+							var dieselFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricediesel')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricediesel_user')+"</Or>";
+							dieselFilter = dieselFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							dieselFilter = dieselFilter.replace(Constants.REPLACE_MIN_VALUE,0);
+							dieselFilter = dieselFilter.replace(Constants.REPLACE_MAX_VALUE,priceDieselMin);
+							dieselFilter = dieselFilter.replace(Constants.REPLACE_MAX_VALUE,priceDieselMin);
+							precosFilt += dieselFilter;
+						}
+						
+						if(precosFilt.length>0){
+							filterPrecos = "<And>"+precosFilt+"</And>";
+						}
 					}
-				}
-				
-				for(var index:int = 0; index < props.length; index++){
-					var propStr:String = props.getItemAt(index).toString();
-					var filter:String = withCleanFilter[propStr].toString().replace(Constants.REPLACE_FILTERS, '');
-					layersFilterData += filter;
-				}
-				filters+='<And>'+layersFilterData+'</And>';
-				var filterPrecos:String = "";
-				if(search && search.precoCheck.selected){
-					var priceGasolineMin:Number = Number(search.gasolineInput.text);
-					var priceGNVMin:Number = Number(search.gnvInput.text);
-					var priceAlcoholMin:Number = Number(search.alcoholInput.text);
-					var priceDieselMin:Number = Number(search.dieselInput.text);
-					var precosFilt:String = "";
-					if(priceGasolineMin>0){
-						var gasolineFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegasoline')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegasoline_user')+"</Or>";
-						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MAX_VALUE,priceGasolineMin);
-						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						gasolineFilter = gasolineFilter.replace(Constants.REPLACE_MAX_VALUE,priceGasolineMin);
-						precosFilt += gasolineFilter;
+					var filterPostos:String = "";
+					
+					if(search && search.avaliacaoCheck.selected) {
+						var idPostosfilt:String = '<ogc:FeatureId fid="'+this.baseLayer+'.'+0+'" />';
+						idPostosfilt = idPostosfilt.replace(Constants.REPLACE_VALUE, 10);
+						for(var i:int=0; i < search.buscaAvaliacoes.length; i++) {
+							var idPostoFilter:String = '<ogc:FeatureId fid="'+this.baseLayer+'.'+search.buscaAvaliacoes.getItemAt(i)+'" />';
+							idPostosfilt += idPostoFilter;
+						}
+						
+						if(idPostosfilt.length > 0) {
+							filterPostos = "<Or>"+idPostosfilt+"</Or>";
+						}
 					}
 					
-					if(priceGNVMin>0){
-						var gasFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegas')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricegas_user')+"</Or>";
-						gasFilter = gasFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						gasFilter = gasFilter.replace(Constants.REPLACE_MAX_VALUE,priceGNVMin);
-						gasFilter = gasFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						gasFilter = gasFilter.replace(Constants.REPLACE_MAX_VALUE,priceGNVMin);
-						precosFilt += gasFilter;
-					}
-					
-					if(priceAlcoholMin>0){
-						var alcoholFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricealcohol')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricealcohol_user')+"</Or>";
-						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MAX_VALUE,priceAlcoholMin);
-						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						alcoholFilter = alcoholFilter.replace(Constants.REPLACE_MAX_VALUE,priceAlcoholMin);
-						precosFilt += alcoholFilter;
-					}
-					
-					if(priceDieselMin > 0){
-						var dieselFilter:String = "<Or>"+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricediesel')+propBetweenFilter.replace(Constants.REPLACE_PROP_NAME,'pricediesel_user')+"</Or>";
-						dieselFilter = dieselFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						dieselFilter = dieselFilter.replace(Constants.REPLACE_MIN_VALUE,0);
-						dieselFilter = dieselFilter.replace(Constants.REPLACE_MAX_VALUE,priceDieselMin);
-						dieselFilter = dieselFilter.replace(Constants.REPLACE_MAX_VALUE,priceDieselMin);
-						precosFilt += dieselFilter;
-					}
-					
-					if(precosFilt.length>0){
-						filterPrecos = "<And>"+precosFilt+"</And>";
-					}
-				}
-				var filterPostos:String = "";
-
-				if(search && search.avaliacaoCheck.selected) {
-					var idPostosfilt:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,'id_posto_combustivel');
-					idPostosfilt = idPostosfilt.replace(Constants.REPLACE_VALUE, 10);
-					for(var i:int=0; i < search.buscaAvaliacoes.length; i++) {
-						var idPostoFilter:String = propIsLikeFilter.replace(Constants.REPLACE_PROP_NAME,'id_posto_combustivel');
-						idPostoFilter = idPostoFilter.replace(Constants.REPLACE_VALUE, search.buscaAvaliacoes[i]);
-						idPostosfilt += idPostoFilter;
-					}
-					if(idPostosfilt.length > 0) {
-						filterPostos = "<Or>"+idPostosfilt+"</Or>";
-					}
-				}
-				 
-				var xmlRequest:String = 
-					'<wfs:GetFeature service="WFS" version="1.0.0" ' +
+					var xmlRequest:String = 
+						'<wfs:GetFeature service="WFS" version="1.0.0" ' +
 						'	outputFormat="GML2" ' +
 						'	xmlns:topp="http://www.openplans.org/topp" ' +
 						'	xmlns:wfs="http://www.opengis.net/wfs" ' +
@@ -459,18 +486,18 @@
 						'		<ogc:Filter><And>\n' + filters + filterPrecos + filterPostos +
 						'		</And></ogc:Filter> \n' +
 						'	</wfs:Query>\n ' +
-					'</wfs:GetFeature>\n'
-				//ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
-				var service:HTTPService = new HTTPService();
-				service.url = serverUrl;
-				service.resultFormat = "e4x";
-				service.method = "POST";
-				service.contentType = "text/xml";
-				service.showBusyCursor = true;
-				service.addEventListener(ResultEvent.RESULT, resultHttpRequest);
-				service.addEventListener(FaultEvent.FAULT, failHttpRequest);
-				service.send(xmlRequest);
-				
+						'</wfs:GetFeature>\n'
+					//ro.encodeUrl.send(serverUrl,filtersBlank.replace(Constants.REPLACE_FILTERS,filters));
+					var service:HTTPService = new HTTPService();
+					service.url = serverUrl;
+					service.resultFormat = "e4x";
+					service.method = "POST";
+					service.contentType = "text/xml";
+					service.showBusyCursor = true;
+					service.addEventListener(ResultEvent.RESULT, resultHttpRequest);
+					service.addEventListener(FaultEvent.FAULT, failHttpRequest);
+					service.send(xmlRequest);
+				}
 			}
 			
 			private function hasString(props:ArrayList,propName:String):Boolean{
@@ -694,43 +721,45 @@
 			
 		]]>
 	</fx:Script>
-	<s:HGroup>
-		<s:Button  id="facebook" buttonMode="true" visible.ANP="false" skinClass.State1="skins.FBLoginButtonSkin" skinClass.loggedFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.loggedFacebook="logout()"/>
-		<s:Image visible.ANP="true" buttonMode="true" visible.loggedFacebook="false" visible.State1="true" click.State1="loginANP()" width="80" height="35" click.ANP="logoutANP()" source="{Constants.SERVER_AD+'/geogas/imgs/anp.jpg'}"/>
-	</s:HGroup>
+	<s:VGroup width="100%" height="100%">
+		<s:HGroup horizontalAlign="right" width="100%" height="5%">
+			<s:Button  id="facebook" buttonMode="true" visible.ANP="false" skinClass.State1="skins.FBLoginButtonSkin" skinClass.loggedFacebook="skins.FBLogoutButtonSkin" click.State1="login()" click.loggedFacebook="logout()"/>
+			<s:Image visible.ANP="true" buttonMode="true" visible.loggedFacebook="false" visible.State1="true" click.State1="loginANP()" width="80" height="35" click.ANP="logoutANP()" source="{Constants.SERVER_AD+'/geogas/imgs/anp.jpg'}"/>
+		</s:HGroup>
 		
-	<s:HGroup width="100%" height="100%" gap="6">
-	<s:BorderContainer width="20%" height="100%">
-		<mx:TabNavigator x="0" y="-1" width="100%" height="100%">
-			<s:NavigatorContent width="100%" height="100%" label="Layers">
-				<controls:TreeCheckBox id="myTree"
-									   showRoot="false"
-									   width="100%"
-									   height="100%"
-									   dataProvider="{treeSource}"
-									   openItems="{treeSource..node}"
-									   labelField="@label"
-									   checkField="@checked"
-									   itemCheck="onItemCheck( event )" editable="false">
-					
-				</controls:TreeCheckBox>
-			</s:NavigatorContent>
-			<s:NavigatorContent width="100%" height="100%" label="Ferramentas">
-				<views:SearchComponent  id="search" x="0" y="0" width="100%" height="100%" main="{this}" > 
-				</views:SearchComponent>
-			</s:NavigatorContent>
-		</mx:TabNavigator>
-	</s:BorderContainer>
-	<mx:TabNavigator width="80%" height="100%">
-		<s:NavigatorContent id="mapTab" width="100%" height="100%" label="Map">
-				<s:BorderContainer width="100%" height="100%" id="mapC">
-					<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
-							  key="ABQIAAAArTOg12ENOoBN3O9kedACIxRkOv5Oc89yJ4sUflDi_EcLCzRIOBTMHpzPf7PADkHpU0-4GpQuUVpflw"/>
-				</s:BorderContainer>
-		</s:NavigatorContent>
-		<s:NavigatorContent includeIn="hidden" width="100%" height="100%" label="List" id="colGridContainer">
-		</s:NavigatorContent>
-	</mx:TabNavigator>
-	</s:HGroup>
+		<s:HGroup width="100%" height="90%">
+			<s:BorderContainer width="20%" height="100%">
+				<mx:TabNavigator x="0" y="-1" width="100%" height="100%">
+					<s:NavigatorContent width="100%" height="100%" label="Layers">
+						<controls:TreeCheckBox id="myTree"
+											   showRoot="false"
+											   width="100%"
+											   height="100%"
+											   dataProvider="{treeSource}"
+											   openItems="{treeSource..node}"
+											   labelField="@label"
+											   checkField="@checked"
+											   itemCheck="onItemCheck( event )" editable="false">
+							
+						</controls:TreeCheckBox>
+					</s:NavigatorContent>
+					<s:NavigatorContent width="100%" height="100%" label="Ferramentas">
+						<views:SearchComponent  id="search" x="0" y="0" width="100%" height="100%" main="{this}" >
+						</views:SearchComponent>
+					</s:NavigatorContent>
+				</mx:TabNavigator>
+			</s:BorderContainer>
+			<mx:TabNavigator width="80%" height="100%">
+				<s:NavigatorContent id="mapTab" width="100%" height="100%" label="Map">
+					<s:BorderContainer width="100%" height="100%" id="mapC">
+						<maps:Map xmlns:maps="com.google.maps.*" id="map" mapevent_mapready="init()" width="100%" height="100%" sensor="true"
+								  key="ABQIAAAArTOg12ENOoBN3O9kedACIxTMkBa2SVerBPwYxcIR1hQ6hSq4gxSHg0Jh3VLpNvjaUtoxuagGBkNdWw"/>
+					</s:BorderContainer>
+				</s:NavigatorContent>
+				<s:NavigatorContent includeIn="hidden" width="100%" height="100%" label="List" id="colGridContainer">
+				</s:NavigatorContent>
+			</mx:TabNavigator>
+		</s:HGroup>
+	</s:VGroup>
 	
 </mx:Application>

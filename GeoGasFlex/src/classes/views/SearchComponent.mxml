@@ -3,6 +3,7 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="182" height="398" creationComplete="init()">
 	<fx:Declarations>
+		
 		<s:RadioButtonGroup id="radiogroup1"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -27,7 +28,7 @@
 	<s:Label x="136" y="164" width="24" height="20" fontSize="18" fontWeight="bold" text="A"/>
 	<s:Label x="136" y="193" width="24" height="20" fontSize="18" fontWeight="bold" text="D"/>
 	<s:Label x="136" y="222" width="47" height="20" fontSize="18" fontWeight="bold" text="GNV"/>
-	<s:CheckBox x="33" y="301" label="Amigos" id="amigos" enabled="{avaliacaoCheck.selected}"/>
+	<s:CheckBox visible="false" x="33" y="301" label="Amigos" id="amigos" enabled="{avaliacaoCheck.selected}"/>
 	<s:Label x="107" y="271" width="65" height="22" text="Nota Min." verticalAlign="middle"/>
 	<s:Button x="38" y="347" label="Atualizar Mapa" id="atualizarMapa" click="atualiza()"/>
 	
@@ -35,6 +36,7 @@
 		<![CDATA[
 			import classes.events.EventoPesquisa;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -43,10 +45,18 @@
 			import utils.FacebookConnection;
 			
 			private var dispatcher:IEventDispatcher = new EventDispatcher();
-			public var buscaAvaliacoes:Array = new Array();
+			public var buscaAvaliacoes:ArrayCollection = new ArrayCollection();
 			public var main:GeoGasFlex;
 			
 			public function init():void {
+				this.amigos.visible = main.fb.connected;
+			}
+			
+			public function disableAllRadios():void{
+				raioCheck.selected = false;
+				avaliacaoCheck.selected = false;
+				precoCheck.selected = false;
+				rotaCheck.selected = false;
 			}
 			
 			public function atualiza():void {
@@ -69,8 +79,8 @@
 			}
 			
 			public function receiveDic(result:ResultEvent):void {
-				if(result as Array != null) {
-					buscaAvaliacoes = result.result as Array;
+				if(result.result as ArrayCollection != null) {
+					buscaAvaliacoes = result.result as ArrayCollection;
 				}
 				main.realizarPesquisa(null);
 			}
