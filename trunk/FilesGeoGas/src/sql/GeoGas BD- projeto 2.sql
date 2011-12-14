@@ -142,34 +142,33 @@ CREATE TABLE layers(
 	has_user_prop INTEGER DEFAULT 0
 );
 
-INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES
-('Bandeira','bandeira','BRANCA','%BRANCA%',null,null,0),
-('Bandeira','bandeira','PETROBRAS','PETROBRAS%',null,null,0),
-('Bandeira','bandeira','SHELL','SHELL%',null,null,0),
-('Bandeira','bandeira','SETTA','%SETTA%',null,null,0),
-('Bandeira','bandeira','DISLUB','DISLUB%',null,null,0),
-('Bandeira','bandeira','ALESAT','ALESAT%',null,null,0),
-('Bandeira','bandeira','COSAN','COSAN%',null,null,0),
-('Bandeira','bandeira','ELLO','ELLO%',null,null,0),
-('Bandeira','bandeira','FAN','FAN%',null,null,0),
-('Bandeira','bandeira','FEDERAL','FEDERAL%',null,null,0),
-('Bandeira','bandeira','IPP','IPP%',null,null,0),
-('Bandeira','bandeira','ALVO','ALVO%',null,null,0),
-('Bandeira','bandeira','SATELITE','SATELITE%',null,null,0),
-('Bandeira','bandeira','SP','SP%',null,null,0),
-('Bandeira','bandeira','TEMAPE','TEMAPE%',null,null,0),
-('Bandeira','bandeira','TOTAL','TOTAL%',null,null,0),
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','BRANCA','%BRANCA%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','PETROBRAS','PETROBRAS%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','SHELL','SHELL%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','SETTA','%SETTA%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','DISLUB','DISLUB%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','ALESAT','ALESAT%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','COSAN','COSAN%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','ELLO','ELLO%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','FAN','FAN%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','FEDERAL','FEDERAL%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','IPP','IPP%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','ALVO','ALVO%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','SATELITE','SATELITE%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','SP','SP%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','TEMAPE','TEMAPE%',null,null,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Bandeira','bandeira','TOTAL','TOTAL%',null,null,0);
 
-('Tipo Comb.','pricegasoline','Gasolina',null,0,1000,1),
-('Tipo Comb.','pricealcohol','Alcool',null,0,1000,1),
-('Tipo Comb.','pricediesel','Diesel',null,0,1000,1),
-('Tipo Comb.','pricegas','Gas',null,0,1000,1),
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Tipo Comb.','pricegasoline','Gasolina',null,0,1000,1);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Tipo Comb.','pricealcohol','Alcool',null,0,1000,1);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Tipo Comb.','pricediesel','Diesel',null,0,1000,1);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Tipo Comb.','pricegas','Gas',null,0,1000,1);
 
-('Aval. ANP','autuacoes','Autuados',null,1,1000000,0),
-('Aval. ANP','autuacoes','Nao Autuados',null,-1,0,0),
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Aval. ANP','autuacoes','Autuados',null,1,1000000,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Aval. ANP','autuacoes','Nao Autuados',null,-1,0,0);
 
-('Aval. Usuarios','denuncias','Com denuncias',null,1,1000000,0),
-('Aval. Usuarios','denuncias','Sem denuncias',null,-1,0,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Aval. Usuarios','denuncias','Com denuncias',null,1,1000000,0);
+INSERT INTO layers(folder,prop_name,label,islike_value,min_value,max_value,has_user_prop) VALUES ('Aval. Usuarios','denuncias','Sem denuncias',null,-1,0,0);
 
 
 CREATE OR REPLACE FUNCTION update_postocombustivel_anp() RETURNS TRIGGER AS $update_postocombustivel_anp$
