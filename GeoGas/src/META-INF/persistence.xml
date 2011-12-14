@@ -6,9 +6,9 @@
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
-            <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/geogas" />
+            <property name="hibernate.connection.url" value="jdbc:postgresql://150.165.75.168:5433/geogas" />
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
-            <property name="hibernate.connection.password" value="admin" />
+            <property name="hibernate.connection.password" value="oradb2010pgsql" />
             <property name="hibernate.connection.username" value="postgres" />
             <property name="hibernate.hbm2ddl.auto" value="validate" />
         </properties>
